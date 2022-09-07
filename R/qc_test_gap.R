@@ -10,13 +10,12 @@
 #'
 #' @export
 
-qc_flag_range <- function(dat, variable, threshold) {
+qc_test_gap <- function(dat, variable, threshold) {
 
   dat %>%
     group_by(sensor) %>%
     mutate(
       diff = as.numeric(
-        #difftime(lead(timestamp_utc), timestamp_utc, units = "hours")
         difftime(timestamp_utc, lag(timestamp_utc), units = "hours")
       ),
 
@@ -32,9 +31,6 @@ qc_flag_range <- function(dat, variable, threshold) {
 }
 
 
-#test
-
-# DD test right back!
 
 
 
