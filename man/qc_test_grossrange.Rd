@@ -2,16 +2,24 @@
 % Please edit documentation in R/qc_test_grossrange.R
 \name{qc_test_grossrange}
 \alias{qc_test_grossrange}
-\title{Add flag column for the grossrange test}
+\title{Add flag columns for the grossrange test}
 \usage{
-qc_test_grossrange(dat)
+qc_test_grossrange(dat, grossrange_table = NULL)
 }
 \arguments{
-\item{dat}{Data.frame with at least one column \code{timestamp}.}
+\item{dat}{placeholder}
+
+\item{grossrange_table}{Data.frame with 6 columns: \code{variable}: should
+match the names of the variables being tested in \code{dat}.
+\code{sensor_make}: this may change \code{sensor_min}: minimum value the
+sensor can record. \code{sensor_max}: maximum value the sensor can record.
+\code{user_min}: minimum reasonable value; smaller values are "of
+interest". \code{user_max}: maximum reasonable value; larger values are "of
+interest".}
 }
 \value{
 placeholder for now
 }
 \description{
-Add flag column for the grossrange test
+Add flag columns for the grossrange test
 }

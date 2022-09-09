@@ -1,17 +1,14 @@
-
 #' Add flag column for the climatology test
 #'
 #' @param dat Data.frame with at least one column \code{timestamp}.
 #'
 #' @return placeholder for now
 #'
-#' @importFrom dplyr %>% case_when mutate stringr
+#' @importFrom dplyr %>% case_when mutate
+#' @importFrom lubridate month parse_date_time
+#' @importFrom stringr str_detect
 #'
 #' @export
-
-
-
-
 
 qc_test_climatology <- function(dat) {
   dat %>%

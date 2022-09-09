@@ -17,12 +17,16 @@ utils::globalVariables(
 
     # qc_test_grossrange
     "sensor",
-    "sensormax",
-    "sensormin",
-    "usermax",
-    "usermin",
+    "sensor_make",
+    "sensor_max",
+    "sensor_min",
+    "user_max",
+    "user_min",
     "timestamp_utc",
+    "grossrange_flag",
+    "variable",
+    "value"
 
-    "TIMESTAMP"
+
   )
 )
