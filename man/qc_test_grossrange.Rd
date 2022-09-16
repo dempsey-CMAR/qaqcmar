@@ -9,17 +9,24 @@ qc_test_grossrange(dat, grossrange_table = NULL)
 \arguments{
 \item{dat}{placeholder}
 
-\item{grossrange_table}{Data.frame with 6 columns: \code{variable}: should
+\item{grossrange_table}{Data frame with 6 columns: \code{variable}: should
 match the names of the variables being tested in \code{dat}.
 \code{sensor_make}: this may change \code{sensor_min}: minimum value the
 sensor can record. \code{sensor_max}: maximum value the sensor can record.
 \code{user_min}: minimum reasonable value; smaller values are "of
 interest". \code{user_max}: maximum reasonable value; larger values are "of
-interest".}
+interest".
+
+Default is \code{grossrange_table = NULL}, which uses default values. To
+see the default \code{grossrange_table}, type
+\code{threshold_tables$grossrange_table}.}
 }
 \value{
 placeholder for now
 }
 \description{
-Add flag columns for the grossrange test
+What makes the most sense for the sensor_make column?
+}
+\details{
+How can user see grossrange table?
 }

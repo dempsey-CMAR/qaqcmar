@@ -7,7 +7,7 @@
 #'
 #' @param dat placeholder
 #'
-#' @param grossrange_table Data.frame with 6 columns: \code{variable}: should
+#' @param grossrange_table Data frame with 6 columns: \code{variable}: should
 #'   match the names of the variables being tested in \code{dat}.
 #'   \code{sensor_make}: this may change \code{sensor_min}: minimum value the
 #'   sensor can record. \code{sensor_max}: maximum value the sensor can record.
@@ -15,8 +15,9 @@
 #'   interest". \code{user_max}: maximum reasonable value; larger values are "of
 #'   interest".
 #'
-#'   Default is \code{grossrange_table = NULL}, which uses default values stored
-#'   internally.
+#'   Default is \code{grossrange_table = NULL}, which uses default values. To
+#'   see the default \code{grossrange_table}, type
+#'   \code{threshold_tables$grossrange_table}.
 #'
 #' @return placeholder for now
 #'
@@ -35,9 +36,10 @@ qc_test_grossrange <- function(dat, grossrange_table = NULL) {
 
   # import default thresholds from internal data file
   if (is.null(grossrange_table)) {
-    grossrange_table <-get0(
-      "threshold_tables", envir = asNamespace("qaqcmar")
-    )$grossrange_table
+    grossrange_table <- threshold_tables$grossrange_table
+    #  grossrange_table <- get0(
+    #   "threshold_tables", envir = asNamespace("qaqcmar")
+    # )$grossrange_table
   }
 
   # check the vars in table are in the colname and vice versa
@@ -68,7 +70,7 @@ qc_test_grossrange <- function(dat, grossrange_table = NULL) {
             but not in grossrange_table")
   }
 
-  dat %>%
+  x <- dat %>%
     ss_pivot_longer() %>%
     separate(sensor, into = c("sensor_make", NA), remove = FALSE, sep = "-") %>%
     mutate(
@@ -87,7 +89,6 @@ qc_test_grossrange <- function(dat, grossrange_table = NULL) {
         TRUE ~ 2
       ),
       grossrange_flag = ordered(grossrange_flag, levels = c(1:4))
-
     ) %>%
     #remove extra columns
     subset(select = -c(sensor_max, sensor_min, user_max, user_min, sensor_make)) %>%
@@ -98,147 +99,6 @@ qc_test_grossrange <- function(dat, grossrange_table = NULL) {
 }
 
 
-
-
-# qc_test_grossrange <- function(dat) {
-#
-#   dat %>%
-#     mutate(
-#       sensormax = case_when(
-#         VARIABLE == "Dissolved Oxygen" & str_detect(dat$SENSOR, "aquaMeasure") == TRUE ~ 150, #aquaMeasure DOT DO
-#         VARIABLE == "Dissolved Oxygen" & str_detect(dat$SENSOR, "HOBO") == TRUE ~ 30, #Hobo DO DO
-#         VARIABLE == "Temperature" & str_detect(dat$SENSOR, "aquaMeasure") ~ 35, #aquaMeasure ALL temp
-#         VARIABLE == "Temperature" & str_detect(dat$SENSOR, "HOBO") ~ 70, #Hobo ALL temp
-#         VARIABLE == "Temperature" & str_detect(dat$SENSOR, "VR2AR") ~ 40, #Vemco temp
-#         VARIABLE == "Salinity" ~ 40 #aquaMeasure SAL SAL
-#       )) %>%
-#     mutate(
-#       sensormin = case_when(
-#         VARIABLE == "Dissolved Oxygen" & str_detect(dat$SENSOR, "aquaMeasure") == TRUE ~ 0, #aquaMeasure DOT DO
-#         VARIABLE == "Dissolved Oxygen" & str_detect(dat$SENSOR, "HOBO") == TRUE ~ 0, #Hobo DO DO
-#         VARIABLE == "Temperature" & str_detect(dat$SENSOR, "aquaMeasure") ~ -5, #aquaMeasure ALL temp
-#         VARIABLE == "Temperature" & str_detect(dat$SENSOR, "HOBO") ~ -40, #Hobo ALL temp
-#         VARIABLE == "Temperature" & str_detect(dat$SENSOR, "VR2AR") ~ -5, #Vemco temp
-#         VARIABLE == "Salinity" ~ 0 #aquaMeasure SAL SAL
-#       )) %>%
-#     mutate(
-#       usermax = case_when(
-#         VARIABLE == "Dissolved Oxygen" & str_detect(dat$SENSOR, "aquaMeasure") == TRUE ~ 130, #aquaMeasure DOT DO
-#         VARIABLE == "Dissolved Oxygen" & str_detect(dat$SENSOR, "HOBO") == TRUE ~ 25, #Hobo DO DO
-#         VARIABLE == "Temperature" & str_detect(dat$SENSOR, "aquaMeasure") ~ 25, #aquaMeasure ALL temp
-#         VARIABLE == "Temperature" & str_detect(dat$SENSOR, "HOBO") ~ 25, #Hobo ALL temp
-#         VARIABLE == "Temperature" & str_detect(dat$SENSOR, "VR2AR") ~ 25, #Vemco temp
-#         VARIABLE == "Salinity" ~ 35 #aquaMeasure SAL SAL
-#       ))%>%
-#     mutate(
-#       usermin = case_when(
-#         VARIABLE == "Dissolved Oxygen" & str_detect(dat$SENSOR, "aquaMeasure") == TRUE ~ 50, #aquaMeasure DOT DO
-#         VARIABLE == "Dissolved Oxygen" & str_detect(dat$SENSOR, "HOBO") == TRUE ~ 0, #Hobo DO DO
-#         VARIABLE == "Temperature" & str_detect(dat$SENSOR, "aquaMeasure") ~ -3, #aquaMeasure ALL temp
-#         VARIABLE == "Temperature" & str_detect(dat$SENSOR, "HOBO") ~ -3, #Hobo ALL temp
-#         VARIABLE == "Temperature" & str_detect(dat$SENSOR, "VR2AR") ~ -3, #Vemco temp
-#         VARIABLE == "Salinity" ~ 0 #aquaMeasure SAL SAL
-#       ))%>%
-#     mutate(
-#       flag = case_when(
-#         VALUE > sensormax |
-#         VALUE < sensormin  ~ 4,
-#         VALUE > usermax |
-#         VALUE < usermin ~ 3,
-#         VALUE <= sensormax |
-#         VALUE >= sensormin ~ 1,
-#         TRUE ~ 2
-#       )) %>%
-#     mutate(flag = factor(flag)) %>%
-#     # assign levels to the factor based on the numeric values of flag
-#     mutate(
-#       flag = ordered(
-#         flag,
-#         levels = as.numeric(levels(flag))[order(as.numeric(levels(flag)))]
-#       )
-#     ) %>%
-#     #remove extra columns
-#     subset(select = -c(sensormax, sensormin, usermax, usermin))
-#
-# }
-
-#Considerations:
-#problem: operational range is unique to sensor AND variable... not just variable
-       #use narrowest range between all sensors?
-       #no unique identifier to specify anything other than manufacturer.
-#will need to add additional range values as we process data for new variables (level loggers, TURB, CHL)
-#what do we want to name the "flag" column?
-
-
-
-
-
-##test the function
-# dat3 <- qc_test_grossrange(dat)
-#
-# #read in file with outliers to test each flag
-# dat<-read.csv("C:/Users/Nicole Torrie/Documents/R/test_qaqc_dataset/Colchester_2021-12-09_QAQC.csv")
-#
-# library(dplyr)
-# library(stringr)
-# library(ggplot2)
-#
-# dat2 <- dat %>%
-#   mutate(
-#     sensormax = case_when(
-#       VARIABLE == "Dissolved Oxygen" & str_detect(dat$SENSOR, "aquaMeasure") == TRUE ~ 150, #aquaMeasure DOT DO
-#       VARIABLE == "Dissolved Oxygen" & str_detect(dat$SENSOR, "HOBO") == TRUE ~ 30, #Hobo DO DO
-#       VARIABLE == "Temperature" & str_detect(dat$SENSOR, "aquaMeasure") ~ 35, #aquaMeasure ALL temp
-#       VARIABLE == "Temperature" & str_detect(dat$SENSOR, "HOBO") ~ 70, #Hobo ALL temp
-#       VARIABLE == "Temperature" & str_detect(dat$SENSOR, "VR2AR") ~ 40, #Vemco temp
-#       VARIABLE == "Salinity" ~ 40 #aquaMeasure SAL SAL
-#     )) %>%
-#   mutate(
-#     sensormin = case_when(
-#       VARIABLE == "Dissolved Oxygen" & str_detect(dat$SENSOR, "aquaMeasure") == TRUE ~ 0, #aquaMeasure DOT DO
-#       VARIABLE == "Dissolved Oxygen" & str_detect(dat$SENSOR, "HOBO") == TRUE ~ 0, #Hobo DO DO
-#       VARIABLE == "Temperature" & str_detect(dat$SENSOR, "aquaMeasure") ~ -5, #aquaMeasure ALL temp
-#       VARIABLE == "Temperature" & str_detect(dat$SENSOR, "HOBO") ~ -40, #Hobo ALL temp
-#       VARIABLE == "Temperature" & str_detect(dat$SENSOR, "VR2AR") ~ -5, #Vemco temp
-#       VARIABLE == "Salinity" ~ 0 #aquaMeasure SAL SAL
-#     )) %>%
-#   mutate(
-#     usermax = case_when(
-#       VARIABLE == "Dissolved Oxygen" & str_detect(dat$SENSOR, "aquaMeasure") == TRUE ~ 130, #aquaMeasure DOT DO
-#       VARIABLE == "Dissolved Oxygen" & str_detect(dat$SENSOR, "HOBO") == TRUE ~ 25, #Hobo DO DO
-#       VARIABLE == "Temperature" & str_detect(dat$SENSOR, "aquaMeasure") ~ 25, #aquaMeasure ALL temp
-#       VARIABLE == "Temperature" & str_detect(dat$SENSOR, "HOBO") ~ 25, #Hobo ALL temp
-#       VARIABLE == "Temperature" & str_detect(dat$SENSOR, "VR2AR") ~ 25, #Vemco temp
-#       VARIABLE == "Salinity" ~ 35 #aquaMeasure SAL SAL
-#     ))%>%
-#   mutate(
-#     usermin = case_when(
-#       VARIABLE == "Dissolved Oxygen" & str_detect(dat$SENSOR, "aquaMeasure") == TRUE ~ 50, #aquaMeasure DOT DO
-#       VARIABLE == "Dissolved Oxygen" & str_detect(dat$SENSOR, "HOBO") == TRUE ~ 0, #Hobo DO DO
-#       VARIABLE == "Temperature" & str_detect(dat$SENSOR, "aquaMeasure") ~ -3, #aquaMeasure ALL temp
-#       VARIABLE == "Temperature" & str_detect(dat$SENSOR, "HOBO") ~ -3, #Hobo ALL temp
-#       VARIABLE == "Temperature" & str_detect(dat$SENSOR, "VR2AR") ~ -3, #Vemco temp
-#       VARIABLE == "Salinity" ~ 0 #aquaMeasure SAL SAL
-#     ))%>%
-#   mutate(
-#     flag = case_when(
-#       VALUE > sensormax |
-#       VALUE < sensormin  ~ 4,
-#       VALUE > usermax |
-#       VALUE < usermin ~ 3,
-#       VALUE <= sensormax |
-#       VALUE >= sensormin ~ 1,
-#       TRUE ~ 2
-#     )) %>%
-#   mutate(flag = factor(flag)) %>%
-#   # assign levels to the factor based on the numeric values of flag
-#   mutate(flag = ordered(flag,
-#                         levels = as.numeric(levels(flag))[order(as.numeric(levels(flag)))]))
-#
-#
-#
-#
-#
 # #test plots
 # DO <- filter(dat2,VARIABLE == "Dissolved Oxygen", preserve=TRUE)
 # TEMPam <- filter(dat2,VARIABLE == "Temperature" & str_detect(dat2$SENSOR, "aquaMeasure"), preserve=TRUE)
@@ -250,6 +110,4 @@ qc_test_grossrange <- function(dat, grossrange_table = NULL) {
 #   geom_point()+geom_text(hjust=0, vjust=0)+
 #   scale_color_manual(values=c("green", "orange", "red"))+
 #   ggtitle(TEMPhobo$VARIABLE)
-#
-#
 #

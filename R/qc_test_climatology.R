@@ -1,6 +1,24 @@
 #' Add flag column for the climatology test
 #'
-#' @param dat Data.frame with at least one column \code{timestamp}.
+#' @param dat placeholder
+#'
+#' @param climatology_table Data frame with 4 columns: \code{variable}: should
+#'   match the names of the variables being tested in \code{dat}. \code{season}:
+#'   there should be an entry of "winter", "spring", "summer", and "fall" for
+#'   each variable. \code{season_min}: minimum reasonable value for the
+#'   corresponding variable during the corresponding season. \code{season_max}:
+#'   maximum reasonable value for the corresponding variable during the
+#'   corresponding season.
+#'
+#'   Default values are used if \code{climatology_table = NULL}. To see the
+#'   default \code{climatology_table}, type
+#'   \code{threshold_tables$climatology_table} in the console.
+#'
+#' @param seasons Data frame with 2 columns: \code{month}: numeric value of the
+#'   month and \code{season}, the corresponding season (entries of "winter",
+#'   "spring", "summer", and "fall"). Default table is used if \code{seasons =
+#'   NULL}. To see the default values, type \code{threshold_tables$seasons} in
+#'   the console.
 #'
 #' @return placeholder for now
 #'
@@ -10,8 +28,25 @@
 #'
 #' @export
 
-qc_test_climatology <- function(dat) {
+qc_test_climatology <- function(
+  dat,
+  climatology_table = NULL,
+  seasons = NULL
+  ) {
+  # import default thresholds from internal data file
+  if (is.null(climatology_table)) {
+    climatology_table <- threshold_tables$climatology_table
+  }
+
   dat %>%
+    select(tstamp = contains("timestamp")) %>%
+    mutate(
+      tstamp_month = month(tstamp)
+    ) %>%
+    left_join(seasons, by = "month")
+
+
+
     mutate(
       mutate(
         SEASON = case_when(

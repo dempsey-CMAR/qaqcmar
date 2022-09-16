@@ -11,8 +11,6 @@ utils::globalVariables(
     # qc_test_climatology
     "flag",
     "seasonmax",
-
-    "seasonmax",
     "seasonmin",
 
     # qc_test_grossrange
@@ -26,7 +24,5 @@ utils::globalVariables(
     "grossrange_flag",
     "variable",
     "value"
-
-
   )
 )
