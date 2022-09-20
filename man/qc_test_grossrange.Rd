@@ -25,8 +25,5 @@ see the default \code{grossrange_table}, type
 placeholder for now
 }
 \description{
-What makes the most sense for the sensor_make column?
-}
-\details{
-How can user see grossrange table?
+Add flag columns for the grossrange test
 }

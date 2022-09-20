@@ -10,8 +10,13 @@ utils::globalVariables(
   c(
     # qc_test_climatology
     "flag",
-    "seasonmax",
-    "seasonmin",
+    "season_max",
+    "season_min",
+    "season",
+    "tstamp",
+    "climatology_flag",
+    "numeric_month",
+    "threshold_tables",
 
     # qc_test_grossrange
     "sensor",

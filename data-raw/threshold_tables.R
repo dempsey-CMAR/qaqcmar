@@ -4,15 +4,15 @@
 path <- system.file("data-raw", package = "qaqcmar")
 
 
-climatology_table <- read_excel(
+climatology_table <- readxl::read_excel(
   paste0(path, "/qc_thresholds.xlsx"), sheet = "climatology"
 )
 
-seasons <- read_excel(
+seasons_table <- readxl::read_excel(
   paste0(path, "/qc_thresholds.xlsx"), sheet = "seasons"
 )
 
-grossrange_table <- read_excel(
+grossrange_table <- readxl::read_excel(
   paste0(path, "/qc_thresholds.xlsx"), sheet = "grossrange"
 )
 
@@ -21,8 +21,8 @@ grossrange_table <- read_excel(
 
 threshold_tables <- list(
   climatology_table = climatology_table,
-  seasons = seasons,
-  grossrange_table = grossrange_table,
+  seasons_table = seasons_table,
+  grossrange_table = grossrange_table
 )
 
 usethis::use_data(threshold_tables, overwrite = TRUE)
@@ -30,7 +30,6 @@ usethis::use_data(threshold_tables, overwrite = TRUE)
 
 
 # Old ---------------------------------------------------------------------
-
 
 # # might be better to read these in from csv files in data-raw
 # template <- data.frame(

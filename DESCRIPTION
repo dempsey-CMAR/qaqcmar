@@ -11,6 +11,7 @@ BugReports: https://github.com/dempsey-CMAR/qaqcmar/issues
 Imports: 
     dplyr,
     lubridate,
+    readxl,
     sensorstrings (>= 0.1.0),
     stringr,
     tidyr

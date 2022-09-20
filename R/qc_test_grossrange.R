@@ -1,10 +1,5 @@
 #' Add flag columns for the grossrange test
 #'
-#' What makes the most sense for the sensor_make column?
-#'
-#' How can user see grossrange table?
-#'
-#'
 #' @param dat placeholder
 #'
 #' @param grossrange_table Data frame with 6 columns: \code{variable}: should
@@ -70,7 +65,7 @@ qc_test_grossrange <- function(dat, grossrange_table = NULL) {
             but not in grossrange_table")
   }
 
-  x <- dat %>%
+  dat %>%
     ss_pivot_longer() %>%
     separate(sensor, into = c("sensor_make", NA), remove = FALSE, sep = "-") %>%
     mutate(

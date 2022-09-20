@@ -4,7 +4,7 @@
 \alias{qc_test_climatology}
 \title{Add flag column for the climatology test}
 \usage{
-qc_test_climatology(dat, climatology_table = NULL, seasons = NULL)
+qc_test_climatology(dat, climatology_table = NULL, seasons_table = NULL)
 }
 \arguments{
 \item{dat}{placeholder}
@@ -21,11 +21,11 @@ Default values are used if \code{climatology_table = NULL}. To see the
 default \code{climatology_table}, type
 \code{threshold_tables$climatology_table} in the console.}
 
-\item{seasons}{Data frame with 2 columns: \code{month}: numeric value of the
-month and \code{season}, the corresponding season (entries of "winter",
-"spring", "summer", and "fall"). Default table is used if \code{seasons =
-  NULL}. To see the default values, type \code{threshold_tables$seasons} in
-the console.}
+\item{seasons_table}{Data frame with 2 columns: \code{month}: numeric value
+of the month and \code{season}, the corresponding season (entries of
+"winter", "spring", "summer", and "fall"). Default table is used if
+\code{seasons = NULL}. To see the default values, type
+\code{threshold_tables$seasons} in the console.}
 }
 \value{
 placeholder for now
