@@ -14,8 +14,6 @@
 #'
 #' @export
 
-
-
 qc_test_all <- function(dat,
                     qc_tests = c("climatology", "grossrange"),
                     climatology_table = NULL,

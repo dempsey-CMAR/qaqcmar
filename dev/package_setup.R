@@ -14,17 +14,21 @@ use_git()
 # set up github
 use_github()
 
-# add packages
+# add packages (from CRAN)
 use_package("dplyr")
+use_package("purrr")
+use_package("ggplot2")
+use_package("lubridate")
+use_package("purrr")
+use_package("readxl")
+use_package("rlang")
+use_package("stringr")
+use_package("tidyr")
 
+# add packages (not on CRAN)
+use_dev_pacakge("sensorstrings", remote = "dempsey-CMAR/sensorstrings")
 
+# readme
+use_readme_rmd()
 
-####
-
-dat_flag <- qc_flag_range(dat, threshold = 1)
-
-
-
-
-
-
+# github actions

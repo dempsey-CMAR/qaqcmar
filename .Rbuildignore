@@ -5,3 +5,4 @@
 
 dev
 ^data-raw$
+^README\.Rmd$

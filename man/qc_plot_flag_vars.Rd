@@ -4,7 +4,7 @@
 \alias{qc_plot_flag_vars}
 \title{Title}
 \usage{
-qc_plot_flag_vars(dat, qc_tests, vars = NULL)
+qc_plot_flag_vars(dat, qc_tests = c("climatology", "grossrange"), vars = "all")
 }
 \arguments{
 \item{dat}{placeholder}
@@ -14,7 +14,7 @@ qc_plot_flag_vars(dat, qc_tests, vars = NULL)
 \item{vars}{Variables to plot}
 }
 \value{
-ggplot
+list of ggplot objects
 }
 \description{
 Title
