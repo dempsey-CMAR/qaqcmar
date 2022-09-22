@@ -32,3 +32,7 @@ use_dev_pacakge("sensorstrings", remote = "dempsey-CMAR/sensorstrings")
 use_readme_rmd()
 
 # github actions
+use_github_action_check_standard()
+
+
+

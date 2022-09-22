@@ -6,6 +6,8 @@
 <img src="man/figures/hex_qaqcmar.png" width="25%" style="display: block; margin: auto;" />
 
 <!-- badges: start -->
+
+[![R-CMD-check](https://github.com/dempsey-CMAR/qaqcmar/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/dempsey-CMAR/qaqcmar/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 The goal of qaqcmar is to …
