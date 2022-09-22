@@ -1,0 +1,166 @@
+---
+output: github_document
+editor_options: 
+  chunk_output_type: console
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%",
+  dpi = 600
+)
+
+library(kableExtra)
+library(DT)
+```
+
+# qaqcmar
+
+```{r, echo=FALSE, out.width="25%", fig.align='center'}
+knitr::include_graphics("man/figures/hex_qaqcmar.png")
+```
+
+
+
+<!-- badges: start -->
+<!-- badges: end -->
+
+The goal of qaqcmar is to ...
+
+## Installation
+
+You can install the development version of qaqcmar from [GitHub](https://github.com/) with:
+
+``` r
+# install.packages("devtools")
+devtools::install_github("dempsey-CMAR/qaqcmar")
+```
+
+## Example
+
+This is a basic example which shows you how to solve a common problem:
+
+```{r, message=FALSE}
+library(qaqcmar)
+library(sensorstrings)
+
+library(dplyr)
+library(lubridate)
+```
+
+### Example Sensor String Data
+
+```{r}
+# read in example data
+path <- system.file("testdata", package = "qaqcmar")
+
+dat <- read.csv(paste0(path, "/example_data.csv")) %>% 
+  select(
+    sensor, timestamp_utc, 
+    contains(c("depth", "temperature", "salinity", "dissolved_oxygen"))
+  ) %>% 
+  mutate(timestamp_utc = as_datetime(timestamp_utc))
+
+kable(dat[1:10, ])
+
+```
+
+```{r fig1, fig.height=8, dpi=600}
+ss_plot_variables_at_depth(dat)
+```
+
+
+### Apply QC flags
+
+#### Gross Range Test
+
+Inspect the default gross range threshold values for each variable and sensor:
+```{r}
+kable(threshold_tables$grossrange_table)
+```
+
+Apply test:
+```{r}
+dat_gr <- qc_test_grossrange(dat)
+
+kable(dat_gr[1:10, ])
+```
+
+```{r}
+dat_gr <- dat_gr %>% 
+  qc_pivot_longer(qc_tests = "grossrange")
+
+kable(dat_gr[1:10, ])
+```
+
+Plot flagged observations:
+```{r fig2}
+grossrange_plots <- qc_plot_flag_vars(dat_gr, qc_tests = "grossrange")
+
+grossrange_plots
+```
+
+#### Climatology Test
+
+Inspect the default gross range threshold values for each variable and season:
+```{r}
+kable(threshold_tables$climatology_table)
+```
+
+Inspect default seasons:
+```{r}
+kable(threshold_tables$seasons_table)
+```
+
+Apply test:
+```{r}
+dat_cl <- qc_test_climatology(dat)
+
+kable(dat_cl[1:10, ])
+```
+
+```{r}
+dat_cl <- dat_cl %>% 
+  qc_pivot_longer(qc_tests = "climatology")
+
+kable(dat_gr[1:10, ])
+```
+
+Plot flagged observations:
+```{r fig3}
+climatology_plots <- qc_plot_flag_vars(dat_cl, qc_tests = "climatology")
+
+climatology_plots
+```
+
+#### All Tests
+
+```{r}
+dat_qc <- dat %>% 
+  qc_test_all() %>% 
+  qc_pivot_longer()
+
+kable(dat_qc[1:10, ])
+```
+
+Plot flagged observations:
+```{r fig4}
+qc_plots <- qc_plot_flag_vars(dat_qc)
+
+qc_plots
+```
+
+
+
+
+
+
+
+
+
+
