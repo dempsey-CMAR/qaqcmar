@@ -15,8 +15,10 @@ knitr::opts_chunk$set(
   dpi = 600
 )
 
+library(badger)
 library(kableExtra)
-library(DT)
+
+repo <- "dempsey-cmar/qaqcmar"
 ```
 
 # qaqcmar
@@ -28,7 +30,7 @@ knitr::include_graphics("man/figures/hex_qaqcmar.png")
 
 
 <!-- badges: start -->
-[![R-CMD-check](https://github.com/dempsey-CMAR/qaqcmar/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/dempsey-CMAR/qaqcmar/actions/workflows/R-CMD-check.yaml)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0) `r badge_devel(repo, "blue")` `r badge_codefactor(repo)` [![R-CMD-check](https://github.com/dempsey-CMAR/qaqcmar/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/dempsey-CMAR/qaqcmar/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 The goal of qaqcmar is to ...
@@ -49,7 +51,6 @@ This is a basic example which shows you how to solve a common problem:
 ```{r, message=FALSE}
 library(qaqcmar)
 library(sensorstrings)
-
 library(dplyr)
 library(lubridate)
 ```

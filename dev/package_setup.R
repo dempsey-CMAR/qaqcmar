@@ -34,5 +34,6 @@ use_readme_rmd()
 # github actions
 use_github_action_check_standard()
 
-
+# code factor
+# https://www.codefactor.io/dashboard
 
