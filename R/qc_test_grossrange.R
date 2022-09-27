@@ -1,6 +1,6 @@
 #' Add flag columns for the grossrange test
 #'
-#' @param dat placeholder
+#' @param dat placeholder... wide data
 #'
 #' @param grossrange_table Data frame with 6 columns: \code{variable}: should
 #'   match the names of the variables being tested in \code{dat}.
@@ -15,6 +15,8 @@
 #'   \code{threshold_tables$grossrange_table}.
 #'
 #' @return placeholder for now
+#'
+#' @family tests
 #'
 #' @importFrom dplyr %>% case_when contains left_join mutate select
 #' @importFrom sensorstrings ss_pivot_longer
@@ -32,9 +34,6 @@ qc_test_grossrange <- function(dat, grossrange_table = NULL) {
   # import default thresholds from internal data file
   if (is.null(grossrange_table)) {
     grossrange_table <- threshold_tables$grossrange_table
-    #  grossrange_table <- get0(
-    #   "threshold_tables", envir = asNamespace("qaqcmar")
-    # )$grossrange_table
   }
 
   # check the vars in table are in the colname and vice versa
@@ -92,17 +91,3 @@ qc_test_grossrange <- function(dat, grossrange_table = NULL) {
       values_from = c(value, grossrange_flag)
     )
 }
-
-
-# #test plots
-# DO <- filter(dat2,VARIABLE == "Dissolved Oxygen", preserve=TRUE)
-# TEMPam <- filter(dat2,VARIABLE == "Temperature" & str_detect(dat2$SENSOR, "aquaMeasure"), preserve=TRUE)
-# TEMPhobo <- filter(dat2,VARIABLE == "Temperature" & str_detect(dat2$SENSOR, "HOBO"), preserve=TRUE)
-# TEMPvr <- filter(dat2,VARIABLE == "Temperature" & str_detect(dat2$SENSOR, "VR2AR"), preserve=TRUE)
-#
-#
-# ggplot(TEMPhobo, aes(TIMESTAMP, VALUE, colour = flag, label = TEST))+
-#   geom_point()+geom_text(hjust=0, vjust=0)+
-#   scale_color_manual(values=c("green", "orange", "red"))+
-#   ggtitle(TEMPhobo$VARIABLE)
-#

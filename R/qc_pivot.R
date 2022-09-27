@@ -2,7 +2,8 @@
 #'
 #' @param dat_wide placeholder
 #'
-#' @inheritParams qc_test_all
+#' @param qc_tests qc tests in dat_wide. If dat_wide only includes the max flag,
+#'   use \code{qc_tests = "qc"}.
 #'
 #' @return placeholder
 #'
@@ -11,9 +12,24 @@
 #'
 #' @export
 
+# # turn this into example
+# path <- system.file("testdata", package = "qaqcmar")
+# dat <- read.csv(paste0(path, "/example_data.csv"))
+#
+# dat_long <- dat %>%
+#   qc_test_all() %>%
+#   qc_pivot_longer()
+#
+# dat_long <- dat %>%
+#   qc_test_all() %>%
+#   qc_assign_max_flag() %>%
+#   qc_pivot_longer(qc_tests = "qc")
+
 
 qc_pivot_longer <- function(dat_wide,
                             qc_tests = c("climatology", "grossrange")) {
+
+  qc_tests <- tolower(qc_tests)
 
   dat <- dat_wide %>%
     pivot_longer(
@@ -23,12 +39,22 @@ qc_pivot_longer <- function(dat_wide,
       values_drop_na = TRUE
     )
 
+  #browser()
+
+  if("qc" %in% qc_tests) {
+    # if(length(qc_tests) > 1) {
+    #   stop()
+    # }
+    #
+    dat <- pivot_flags_longer(dat, qc_test = "qc")
+  }
+
   if("climatology" %in% qc_tests) {
-    dat <- pivot_test_longer(dat, qc_test = "climatology")
+    dat <- pivot_flags_longer(dat, qc_test = "climatology")
   }
 
   if("grossrange" %in% qc_tests) {
-    dat <- pivot_test_longer(dat, qc_test = "grossrange")
+    dat <- pivot_flags_longer(dat, qc_test = "grossrange")
   }
 
   dat
@@ -36,10 +62,9 @@ qc_pivot_longer <- function(dat_wide,
 }
 
 
-
 #' Title
 #'
-#' @param dat placeholder
+#' @param dat_wide placeholder...
 #' @param qc_test placeholder
 #'
 #' @return placeholder
@@ -49,11 +74,11 @@ qc_pivot_longer <- function(dat_wide,
 #' @importFrom tidyr pivot_longer
 
 
-pivot_test_longer <- function(dat, qc_test) {
+pivot_flags_longer <- function(dat_wide, qc_test) {
 
   col_name <- paste0(qc_test, "_flag_variable")
 
-  dat %>%
+  dat_wide %>%
     pivot_longer(
       cols = contains(qc_test),
       names_to = paste0(qc_test, "_flag_variable"),

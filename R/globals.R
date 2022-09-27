@@ -28,6 +28,11 @@ utils::globalVariables(
     "timestamp_utc",
     "grossrange_flag",
     "variable",
-    "value"
+    "value",
+
+    # qc_assign_max_flag
+    "qc_col",
+    "qc_flag"
+
   )
 )

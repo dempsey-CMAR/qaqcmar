@@ -16,7 +16,6 @@ knitr::opts_chunk$set(
 )
 
 library(badger)
-library(kableExtra)
 
 repo <- "dempsey-cmar/qaqcmar"
 ```
@@ -33,7 +32,7 @@ knitr::include_graphics("man/figures/hex_qaqcmar.png")
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0) `r badge_devel(repo, "blue")` `r badge_codefactor(repo)` [![R-CMD-check](https://github.com/dempsey-CMAR/qaqcmar/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/dempsey-CMAR/qaqcmar/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
-The goal of qaqcmar is to ...
+The goal of qaqcmar is to apply quality control flags to Water Quality data collected through the Centre for Marine Applied Research's (CMAR) Coastal Monitoring Program.
 
 ## Installation
 
@@ -44,18 +43,33 @@ You can install the development version of qaqcmar from [GitHub](https://github.
 devtools::install_github("dempsey-CMAR/qaqcmar")
 ```
 
+## Background
+
+- Coastal Monitoring Program
+
+- QARTOD manuals
+
+- Tests that we are planning to run (include table)
+
+- Flagging scheme (include table)
+
+- Thresholds ... defaults built into the package
+
 ## Example
 
-This is a basic example which shows you how to solve a common problem:
 
 ```{r, message=FALSE}
 library(qaqcmar)
 library(sensorstrings)
 library(dplyr)
+library(kableExtra)
 library(lubridate)
 ```
 
 ### Example Sensor String Data
+
+Consider Water Quality data collected from xx to xx.
+
 
 ```{r}
 # read in example data
@@ -68,7 +82,7 @@ dat <- read.csv(paste0(path, "/example_data.csv")) %>%
   ) %>% 
   mutate(timestamp_utc = as_datetime(timestamp_utc))
 
-kable(dat[1:10, ])
+kable(dat[1:5, ])
 
 ```
 
@@ -79,84 +93,52 @@ ss_plot_variables_at_depth(dat)
 
 ### Apply QC flags
 
-#### Gross Range Test
+There is a separate function for each QC test. For example, `qc_test_grossrange()` applies the gross range test by adding a a `grossrange_flag_**` column for each variable in `dat`.
 
-Inspect the default gross range threshold values for each variable and sensor:
-```{r}
-kable(threshold_tables$grossrange_table)
-```
+*Possibly add table here*
+
+#### Gross Range Test
 
 Apply test:
 ```{r}
 dat_gr <- qc_test_grossrange(dat)
 
-kable(dat_gr[1:10, ])
+kable(dat_gr[1:5, ])
 ```
 
-```{r}
-dat_gr <- dat_gr %>% 
-  qc_pivot_longer(qc_tests = "grossrange")
-
-kable(dat_gr[1:10, ])
-```
-
-Plot flagged observations:
+The flagged data can be plotted with `qc_plot_all_tests()`, specifying argument `qc_tests = "grossrange"`.
 ```{r fig2}
-grossrange_plots <- qc_plot_flag_vars(dat_gr, qc_tests = "grossrange")
-
-grossrange_plots
+qc_plot_all_tests(dat_gr, qc_tests = "grossrange")
 ```
 
-#### Climatology Test
-
-Inspect the default gross range threshold values for each variable and season:
-```{r}
-kable(threshold_tables$climatology_table)
-```
-
-Inspect default seasons:
-```{r}
-kable(threshold_tables$seasons_table)
-```
-
-Apply test:
-```{r}
-dat_cl <- qc_test_climatology(dat)
-
-kable(dat_cl[1:10, ])
-```
-
-```{r}
-dat_cl <- dat_cl %>% 
-  qc_pivot_longer(qc_tests = "climatology")
-
-kable(dat_gr[1:10, ])
-```
-
-Plot flagged observations:
-```{r fig3}
-climatology_plots <- qc_plot_flag_vars(dat_cl, qc_tests = "climatology")
-
-climatology_plots
-```
 
 #### All Tests
 
+There is no need to call each `qc_test**()` function separately. `qc_test_all()` will apply all specified QC tests to `dat`.
+
 ```{r}
 dat_qc <- dat %>% 
-  qc_test_all() %>% 
-  qc_pivot_longer()
+  qc_test_all(qc_tests = c("climatology", "grossrange")) 
 
-kable(dat_qc[1:10, ])
+kable(dat_qc[1:5, ])
 ```
 
-Plot flagged observations:
-```{r fig4}
-qc_plots <- qc_plot_flag_vars(dat_qc)
+There are now `r ncol(dat_qc)` columns in `dat_qc`!
 
-qc_plots
+`qc_assign_max_flag()` reduces the number of columns in `dat_qc` by keeping the *worst* flag for each variable. 
+
+```{r}
+dat_qc <- dat_qc %>% 
+ qc_assign_max_flag()
+
+kable(dat_qc[1:5, ])
 ```
 
+The flagged data can be plotted with `qc_plot_all_tests()`, specifying argument `qc_tests = "qc"`.
+
+```{r fig3}
+qc_plot_all_tests(dat_qc, qc_tests = "qc")
+```
 
 
 

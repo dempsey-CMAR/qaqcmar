@@ -1,6 +1,7 @@
 #' Title
 #'
-#' @param dat placeholder
+#' @param dat placeholder... can be wide or long, but must include columns named
+#'   _flag_variable.
 #'
 #' @param vars Variables to plot
 #'
@@ -13,25 +14,28 @@
 #' @export
 #'
 
-# #turn this into example
+# turn this into example
 # path <- system.file("testdata", package = "qaqcmar")
 # dat <- read.csv(paste0(path, "/example_data.csv"))
 #
-# dat <-  qc_test_all(dat) %>%
+# dat <-  qc_test_all(dat) #%>%
 #   qc_pivot_longer()
 #
 # plots <- qc_plot_flag_vars(dat)
 
-qc_plot_flag_vars <- function(dat,
+qc_plot_all_tests <- function(dat,
                               qc_tests = c("climatology", "grossrange"),
                               vars = "all") {
-
- # qc_tests = c("climatology", "grossrange")
-  if(vars == "all") vars <- unique(dat$variable)
 
   dat <- dat %>%
     rename(tstamp = contains("timestamp")) %>%
     mutate(tstamp = as_datetime(tstamp))
+
+  if(!("variable" %in% colnames(dat))) {
+    dat <- qc_pivot_longer(dat, qc_tests = qc_tests)
+  }
+
+  if(vars == "all") vars <- unique(dat$variable)
 
   p <- list(NULL)
   p_out <- list(NULL)
@@ -52,7 +56,7 @@ qc_plot_flag_vars <- function(dat,
 
       qc_test_j <- qc_tests[j]
 
-      p[[qc_test_j]] <- ggplot_flags(dat_i, qc_test = qc_test_j, var = var_i)
+      p[[qc_test_j]] <- ggplot_all_tests(dat_i, qc_test = qc_test_j, var = var_i)
       # might want to ggpubr these together
 
       p <- Filter(Negate(is.null), p)
@@ -81,7 +85,7 @@ qc_plot_flag_vars <- function(dat,
 #'   ggplot ggtitle guides guide_legend  scale_colour_manual scale_x_datetime
 #'   scale_y_continuous theme_light theme
 
-ggplot_flags <- function(dat, qc_test, var) {
+ggplot_all_tests <- function(dat, qc_test, var) {
 
   # https://www.visualisingdata.com/2019/08/five-ways-to-design-for-red-green-colour-blindness/
   flag_colours <- c("#006164", "#E6E1BC", "#EDA247", "#DB4325")

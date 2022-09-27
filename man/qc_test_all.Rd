@@ -13,7 +13,7 @@ qc_test_all(
 )
 }
 \arguments{
-\item{dat}{Data in a wide format.}
+\item{dat}{Data in a wide format. Add more here}
 
 \item{qc_tests}{QC tests to run.}
 

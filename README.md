@@ -14,7 +14,9 @@ v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/li
 [![R-CMD-check](https://github.com/dempsey-CMAR/qaqcmar/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/dempsey-CMAR/qaqcmar/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
-The goal of qaqcmar is to …
+The goal of qaqcmar is to apply quality control flags to Water Quality
+data collected through the Centre for Marine Applied Research’s (CMAR)
+Coastal Monitoring Program.
 
 ## Installation
 
@@ -26,18 +28,31 @@ You can install the development version of qaqcmar from
 devtools::install_github("dempsey-CMAR/qaqcmar")
 ```
 
-## Example
+## Background
 
-This is a basic example which shows you how to solve a common problem:
+-   Coastal Monitoring Program
+
+-   QARTOD manuals
+
+-   Tests that we are planning to run (include table)
+
+-   Flagging scheme (include table)
+
+-   Thresholds … defaults built into the package
+
+## Example
 
 ``` r
 library(qaqcmar)
 library(sensorstrings)
 library(dplyr)
+library(kableExtra)
 library(lubridate)
 ```
 
 ### Example Sensor String Data
+
+Consider Water Quality data collected from xx to xx.
 
 ``` r
 # read in example data
@@ -50,7 +65,7 @@ dat <- read.csv(paste0(path, "/example_data.csv")) %>%
   ) %>% 
   mutate(timestamp_utc = as_datetime(timestamp_utc))
 
-kable(dat[1:10, ])
+kable(dat[1:5, ])
 ```
 
 <table>
@@ -213,136 +228,6 @@ NA
 NA
 </td>
 </tr>
-<tr>
-<td style="text-align:left;">
-HOBO Pro V2-10755220
-</td>
-<td style="text-align:left;">
-2019-05-30 23:00:00
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-7.293
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-HOBO Pro V2-10755220
-</td>
-<td style="text-align:left;">
-2019-05-31 00:00:00
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-7.670
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-HOBO Pro V2-10755220
-</td>
-<td style="text-align:left;">
-2019-10-18 10:00:00
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-11.929
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-HOBO Pro V2-10755220
-</td>
-<td style="text-align:left;">
-2019-10-18 11:00:00
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-11.904
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-HOBO Pro V2-10755220
-</td>
-<td style="text-align:left;">
-2019-10-18 12:00:00
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-11.904
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-</tr>
 </tbody>
 </table>
 
@@ -354,168 +239,20 @@ ss_plot_variables_at_depth(dat)
 
 ### Apply QC flags
 
+There is a separate function for each QC test. For example,
+`qc_test_grossrange()` applies the gross range test by adding a a
+`grossrange_flag_**` column for each variable in `dat`.
+
+*Possibly add table here*
+
 #### Gross Range Test
-
-Inspect the default gross range threshold values for each variable and
-sensor:
-
-``` r
-kable(threshold_tables$grossrange_table)
-```
-
-<table>
-<thead>
-<tr>
-<th style="text-align:left;">
-variable
-</th>
-<th style="text-align:left;">
-sensor_make
-</th>
-<th style="text-align:right;">
-sensor_min
-</th>
-<th style="text-align:right;">
-sensor_max
-</th>
-<th style="text-align:right;">
-user_min
-</th>
-<th style="text-align:right;">
-user_max
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left;">
-dissolved_oxygen_mg_per_L
-</td>
-<td style="text-align:left;">
-hobo
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-30
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-25
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-dissolved_oxygen_percent_saturation
-</td>
-<td style="text-align:left;">
-aquameasure
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-150
-</td>
-<td style="text-align:right;">
-50
-</td>
-<td style="text-align:right;">
-130
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-salinity_psu
-</td>
-<td style="text-align:left;">
-aquameasure
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-40
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-35
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-temperature_degree_C
-</td>
-<td style="text-align:left;">
-aquameasure
-</td>
-<td style="text-align:right;">
--5
-</td>
-<td style="text-align:right;">
-35
-</td>
-<td style="text-align:right;">
--3
-</td>
-<td style="text-align:right;">
-25
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-temperature_degree_C
-</td>
-<td style="text-align:left;">
-hobo
-</td>
-<td style="text-align:right;">
--40
-</td>
-<td style="text-align:right;">
-70
-</td>
-<td style="text-align:right;">
--3
-</td>
-<td style="text-align:right;">
-25
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-temperature_degree_C
-</td>
-<td style="text-align:left;">
-vemco
-</td>
-<td style="text-align:right;">
--5
-</td>
-<td style="text-align:right;">
-40
-</td>
-<td style="text-align:right;">
--3
-</td>
-<td style="text-align:right;">
-25
-</td>
-</tr>
-</tbody>
-</table>
 
 Apply test:
 
 ``` r
 dat_gr <- qc_test_grossrange(dat)
 
-kable(dat_gr[1:10, ])
+kable(dat_gr[1:5, ])
 ```
 
 <table>
@@ -768,454 +505,14 @@ NA
 NA
 </td>
 </tr>
-<tr>
-<td style="text-align:left;">
-HOBO Pro V2-10755220
-</td>
-<td style="text-align:left;">
-2019-05-30 23:00:00
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:right;">
-7.293
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:left;">
-1
-</td>
-<td style="text-align:left;">
-NA
-</td>
-<td style="text-align:left;">
-NA
-</td>
-<td style="text-align:left;">
-NA
-</td>
-<td style="text-align:left;">
-NA
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-HOBO Pro V2-10755220
-</td>
-<td style="text-align:left;">
-2019-05-31 00:00:00
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:right;">
-7.670
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:left;">
-1
-</td>
-<td style="text-align:left;">
-NA
-</td>
-<td style="text-align:left;">
-NA
-</td>
-<td style="text-align:left;">
-NA
-</td>
-<td style="text-align:left;">
-NA
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-HOBO Pro V2-10755220
-</td>
-<td style="text-align:left;">
-2019-10-18 10:00:00
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:right;">
-11.929
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:left;">
-1
-</td>
-<td style="text-align:left;">
-NA
-</td>
-<td style="text-align:left;">
-NA
-</td>
-<td style="text-align:left;">
-NA
-</td>
-<td style="text-align:left;">
-NA
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-HOBO Pro V2-10755220
-</td>
-<td style="text-align:left;">
-2019-10-18 11:00:00
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:right;">
-11.904
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:left;">
-1
-</td>
-<td style="text-align:left;">
-NA
-</td>
-<td style="text-align:left;">
-NA
-</td>
-<td style="text-align:left;">
-NA
-</td>
-<td style="text-align:left;">
-NA
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-HOBO Pro V2-10755220
-</td>
-<td style="text-align:left;">
-2019-10-18 12:00:00
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:right;">
-11.904
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:left;">
-1
-</td>
-<td style="text-align:left;">
-NA
-</td>
-<td style="text-align:left;">
-NA
-</td>
-<td style="text-align:left;">
-NA
-</td>
-<td style="text-align:left;">
-NA
-</td>
-</tr>
 </tbody>
 </table>
 
-``` r
-dat_gr <- dat_gr %>% 
-  qc_pivot_longer(qc_tests = "grossrange")
-
-kable(dat_gr[1:10, ])
-```
-
-<table>
-<thead>
-<tr>
-<th style="text-align:left;">
-sensor
-</th>
-<th style="text-align:left;">
-timestamp_utc
-</th>
-<th style="text-align:right;">
-sensor_depth_at_low_tide_m
-</th>
-<th style="text-align:left;">
-variable
-</th>
-<th style="text-align:right;">
-value
-</th>
-<th style="text-align:left;">
-grossrange_flag_value
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left;">
-HOBO Pro V2-10755220
-</td>
-<td style="text-align:left;">
-2019-05-29 18:00:00
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:left;">
-temperature_degree_C
-</td>
-<td style="text-align:right;">
-12.243
-</td>
-<td style="text-align:left;">
-1
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-HOBO Pro V2-10755220
-</td>
-<td style="text-align:left;">
-2019-05-30 19:00:00
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:left;">
-temperature_degree_C
-</td>
-<td style="text-align:right;">
-7.870
-</td>
-<td style="text-align:left;">
-1
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-HOBO Pro V2-10755220
-</td>
-<td style="text-align:left;">
-2019-05-30 20:00:00
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:left;">
-temperature_degree_C
-</td>
-<td style="text-align:right;">
-6.585
-</td>
-<td style="text-align:left;">
-1
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-HOBO Pro V2-10755220
-</td>
-<td style="text-align:left;">
-2019-05-30 21:00:00
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:left;">
-temperature_degree_C
-</td>
-<td style="text-align:right;">
-6.661
-</td>
-<td style="text-align:left;">
-1
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-HOBO Pro V2-10755220
-</td>
-<td style="text-align:left;">
-2019-05-30 22:00:00
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:left;">
-temperature_degree_C
-</td>
-<td style="text-align:right;">
-6.661
-</td>
-<td style="text-align:left;">
-1
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-HOBO Pro V2-10755220
-</td>
-<td style="text-align:left;">
-2019-05-30 23:00:00
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:left;">
-temperature_degree_C
-</td>
-<td style="text-align:right;">
-7.293
-</td>
-<td style="text-align:left;">
-1
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-HOBO Pro V2-10755220
-</td>
-<td style="text-align:left;">
-2019-05-31 00:00:00
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:left;">
-temperature_degree_C
-</td>
-<td style="text-align:right;">
-7.670
-</td>
-<td style="text-align:left;">
-1
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-HOBO Pro V2-10755220
-</td>
-<td style="text-align:left;">
-2019-10-18 10:00:00
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:left;">
-temperature_degree_C
-</td>
-<td style="text-align:right;">
-11.929
-</td>
-<td style="text-align:left;">
-1
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-HOBO Pro V2-10755220
-</td>
-<td style="text-align:left;">
-2019-10-18 11:00:00
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:left;">
-temperature_degree_C
-</td>
-<td style="text-align:right;">
-11.904
-</td>
-<td style="text-align:left;">
-1
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-HOBO Pro V2-10755220
-</td>
-<td style="text-align:left;">
-2019-10-18 12:00:00
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:left;">
-temperature_degree_C
-</td>
-<td style="text-align:right;">
-11.904
-</td>
-<td style="text-align:left;">
-1
-</td>
-</tr>
-</tbody>
-</table>
-
-Plot flagged observations:
+The flagged data can be plotted with `qc_plot_all_tests()`, specifying
+argument `qc_tests = "grossrange"`.
 
 ``` r
-grossrange_plots <- qc_plot_flag_vars(dat_gr, qc_tests = "grossrange")
-
-grossrange_plots
+qc_plot_all_tests(dat_gr, qc_tests = "grossrange")
 #> $temperature_degree_C
 #> $temperature_degree_C$grossrange
 ```
@@ -1250,383 +547,20 @@ grossrange_plots
 
 <img src="man/figures/README-fig2-5.png" width="100%" />
 
-#### Climatology Test
+#### All Tests
 
-Inspect the default gross range threshold values for each variable and
-season:
-
-``` r
-kable(threshold_tables$climatology_table)
-```
-
-<table>
-<thead>
-<tr>
-<th style="text-align:left;">
-variable
-</th>
-<th style="text-align:left;">
-season
-</th>
-<th style="text-align:right;">
-season_min
-</th>
-<th style="text-align:right;">
-season_max
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left;">
-dissolved_oxygen_mg_per_L
-</td>
-<td style="text-align:left;">
-winter
-</td>
-<td style="text-align:right;">
-2.0
-</td>
-<td style="text-align:right;">
-15
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-dissolved_oxygen_mg_per_L
-</td>
-<td style="text-align:left;">
-spring
-</td>
-<td style="text-align:right;">
-5.0
-</td>
-<td style="text-align:right;">
-20
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-dissolved_oxygen_mg_per_L
-</td>
-<td style="text-align:left;">
-summer
-</td>
-<td style="text-align:right;">
-10.0
-</td>
-<td style="text-align:right;">
-20
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-dissolved_oxygen_mg_per_L
-</td>
-<td style="text-align:left;">
-fall
-</td>
-<td style="text-align:right;">
-2.0
-</td>
-<td style="text-align:right;">
-15
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-dissolved_oxygen_percent_saturation
-</td>
-<td style="text-align:left;">
-winter
-</td>
-<td style="text-align:right;">
-70.0
-</td>
-<td style="text-align:right;">
-120
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-dissolved_oxygen_percent_saturation
-</td>
-<td style="text-align:left;">
-spring
-</td>
-<td style="text-align:right;">
-70.0
-</td>
-<td style="text-align:right;">
-130
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-dissolved_oxygen_percent_saturation
-</td>
-<td style="text-align:left;">
-summer
-</td>
-<td style="text-align:right;">
-70.0
-</td>
-<td style="text-align:right;">
-130
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-dissolved_oxygen_percent_saturation
-</td>
-<td style="text-align:left;">
-fall
-</td>
-<td style="text-align:right;">
-70.0
-</td>
-<td style="text-align:right;">
-120
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-salinity_psu
-</td>
-<td style="text-align:left;">
-winter
-</td>
-<td style="text-align:right;">
-0.0
-</td>
-<td style="text-align:right;">
-40
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-salinity_psu
-</td>
-<td style="text-align:left;">
-spring
-</td>
-<td style="text-align:right;">
-0.0
-</td>
-<td style="text-align:right;">
-40
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-salinity_psu
-</td>
-<td style="text-align:left;">
-summer
-</td>
-<td style="text-align:right;">
-0.0
-</td>
-<td style="text-align:right;">
-40
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-salinity_psu
-</td>
-<td style="text-align:left;">
-fall
-</td>
-<td style="text-align:right;">
-0.0
-</td>
-<td style="text-align:right;">
-40
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-temperature_degree_C
-</td>
-<td style="text-align:left;">
-winter
-</td>
-<td style="text-align:right;">
--0.7
-</td>
-<td style="text-align:right;">
-15
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-temperature_degree_C
-</td>
-<td style="text-align:left;">
-spring
-</td>
-<td style="text-align:right;">
-0.0
-</td>
-<td style="text-align:right;">
-20
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-temperature_degree_C
-</td>
-<td style="text-align:left;">
-summer
-</td>
-<td style="text-align:right;">
-7.0
-</td>
-<td style="text-align:right;">
-25
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-temperature_degree_C
-</td>
-<td style="text-align:left;">
-fall
-</td>
-<td style="text-align:right;">
-5.0
-</td>
-<td style="text-align:right;">
-20
-</td>
-</tr>
-</tbody>
-</table>
-
-Inspect default seasons:
+There is no need to call each `qc_test**()` function separately.
+`qc_test_all()` will apply all specified QC tests to `dat`.
 
 ``` r
-kable(threshold_tables$seasons_table)
-```
+dat_qc <- dat %>% 
+  qc_test_all(qc_tests = c("climatology", "grossrange")) 
+#> Joining, by = c("sensor", "timestamp_utc", "sensor_depth_at_low_tide_m",
+#> "value_temperature_degree_C", "value_dissolved_oxygen_percent_saturation",
+#> "value_salinity_psu", "value_sensor_depth_measured_m",
+#> "value_dissolved_oxygen_mg_per_L")
 
-<table>
-<thead>
-<tr>
-<th style="text-align:right;">
-numeric_month
-</th>
-<th style="text-align:left;">
-season
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:left;">
-winter
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:left;">
-winter
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-3
-</td>
-<td style="text-align:left;">
-winter
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-4
-</td>
-<td style="text-align:left;">
-spring
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-5
-</td>
-<td style="text-align:left;">
-spring
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-6
-</td>
-<td style="text-align:left;">
-spring
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-7
-</td>
-<td style="text-align:left;">
-summer
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-8
-</td>
-<td style="text-align:left;">
-summer
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-9
-</td>
-<td style="text-align:left;">
-summer
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-10
-</td>
-<td style="text-align:left;">
-fall
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-11
-</td>
-<td style="text-align:left;">
-fall
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-12
-</td>
-<td style="text-align:left;">
-fall
-</td>
-</tr>
-</tbody>
-</table>
-
-Apply test:
-
-``` r
-dat_cl <- qc_test_climatology(dat)
-
-kable(dat_cl[1:10, ])
+kable(dat_qc[1:5, ])
 ```
 
 <table>
@@ -1671,6 +605,21 @@ climatology_flag_sensor_depth_measured_m
 <th style="text-align:left;">
 climatology_flag_dissolved_oxygen_mg_per_L
 </th>
+<th style="text-align:left;">
+grossrange_flag_temperature_degree_C
+</th>
+<th style="text-align:left;">
+grossrange_flag_dissolved_oxygen_percent_saturation
+</th>
+<th style="text-align:left;">
+grossrange_flag_salinity_psu
+</th>
+<th style="text-align:left;">
+grossrange_flag_sensor_depth_measured_m
+</th>
+<th style="text-align:left;">
+grossrange_flag_dissolved_oxygen_mg_per_L
+</th>
 </tr>
 </thead>
 <tbody>
@@ -1697,6 +646,21 @@ NA
 NA
 </td>
 <td style="text-align:right;">
+NA
+</td>
+<td style="text-align:left;">
+1
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
 NA
 </td>
 <td style="text-align:left;">
@@ -1755,6 +719,21 @@ NA
 <td style="text-align:left;">
 NA
 </td>
+<td style="text-align:left;">
+1
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
 </tr>
 <tr>
 <td style="text-align:left;">
@@ -1779,6 +758,21 @@ NA
 NA
 </td>
 <td style="text-align:right;">
+NA
+</td>
+<td style="text-align:left;">
+1
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
 NA
 </td>
 <td style="text-align:left;">
@@ -1837,6 +831,21 @@ NA
 <td style="text-align:left;">
 NA
 </td>
+<td style="text-align:left;">
+1
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
 </tr>
 <tr>
 <td style="text-align:left;">
@@ -1878,196 +887,6 @@ NA
 <td style="text-align:left;">
 NA
 </td>
-</tr>
-<tr>
-<td style="text-align:left;">
-HOBO Pro V2-10755220
-</td>
-<td style="text-align:left;">
-2019-05-30 23:00:00
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:right;">
-7.293
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:left;">
-1
-</td>
-<td style="text-align:left;">
-NA
-</td>
-<td style="text-align:left;">
-NA
-</td>
-<td style="text-align:left;">
-NA
-</td>
-<td style="text-align:left;">
-NA
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-HOBO Pro V2-10755220
-</td>
-<td style="text-align:left;">
-2019-05-31 00:00:00
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:right;">
-7.670
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:left;">
-1
-</td>
-<td style="text-align:left;">
-NA
-</td>
-<td style="text-align:left;">
-NA
-</td>
-<td style="text-align:left;">
-NA
-</td>
-<td style="text-align:left;">
-NA
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-HOBO Pro V2-10755220
-</td>
-<td style="text-align:left;">
-2019-10-18 10:00:00
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:right;">
-11.929
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:left;">
-1
-</td>
-<td style="text-align:left;">
-NA
-</td>
-<td style="text-align:left;">
-NA
-</td>
-<td style="text-align:left;">
-NA
-</td>
-<td style="text-align:left;">
-NA
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-HOBO Pro V2-10755220
-</td>
-<td style="text-align:left;">
-2019-10-18 11:00:00
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:right;">
-11.904
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:left;">
-1
-</td>
-<td style="text-align:left;">
-NA
-</td>
-<td style="text-align:left;">
-NA
-</td>
-<td style="text-align:left;">
-NA
-</td>
-<td style="text-align:left;">
-NA
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-HOBO Pro V2-10755220
-</td>
-<td style="text-align:left;">
-2019-10-18 12:00:00
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:right;">
-11.904
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
 <td style="text-align:left;">
 1
 </td>
@@ -2087,11 +906,16 @@ NA
 </tbody>
 </table>
 
-``` r
-dat_cl <- dat_cl %>% 
-  qc_pivot_longer(qc_tests = "climatology")
+There are now 18 columns in `dat_qc`!
 
-kable(dat_gr[1:10, ])
+`qc_assign_max_flag()` reduces the number of columns in `dat_qc` by
+keeping the *worst* flag for each variable.
+
+``` r
+dat_qc <- dat_qc %>% 
+ qc_assign_max_flag()
+
+kable(dat_qc[1:5, ])
 ```
 
 <table>
@@ -2106,14 +930,35 @@ timestamp_utc
 <th style="text-align:right;">
 sensor_depth_at_low_tide_m
 </th>
-<th style="text-align:left;">
-variable
+<th style="text-align:right;">
+value_dissolved_oxygen_mg_per_L
 </th>
 <th style="text-align:right;">
-value
+value_dissolved_oxygen_percent_saturation
+</th>
+<th style="text-align:right;">
+value_salinity_psu
+</th>
+<th style="text-align:right;">
+value_sensor_depth_measured_m
+</th>
+<th style="text-align:right;">
+value_temperature_degree_C
 </th>
 <th style="text-align:left;">
-grossrange_flag_value
+qc_flag_dissolved_oxygen_mg_per_L
+</th>
+<th style="text-align:left;">
+qc_flag_dissolved_oxygen_percent_saturation
+</th>
+<th style="text-align:left;">
+qc_flag_salinity_psu
+</th>
+<th style="text-align:left;">
+qc_flag_sensor_depth_measured_m
+</th>
+<th style="text-align:left;">
+qc_flag_temperature_degree_C
 </th>
 </tr>
 </thead>
@@ -2128,11 +973,32 @@ HOBO Pro V2-10755220
 <td style="text-align:right;">
 2
 </td>
-<td style="text-align:left;">
-temperature_degree_C
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
 </td>
 <td style="text-align:right;">
 12.243
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
 </td>
 <td style="text-align:left;">
 1
@@ -2148,11 +1014,32 @@ HOBO Pro V2-10755220
 <td style="text-align:right;">
 2
 </td>
-<td style="text-align:left;">
-temperature_degree_C
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
 </td>
 <td style="text-align:right;">
 7.870
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
 </td>
 <td style="text-align:left;">
 1
@@ -2168,11 +1055,32 @@ HOBO Pro V2-10755220
 <td style="text-align:right;">
 2
 </td>
-<td style="text-align:left;">
-temperature_degree_C
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
 </td>
 <td style="text-align:right;">
 6.585
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
 </td>
 <td style="text-align:left;">
 1
@@ -2188,11 +1096,32 @@ HOBO Pro V2-10755220
 <td style="text-align:right;">
 2
 </td>
-<td style="text-align:left;">
-temperature_degree_C
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
 </td>
 <td style="text-align:right;">
 6.661
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
 </td>
 <td style="text-align:left;">
 1
@@ -2208,111 +1137,32 @@ HOBO Pro V2-10755220
 <td style="text-align:right;">
 2
 </td>
-<td style="text-align:left;">
-temperature_degree_C
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
 </td>
 <td style="text-align:right;">
 6.661
 </td>
 <td style="text-align:left;">
-1
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-HOBO Pro V2-10755220
+NA
 </td>
 <td style="text-align:left;">
-2019-05-30 23:00:00
-</td>
-<td style="text-align:right;">
-2
+NA
 </td>
 <td style="text-align:left;">
-temperature_degree_C
-</td>
-<td style="text-align:right;">
-7.293
+NA
 </td>
 <td style="text-align:left;">
-1
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-HOBO Pro V2-10755220
-</td>
-<td style="text-align:left;">
-2019-05-31 00:00:00
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:left;">
-temperature_degree_C
-</td>
-<td style="text-align:right;">
-7.670
-</td>
-<td style="text-align:left;">
-1
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-HOBO Pro V2-10755220
-</td>
-<td style="text-align:left;">
-2019-10-18 10:00:00
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:left;">
-temperature_degree_C
-</td>
-<td style="text-align:right;">
-11.929
-</td>
-<td style="text-align:left;">
-1
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-HOBO Pro V2-10755220
-</td>
-<td style="text-align:left;">
-2019-10-18 11:00:00
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:left;">
-temperature_degree_C
-</td>
-<td style="text-align:right;">
-11.904
-</td>
-<td style="text-align:left;">
-1
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-HOBO Pro V2-10755220
-</td>
-<td style="text-align:left;">
-2019-10-18 12:00:00
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:left;">
-temperature_degree_C
-</td>
-<td style="text-align:right;">
-11.904
+NA
 </td>
 <td style="text-align:left;">
 1
@@ -2321,14 +1171,13 @@ temperature_degree_C
 </tbody>
 </table>
 
-Plot flagged observations:
+The flagged data can be plotted with `qc_plot_all_tests()`, specifying
+argument `qc_tests = "qc"`.
 
 ``` r
-climatology_plots <- qc_plot_flag_vars(dat_cl, qc_tests = "climatology")
-
-climatology_plots
+qc_plot_all_tests(dat_qc, qc_tests = "qc")
 #> $temperature_degree_C
-#> $temperature_degree_C$climatology
+#> $temperature_degree_C$qc
 ```
 
 <img src="man/figures/README-fig3-1.png" width="100%" />
@@ -2336,366 +1185,27 @@ climatology_plots
     #> 
     #> 
     #> $dissolved_oxygen_percent_saturation
-    #> $dissolved_oxygen_percent_saturation$climatology
+    #> $dissolved_oxygen_percent_saturation$qc
 
 <img src="man/figures/README-fig3-2.png" width="100%" />
 
     #> 
     #> 
     #> $salinity_psu
-    #> $salinity_psu$climatology
+    #> $salinity_psu$qc
 
 <img src="man/figures/README-fig3-3.png" width="100%" />
 
     #> 
     #> 
     #> $sensor_depth_measured_m
-    #> $sensor_depth_measured_m$climatology
+    #> $sensor_depth_measured_m$qc
 
 <img src="man/figures/README-fig3-4.png" width="100%" />
 
     #> 
     #> 
     #> $dissolved_oxygen_mg_per_L
-    #> $dissolved_oxygen_mg_per_L$climatology
+    #> $dissolved_oxygen_mg_per_L$qc
 
 <img src="man/figures/README-fig3-5.png" width="100%" />
-
-#### All Tests
-
-``` r
-dat_qc <- dat %>% 
-  qc_test_all() %>% 
-  qc_pivot_longer()
-#> Joining, by = c("sensor", "timestamp_utc", "sensor_depth_at_low_tide_m",
-#> "value_temperature_degree_C", "value_dissolved_oxygen_percent_saturation",
-#> "value_salinity_psu", "value_sensor_depth_measured_m",
-#> "value_dissolved_oxygen_mg_per_L")
-
-kable(dat_qc[1:10, ])
-```
-
-<table>
-<thead>
-<tr>
-<th style="text-align:left;">
-sensor
-</th>
-<th style="text-align:left;">
-timestamp_utc
-</th>
-<th style="text-align:right;">
-sensor_depth_at_low_tide_m
-</th>
-<th style="text-align:left;">
-variable
-</th>
-<th style="text-align:right;">
-value
-</th>
-<th style="text-align:left;">
-climatology_flag_value
-</th>
-<th style="text-align:left;">
-grossrange_flag_value
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left;">
-HOBO Pro V2-10755220
-</td>
-<td style="text-align:left;">
-2019-05-29 18:00:00
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:left;">
-temperature_degree_C
-</td>
-<td style="text-align:right;">
-12.243
-</td>
-<td style="text-align:left;">
-1
-</td>
-<td style="text-align:left;">
-1
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-HOBO Pro V2-10755220
-</td>
-<td style="text-align:left;">
-2019-05-30 19:00:00
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:left;">
-temperature_degree_C
-</td>
-<td style="text-align:right;">
-7.870
-</td>
-<td style="text-align:left;">
-1
-</td>
-<td style="text-align:left;">
-1
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-HOBO Pro V2-10755220
-</td>
-<td style="text-align:left;">
-2019-05-30 20:00:00
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:left;">
-temperature_degree_C
-</td>
-<td style="text-align:right;">
-6.585
-</td>
-<td style="text-align:left;">
-1
-</td>
-<td style="text-align:left;">
-1
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-HOBO Pro V2-10755220
-</td>
-<td style="text-align:left;">
-2019-05-30 21:00:00
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:left;">
-temperature_degree_C
-</td>
-<td style="text-align:right;">
-6.661
-</td>
-<td style="text-align:left;">
-1
-</td>
-<td style="text-align:left;">
-1
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-HOBO Pro V2-10755220
-</td>
-<td style="text-align:left;">
-2019-05-30 22:00:00
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:left;">
-temperature_degree_C
-</td>
-<td style="text-align:right;">
-6.661
-</td>
-<td style="text-align:left;">
-1
-</td>
-<td style="text-align:left;">
-1
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-HOBO Pro V2-10755220
-</td>
-<td style="text-align:left;">
-2019-05-30 23:00:00
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:left;">
-temperature_degree_C
-</td>
-<td style="text-align:right;">
-7.293
-</td>
-<td style="text-align:left;">
-1
-</td>
-<td style="text-align:left;">
-1
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-HOBO Pro V2-10755220
-</td>
-<td style="text-align:left;">
-2019-05-31 00:00:00
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:left;">
-temperature_degree_C
-</td>
-<td style="text-align:right;">
-7.670
-</td>
-<td style="text-align:left;">
-1
-</td>
-<td style="text-align:left;">
-1
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-HOBO Pro V2-10755220
-</td>
-<td style="text-align:left;">
-2019-10-18 10:00:00
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:left;">
-temperature_degree_C
-</td>
-<td style="text-align:right;">
-11.929
-</td>
-<td style="text-align:left;">
-1
-</td>
-<td style="text-align:left;">
-1
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-HOBO Pro V2-10755220
-</td>
-<td style="text-align:left;">
-2019-10-18 11:00:00
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:left;">
-temperature_degree_C
-</td>
-<td style="text-align:right;">
-11.904
-</td>
-<td style="text-align:left;">
-1
-</td>
-<td style="text-align:left;">
-1
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-HOBO Pro V2-10755220
-</td>
-<td style="text-align:left;">
-2019-10-18 12:00:00
-</td>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:left;">
-temperature_degree_C
-</td>
-<td style="text-align:right;">
-11.904
-</td>
-<td style="text-align:left;">
-1
-</td>
-<td style="text-align:left;">
-1
-</td>
-</tr>
-</tbody>
-</table>
-
-Plot flagged observations:
-
-``` r
-qc_plots <- qc_plot_flag_vars(dat_qc)
-
-qc_plots
-#> $temperature_degree_C
-#> $temperature_degree_C$climatology
-```
-
-<img src="man/figures/README-fig4-1.png" width="100%" />
-
-    #> 
-    #> $temperature_degree_C$grossrange
-
-<img src="man/figures/README-fig4-2.png" width="100%" />
-
-    #> 
-    #> 
-    #> $dissolved_oxygen_percent_saturation
-    #> $dissolved_oxygen_percent_saturation$climatology
-
-<img src="man/figures/README-fig4-3.png" width="100%" />
-
-    #> 
-    #> $dissolved_oxygen_percent_saturation$grossrange
-
-<img src="man/figures/README-fig4-4.png" width="100%" />
-
-    #> 
-    #> 
-    #> $salinity_psu
-    #> $salinity_psu$climatology
-
-<img src="man/figures/README-fig4-5.png" width="100%" />
-
-    #> 
-    #> $salinity_psu$grossrange
-
-<img src="man/figures/README-fig4-6.png" width="100%" />
-
-    #> 
-    #> 
-    #> $sensor_depth_measured_m
-    #> $sensor_depth_measured_m$climatology
-
-<img src="man/figures/README-fig4-7.png" width="100%" />
-
-    #> 
-    #> $sensor_depth_measured_m$grossrange
-
-<img src="man/figures/README-fig4-8.png" width="100%" />
-
-    #> 
-    #> 
-    #> $dissolved_oxygen_mg_per_L
-    #> $dissolved_oxygen_mg_per_L$climatology
-
-<img src="man/figures/README-fig4-9.png" width="100%" />
-
-    #> 
-    #> $dissolved_oxygen_mg_per_L$grossrange
-
-<img src="man/figures/README-fig4-10.png" width="100%" />

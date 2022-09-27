@@ -9,7 +9,8 @@ qc_pivot_longer(dat_wide, qc_tests = c("climatology", "grossrange"))
 \arguments{
 \item{dat_wide}{placeholder}
 
-\item{qc_tests}{QC tests to run.}
+\item{qc_tests}{qc tests in dat_wide. If dat_wide only includes the max flag,
+use \code{qc_tests = "qc"}.}
 }
 \value{
 placeholder

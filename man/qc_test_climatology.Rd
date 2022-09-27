@@ -7,7 +7,7 @@
 qc_test_climatology(dat, climatology_table = NULL, seasons_table = NULL)
 }
 \arguments{
-\item{dat}{placeholder}
+\item{dat}{placeholder... wide data}
 
 \item{climatology_table}{Data frame with 4 columns: \code{variable}: should
 match the names of the variables being tested in \code{dat}. \code{season}:
@@ -33,3 +33,8 @@ placeholder for now
 \description{
 Add flag column for the climatology test
 }
+\seealso{
+Other tests: 
+\code{\link{qc_test_grossrange}()}
+}
+\concept{tests}
