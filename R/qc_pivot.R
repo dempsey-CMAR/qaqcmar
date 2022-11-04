@@ -1,11 +1,12 @@
-#' Title
+#' Pivot flagged sensor string data
 #'
-#' @param dat_wide placeholder
+#' @param dat_wide Data frame of flagged sensor string data in wide format.
 #'
-#' @param qc_tests qc tests in dat_wide. If dat_wide only includes the max flag,
-#'   use \code{qc_tests = "qc"}.
+#' @param qc_tests qc tests in \code{dat_wide}. If \code{dat_wide} only includes
+#'   the max flag, use \code{qc_tests = "qc"}.
 #'
-#' @return placeholder
+#' @return Returns \code{dat_wide}, with variables and flags pivoted to a long
+#'   format.
 #'
 #' @importFrom dplyr %>% filter select
 #' @importFrom tidyr pivot_longer
@@ -15,7 +16,7 @@
 # # turn this into example
 # path <- system.file("testdata", package = "qaqcmar")
 # dat <- read.csv(paste0(path, "/example_data.csv"))
-#
+
 # dat_long <- dat %>%
 #   qc_test_all() %>%
 #   qc_pivot_longer()
@@ -26,11 +27,14 @@
 #   qc_pivot_longer(qc_tests = "qc")
 
 
-qc_pivot_longer <- function(dat_wide,
-                            qc_tests = c("climatology", "grossrange")) {
+qc_pivot_longer <- function(
+  dat_wide,
+  qc_tests = c("climatology", "grossrange")
+) {
 
   qc_tests <- tolower(qc_tests)
 
+  # pivot the variables
   dat <- dat_wide %>%
     pivot_longer(
       cols = contains("value"),
@@ -39,13 +43,8 @@ qc_pivot_longer <- function(dat_wide,
       values_drop_na = TRUE
     )
 
-  #browser()
-
+  # pivot the flags indicated
   if("qc" %in% qc_tests) {
-    # if(length(qc_tests) > 1) {
-    #   stop()
-    # }
-    #
     dat <- pivot_flags_longer(dat, qc_test = "qc")
   }
 
@@ -62,12 +61,15 @@ qc_pivot_longer <- function(dat_wide,
 }
 
 
-#' Title
+#' Pivot flagged sensor string data flag columns
 #'
-#' @param dat_wide placeholder...
-#' @param qc_test placeholder
+#' @param dat_wide Data frame of flagged sensor string data with the variables
+#'   in a long format and flags in wide format.
 #'
-#' @return placeholder
+#' @param qc_test Flag columns to pivot.
+#'
+#' @return Returns \code{dat_wide} with the qc_test flag columns pivoted to a
+#'   long format.
 #'
 #' @importFrom dplyr %>% contains filter select
 #' @importFrom rlang sym
