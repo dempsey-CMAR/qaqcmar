@@ -7,7 +7,7 @@
 qc_test_grossrange(dat, grossrange_table = NULL)
 }
 \arguments{
-\item{dat}{placeholder... wide data}
+\item{dat}{Data frame of sensor string data in wide format.}
 
 \item{grossrange_table}{Data frame with 6 columns: \code{variable}: should
 match the names of the variables being tested in \code{dat}.

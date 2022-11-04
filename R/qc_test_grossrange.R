@@ -1,6 +1,6 @@
 #' Add flag columns for the grossrange test
 #'
-#' @param dat placeholder... wide data
+#' @param dat Data frame of sensor string data in wide format.
 #'
 #' @param grossrange_table Data frame with 6 columns: \code{variable}: should
 #'   match the names of the variables being tested in \code{dat}.
@@ -25,10 +25,6 @@
 #'
 #' @export
 
-
-# path <- system.file("testdata", package = "qaqcmar")
-# dat <- read.csv(paste0(path, "/example_data.csv"))
-
 qc_test_grossrange <- function(dat, grossrange_table = NULL) {
 
   # import default thresholds from internal data file
@@ -39,6 +35,7 @@ qc_test_grossrange <- function(dat, grossrange_table = NULL) {
   # check the vars in table are in the colname and vice versa
   dat_vars <- dat %>%
     select(
+      contains("depth_measured"),
       contains("dissolved_oxygen"),
       contains("salinity"),
       contains("temperature")
@@ -48,44 +45,41 @@ qc_test_grossrange <- function(dat, grossrange_table = NULL) {
   # is this even helpful?
   if (!all(unique(grossrange_table$variable) %in% dat_vars)) {
 
-    missing_var <- grossrange_table[
-      which(!(grossrange_table$variable %in% colnames(dat))),
-    ]
+    missing_var <- unique(grossrange_table[
+      which(!(grossrange_table$variable %in% dat_vars)), "variable"
+    ])
 
-    message("Variable <<", missing_var, " >> was found in grossrange_table,
-            but does not exist in dat")
+    for (i in 1:nrow(missing_var)) {
+      message("Variable << ", unique(missing_var$variable[i]), " >>
+            was found in grossrange_table, but does not exist in dat")
+    }
   }
 
   if (!all(dat_vars %in% unique(grossrange_table$variable))) {
 
-    missing_var <- dat_vars[which(!(dat_vars %in% grossrange_table$variable))]
+    missing_var <- unique(dat_vars[which(!(dat_vars %in% grossrange_table$variable))])
 
-    message("Variable <<", missing_var, " >> was found in dat,
+    for (i in seq_along(missing_var)) {
+      message("Variable << ", missing_var[i], " >> was found in dat,
             but not in grossrange_table")
+    }
   }
 
   dat %>%
     ss_pivot_longer() %>%
-    separate(sensor, into = c("sensor_make", NA), remove = FALSE, sep = "-") %>%
-    mutate(
-      sensor_make = case_when(
-        str_detect(sensor, "HOBO") ~ "hobo",
-        str_detect(sensor, "aquaMeasure") ~ "aquameasure",
-        str_detect(sensor, "VR2AR") ~ "vemco"
-      )
-    ) %>%
-    left_join(grossrange_table, by = c("sensor_make", "variable")) %>%
+    left_join(grossrange_table, by = c("sensor_type", "variable")) %>%
     mutate(
       grossrange_flag = case_when(
         value > sensor_max | value < sensor_min  ~ 4,
-        value > user_max | value < user_min ~ 3,
-        value <= sensor_max | value >= sensor_min ~ 1,
+        (value <= sensor_max & value > user_max) |
+          (value >= sensor_min &  value < user_min) ~ 3,
+        value <= user_max | value >= user_min ~ 1,
         TRUE ~ 2
       ),
       grossrange_flag = ordered(grossrange_flag, levels = c(1:4))
     ) %>%
     #remove extra columns
-    subset(select = -c(sensor_max, sensor_min, user_max, user_min, sensor_make)) %>%
+    subset(select = -c(sensor_max, sensor_min, user_max, user_min)) %>%
     pivot_wider(
       names_from = variable,
       values_from = c(value, grossrange_flag)
