@@ -37,3 +37,6 @@ use_github_action_check_standard()
 # code factor
 # https://www.codefactor.io/dashboard
 
+# tests
+use_testthat(3)
+

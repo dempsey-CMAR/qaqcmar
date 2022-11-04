@@ -8,6 +8,9 @@
 
 utils::globalVariables(
   c(
+
+    "sensor_serial_number",
+
     # qc_test_climatology
     "flag",
     "season_max",
@@ -20,7 +23,7 @@ utils::globalVariables(
 
     # qc_test_grossrange
     "sensor",
-    "sensor_make",
+    "sensor_type",
     "sensor_max",
     "sensor_min",
     "user_max",
@@ -32,7 +35,12 @@ utils::globalVariables(
 
     # qc_assign_max_flag
     "qc_col",
-    "qc_flag"
+    "qc_flag",
+
+    # ggplot_all_tests
+    "depth",
+    "sensor_depth_at_low_tide_m"
+
 
   )
 )
