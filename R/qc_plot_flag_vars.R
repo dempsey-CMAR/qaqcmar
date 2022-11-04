@@ -1,13 +1,17 @@
-#' Title
+#' Plot sensor data coloured by flag value
 #'
-#' @param dat placeholder... can be wide or long, but must include columns named
-#'   _flag_variable.
+#' @param dat Data frame of flagged sensor string data in long or wide format.
+#'   Must include at least one column name with the string "_flag_variable".
 #'
-#' @param vars Variables to plot
+#' @param vars Character vector of variables to plot.
+#'
+#' @param labels Logical argument indicating whether to convert numeric flag
+#'   values to text labels for the legend.
 #'
 #' @inheritParams qc_test_all
 #'
-#' @return list of ggplot objects
+#' @return Returns a list of ggplot objects; one figure for each test in
+#'   \code{qc_tests} and variable in \code{vars}, faceted by depth and sensor.
 #'
 #' @importFrom lubridate as_datetime
 #'
@@ -23,9 +27,12 @@
 #
 # plots <- qc_plot_flag_vars(dat)
 
-qc_plot_all_tests <- function(dat,
-                              qc_tests = c("climatology", "grossrange"),
-                              vars = "all") {
+qc_plot_flags <- function(
+  dat,
+  qc_tests = c("climatology", "grossrange"),
+  vars = "all",
+  labels = TRUE
+) {
 
   dat <- dat %>%
     rename(tstamp = contains("timestamp")) %>%
@@ -37,9 +44,12 @@ qc_plot_all_tests <- function(dat,
 
   if(vars == "all") vars <- unique(dat$variable)
 
+  if(isTRUE(labels)) dat <- dat %>% qc_assign_flag_labels()
+
   p <- list(NULL)
   p_out <- list(NULL)
 
+  # plot for each variable
   for (i in seq_along(vars)) {
 
     var_i <- vars[i]
@@ -52,28 +62,26 @@ qc_plot_all_tests <- function(dat,
       break
     }
 
+    # plot for each test
     for (j in seq_along(qc_tests)) {
 
       qc_test_j <- qc_tests[j]
 
-      p[[qc_test_j]] <- ggplot_all_tests(dat_i, qc_test = qc_test_j, var = var_i)
+      p[[qc_test_j]] <- ggplot_flags(dat_i, qc_test = qc_test_j, var = var_i)
       # might want to ggpubr these together
 
-      p <- Filter(Negate(is.null), p)
+      p <- Filter(Negate(is.null), p) # remove empty list element
     }
     p_out[[var_i]] <- p
   }
 
-  # not sure why first element was null
-  p_out <- Filter(Negate(is.null), p_out)
+  p_out <- Filter(Negate(is.null), p_out)   # not sure why first element was null
 
   p_out
 }
 
 
-
-
-#' Title
+#' Create ggplot for one qc_test and variable
 #'
 #' @param dat placeholder
 #' @param qc_test qc test to plot
@@ -85,24 +93,34 @@ qc_plot_all_tests <- function(dat,
 #'   ggplot ggtitle guides guide_legend  scale_colour_manual scale_x_datetime
 #'   scale_y_continuous theme_light theme
 
-ggplot_all_tests <- function(dat, qc_test, var) {
+ggplot_flags <- function(dat, qc_test, var) {
 
   # https://www.visualisingdata.com/2019/08/five-ways-to-design-for-red-green-colour-blindness/
-  flag_colours <- c("#006164", "#E6E1BC", "#EDA247", "#DB4325")
+  flag_colours <- c("chartreuse4", "#E6E1BC", "#EDA247", "#DB4325", "grey24")
+  #"#006164",
 
   flag_column <- paste0(qc_test, "_flag_value")
 
-  ggplot(dat, aes(tstamp, value, colour = !!sym(flag_column))) +
+  dat %>%
+    mutate(
+      sensor = paste(sensor_type, sensor_serial_number, sep = "-"),
+      depth = ordered(
+        sensor_depth_at_low_tide_m,
+        levels = sort(unique(dat$sensor_depth_at_low_tide_m))
+      ),
+      depth = paste0(depth, " m")
+    ) %>%
+    ggplot(aes(tstamp, value, colour = !!sym(flag_column))) +
     geom_point() +
     scale_y_continuous(var) +
     scale_x_datetime("Date") +
     scale_colour_manual("Flag Value", values = flag_colours, drop = FALSE) +
-    # more helpful to have sensor or depth? - could do both
-    # and order factor based on depth
-    facet_wrap(~ sensor) +
+    facet_wrap(~ depth + sensor) +
     theme_light() +
-    theme(strip.text = element_text(colour = "black", size = 10),
-          strip.background = element_rect(fill = "white", colour = "darkgrey")) +
+    theme(
+      strip.text = element_text(colour = "black", size = 10),
+          strip.background = element_rect(fill = "white", colour = "darkgrey")
+      ) +
     guides(color = guide_legend(override.aes = list(size = 4))) +
     ggtitle(paste0(qc_test, " test: ", var))
 
