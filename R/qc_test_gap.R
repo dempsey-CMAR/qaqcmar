@@ -13,6 +13,7 @@
 qc_test_gap <- function(dat, variable, threshold) {
 
   dat %>%
+    mutate(sensor = paste(sensor_type, sensor_serial_number, sep = "-")) %>%
     group_by(sensor) %>%
     mutate(
       diff = as.numeric(
@@ -26,6 +27,7 @@ qc_test_gap <- function(dat, variable, threshold) {
         TRUE ~ diff
       )
     ) %>%
+    select(-sensor) %>%
     ungroup()
 
 }
