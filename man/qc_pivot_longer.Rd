@@ -2,19 +2,20 @@
 % Please edit documentation in R/qc_pivot.R
 \name{qc_pivot_longer}
 \alias{qc_pivot_longer}
-\title{Title}
+\title{Pivot flagged sensor string data}
 \usage{
 qc_pivot_longer(dat_wide, qc_tests = c("climatology", "grossrange"))
 }
 \arguments{
-\item{dat_wide}{placeholder}
+\item{dat_wide}{Data frame of flagged sensor string data in wide format.}
 
-\item{qc_tests}{qc tests in dat_wide. If dat_wide only includes the max flag,
-use \code{qc_tests = "qc"}.}
+\item{qc_tests}{qc tests in \code{dat_wide}. If \code{dat_wide} only includes
+the max flag, use \code{qc_tests = "qc"}.}
 }
 \value{
-placeholder
+Returns \code{dat_wide}, with variables and flags pivoted to a long
+format.
 }
 \description{
-Title
+Pivot flagged sensor string data
 }
