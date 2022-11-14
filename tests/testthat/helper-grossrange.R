@@ -1,4 +1,19 @@
-#' @importFrom dplyr anti_join
+# November 8, 2022
+
+#' testdata was generated such that we KNOW what flag should be assigned to each
+#' observation (data-raw/test_data.R)
+#'
+#' Here, qc_test_grossrange() is applied to the test data. The qc'd data is then
+#' separated into a data frame for each variable and flag value, based on the
+#' timestamps used to generate the data in data-raw/test_data.R.
+#'
+#' The tests check that each data frame include the expected flag value, and
+#' only the expected flag value.
+#'
+
+
+
+#' @importFrom dplyr %>% anti_join
 
 path <- system.file("testdata", package = "qaqcmar")
 
@@ -28,7 +43,7 @@ join_cols <- c(
   "grossrange_flag_sensor_depth_measured_m"
 )
 
-  # temperature fail --------------------------------------------------------------------
+  # temperature - fail --------------------------------------------------------------------
 
 temp_gr_4 <- qc_gr %>%
   filter(
@@ -62,7 +77,7 @@ temp_gr_4 <- qc_gr %>%
       )
   )
 
-# temperature suspect -----------------------------------------------------
+# temperature - suspect -----------------------------------------------------
 
 temp_gr_3 <- qc_gr %>%
   filter(
@@ -95,7 +110,7 @@ temp_gr_3 <- qc_gr %>%
       )
   )
 
-# temperature pass --------------------------------------------------------
+# temperature - pass --------------------------------------------------------
 
 temp_gr_1 <- qc_gr %>%
   filter(sensor_serial_number %in% c(670354, 20495248, 549340)) %>%
@@ -103,7 +118,7 @@ temp_gr_1 <- qc_gr %>%
   dplyr::anti_join(temp_gr_3, by = join_cols)
 
 
-# do_percent_saturation fail ----------------------------------------------
+# do_percent_saturation - fail ----------------------------------------------
 
 do_sat_gr_4 <- qc_gr %>%
   filter(
@@ -115,7 +130,7 @@ do_sat_gr_4 <- qc_gr %>%
       timestamp_utc < as_datetime("2021-10-07 06:00:00")
   )
 
-# do percent saturation suspect -------------------------------------------
+# do percent saturation - suspect -------------------------------------------
 
 do_sat_gr_3 <- qc_gr %>%
   filter(
@@ -127,7 +142,7 @@ do_sat_gr_3 <- qc_gr %>%
       timestamp_utc < as_datetime("2021-10-17 06:00:00"))
   )
 
-# do percent saturation pass ----------------------------------------------
+# do percent saturation - pass ----------------------------------------------
 
 do_sat_gr_1 <- qc_gr %>%
   filter(sensor_serial_number == 670354) %>%
@@ -135,7 +150,7 @@ do_sat_gr_1 <- qc_gr %>%
   dplyr::anti_join(do_sat_gr_3, by = join_cols)
 
 
-# do concentration fail ---------------------------------------------------
+# do concentration - fail ---------------------------------------------------
 
 do_conc_gr_4 <- qc_gr %>%
   filter(
@@ -147,7 +162,7 @@ do_conc_gr_4 <- qc_gr %>%
          timestamp_utc < as_datetime("2021-10-10 18:00:00"))
   )
 
-# do concentration suspect ------------------------------------------------
+# do concentration - suspect ------------------------------------------------
 
 do_conc_gr_3 <- qc_gr %>%
   filter(
@@ -157,7 +172,7 @@ do_conc_gr_3 <- qc_gr %>%
       timestamp_utc < as_datetime("2021-10-17 18:00:00")
   )
 
-# do percent saturation pass ----------------------------------------------
+# do percent saturation - pass ----------------------------------------------
 
 do_conc_gr_1 <- qc_gr %>%
   filter(sensor_serial_number == 20827226) %>%
@@ -192,3 +207,10 @@ salinity_gr_1 <- qc_gr %>%
   filter(sensor_serial_number == 680360) %>%
   dplyr::anti_join(salinity_gr_4, by = join_cols) %>%
   dplyr::anti_join(salinity_gr_3, by = join_cols)
+
+
+# labels ------------------------------------------------------------------
+
+flag_labels <- data.frame(flag = c(1, 2, 3, 4, 9)) %>%
+  qc_assign_flag_labels()
+
