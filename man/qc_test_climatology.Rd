@@ -7,7 +7,7 @@
 qc_test_climatology(dat, climatology_table = NULL, seasons_table = NULL)
 }
 \arguments{
-\item{dat}{placeholder... wide data}
+\item{dat}{Data frame of sensor string data in wide format.}
 
 \item{climatology_table}{Data frame with 4 columns: \code{variable}: should
 match the names of the variables being tested in \code{dat}. \code{season}:

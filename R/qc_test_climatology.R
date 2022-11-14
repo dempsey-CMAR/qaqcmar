@@ -1,6 +1,6 @@
 #' Add flag column for the climatology test
 #'
-#' @param dat placeholder... wide data
+#' @param dat Data frame of sensor string data in wide format.
 #'
 #' @param climatology_table Data frame with 4 columns: \code{variable}: should
 #'   match the names of the variables being tested in \code{dat}. \code{season}:
@@ -68,7 +68,7 @@ qc_test_climatology <- function(
       climatology_flag = ordered(climatology_flag, levels = c(1:4))
     ) %>%
     #remove extra columns
-    subset(select = -c(season_min, season_max, numeric_month, season)) %>%
+    select(-c(season_min, season_max, numeric_month, season)) %>%
     pivot_wider(
       names_from = variable,
       values_from = c(value, climatology_flag)
