@@ -45,9 +45,29 @@ devtools::install_github("dempsey-CMAR/qaqcmar")
 
 ## Background
 
-- Coastal Monitoring Program
+### Coastal Monitoring Program
 
-- QARTOD manuals
+The Centre for Marine Applied Research ([CMAR](https://cmar.ca/)) coordinates an extensive [Coastal Monitoring Program](https://cmar.ca/coastal-monitoring-program/) to measure [Essential Ocean Variables](https://www.goosocean.org/index.php?option=com_content&view=article&id=14&Itemid=114) from around the coast of Nova Scotia, Canada. There are three main branches of the program: _Water Quality_, _Currents_, and _Waves_. Processed data for each branch can be viewed and downloaded from several sources, as outlined in the [CMAR Report & Data Access Cheat Sheet](https://github.com/Centre-for-Marine-Applied-Research/strings/blob/master/man/figures/README-access-cheatsheet.pdf) (download for clickable links).
+
+
+### Quality Assurance and Quality Control 
+
+CMAR applies Quality Assurance (QA) and Quality Control (QC) processes to support the delivery of high quality data (Bushnell et al, 2019). QA processes are typically completed prior to sensor deployment (e.g., sensor calibration and validation), and are documented in a series of Standard Operating Procedures(link here). 
+
+Quality Control processes (e.g., automated data flags, manual review) are completed for each deployment after the data have been collected and compiled. CMAR has adopted the QARTOD (Quality Assurance / Quality Control of Real-Time Oceanographic Data) flagging scheme and associated tests. 
+QARTOD provides a relatively simple yet informative rating scale (Table X), and is very well documented. There are QARTOD manuals for 34 EOVs that provided codeable instructions for implementing recommended QC tests. QARTOD has been adopted by oceanogrpahic organizations around the world, including the US Integrated Ocean Observing System (IOOS).
+
+
+`qaqcmar` is a quality control tool that automates assigning flags to each observation based on QARTOD recommendations.
+
+
+
+
+The QARTOD flagging scheme and tests have been implemented by organizations around the world, including the US Integrated Ocean Observing System (IOOS). QARTOD provides a relatively simple rating scale (Table X) and manuals for 34 EOVs with codeable instructions for implementing QC tests. 
+
+
+
+
 
 - Tests that we are planning to run (include table)
 
@@ -75,16 +95,6 @@ Consider example Water Quality data collected from October 1, 2021 to October 31
 ```{r}
 # read in example data
 path <- system.file("testdata", package = "qaqcmar")
-# 
-# dat <- read.csv(paste0(path, "/example_data.csv")) %>% 
-#   select(
-#     sensor, timestamp_utc, 
-#     contains(c("depth", "temperature", "salinity", "dissolved_oxygen"))
-#   ) %>% 
-#   mutate(
-#     timestamp_utc = paste0(timestamp_utc, ":00"),
-#     timestamp_utc = as_datetime(timestamp_utc)
-#   )
 
 dat <- readRDS(paste0(path, "/test_data_grossrange.RDS")) %>% 
   select(-c(latitude, longitude))
