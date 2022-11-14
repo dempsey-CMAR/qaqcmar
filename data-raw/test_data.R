@@ -22,15 +22,6 @@ hobo_do <- ss_compile_deployment_data(here("data-raw/Birchy Head_2021-11-26")) %
     salinity_psu = NA,
     dissolved_oxygen_percent_saturation = NA,
     sensor_depth_measured_m = NA) %>%
-  # relocate(
-  #   dissolved_oxygen_percent_saturation,
-  #   .before = dissolved_oxygen_uncorrected_mg_per_L
-  # ) %>%
-  # relocate(
-  #   salinity_psu,
-  #   .after = dissolved_oxygen_uncorrected_mg_per_L
-  # ) %>%
-  # Align Birchy Head January with Wedgeport October
   mutate(timestamp_utc = timestamp_utc - days(60))
 
 # ss_ggplot_variables(hobo_do)
@@ -217,7 +208,7 @@ qaqc_dat <- oct_dat %>%
 ss_ggplot_variables(qaqc_dat)
 
 
-# Make a csv file of qaqc_dat (could make this rds)
+# Export rds file
 write_csv(qaqc_dat, file = here("inst/testdata/test_data.csv"))
 saveRDS(qaqc_dat, file = here("inst/testdata/test_data.RDS"))
 
