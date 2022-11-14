@@ -68,34 +68,40 @@ library(lubridate)
 
 ### Example Sensor String Data
 
-Consider Water Quality data collected from xx to xx.
+Consider example Water Quality data collected from October 1, 2021 to October 31, 2021. Note that some observations are far higher or lower than what would be reasonably expected.
+(Note: this is fake data generated from two deployments for illustrative purposes.)
 
 
 ```{r}
 # read in example data
 path <- system.file("testdata", package = "qaqcmar")
+# 
+# dat <- read.csv(paste0(path, "/example_data.csv")) %>% 
+#   select(
+#     sensor, timestamp_utc, 
+#     contains(c("depth", "temperature", "salinity", "dissolved_oxygen"))
+#   ) %>% 
+#   mutate(
+#     timestamp_utc = paste0(timestamp_utc, ":00"),
+#     timestamp_utc = as_datetime(timestamp_utc)
+#   )
 
-dat <- read.csv(paste0(path, "/example_data.csv")) %>% 
-  select(
-    sensor, timestamp_utc, 
-    contains(c("depth", "temperature", "salinity", "dissolved_oxygen"))
-  ) %>% 
-  mutate(timestamp_utc = as_datetime(timestamp_utc))
+dat <- readRDS(paste0(path, "/test_data_grossrange.RDS")) %>% 
+  select(-c(latitude, longitude))
 
 kable(dat[1:5, ])
 
 ```
 
-```{r fig1, fig.height=8, dpi=600}
-ss_plot_variables_at_depth(dat)
+```{r fig1, fig.height=8}
+ss_ggplot_variables(dat)
 ```
 
 
 ### Apply QC flags
 
-There is a separate function for each QC test. For example, `qc_test_grossrange()` applies the gross range test by adding a a `grossrange_flag_**` column for each variable in `dat`.
+`qcqcmar` includes a separate function for each QC test. For example, `qc_test_grossrange()` applies the gross range test by adding a a `grossrange_flag_**` column for each variable in `dat`.
 
-*Possibly add table here*
 
 #### Gross Range Test
 
@@ -106,15 +112,15 @@ dat_gr <- qc_test_grossrange(dat)
 kable(dat_gr[1:5, ])
 ```
 
-The flagged data can be plotted with `qc_plot_all_tests()`, specifying argument `qc_tests = "grossrange"`.
+The flagged data can be plotted with `qc_plot_flags()`, specifying argument `qc_tests = "grossrange"`.
 ```{r fig2}
-qc_plot_all_tests(dat_gr, qc_tests = "grossrange")
+qc_plot_flags(dat_gr, qc_tests = "grossrange", ncol = 2)
 ```
 
 
 #### All Tests
 
-There is no need to call each `qc_test**()` function separately. `qc_test_all()` will apply all specified QC tests to `dat`.
+`qc_test_all()` will apply all specified QC tests to `dat`.
 
 ```{r}
 dat_qc <- dat %>% 
@@ -134,10 +140,10 @@ dat_qc <- dat_qc %>%
 kable(dat_qc[1:5, ])
 ```
 
-The flagged data can be plotted with `qc_plot_all_tests()`, specifying argument `qc_tests = "qc"`.
+The flagged data can be plotted with `qc_plot_flags()`, specifying argument `qc_tests = "qc"`.
 
 ```{r fig3}
-qc_plot_all_tests(dat_qc, qc_tests = "qc")
+qc_plot_flags(dat_qc, qc_tests = "qc")
 ```
 
 
