@@ -1,9 +1,8 @@
 Package: qaqcmar
-Title: What the Package Does (One Line, Title Case)
-Version: 0.0.0.1
+Title: Apply Quality Control Flags to CMAR Water Quality Data
+Version: 0.0.1
 Authors@R: 
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"),
-           comment = c(ORCID = "YOUR-ORCID-ID"))
+    person("Danielle", "Dempsey", , "ddempsey@perennia.ca", role = c("aut", "cre"))
 Description: What the package does (one paragraph).
 License: GPL (>= 3)
 URL: https://github.com/dempsey-CMAR/qaqcmar
