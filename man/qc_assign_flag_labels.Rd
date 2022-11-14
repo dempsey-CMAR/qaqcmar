@@ -20,11 +20,3 @@ All columns with the string "flag" in the name will be converted from numeric
 flags to text flags (e.g., 1 = Pass, 2 = Not Evaluated, 3 = Suspect, 4 =
 Fail).
 }
-\examples{
-path <- system.file("testdata", package = "qaqcmar")
-dat <- readRDS(paste0(path, "/test_data.RDS"))
-
-dat_qc <- dat \%>\%
- qc_test_grossrange() \%>\%
- qc_assign_flag_labels()
-}
