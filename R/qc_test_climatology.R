@@ -71,7 +71,8 @@ qc_test_climatology <- function(
     select(-c(season_min, season_max, numeric_month, season)) %>%
     pivot_wider(
       names_from = variable,
-      values_from = c(value, climatology_flag)
+      values_from = c(value, climatology_flag),
+      names_sort = TRUE
     )
 
   colnames(dat)[which(colnames(dat) == "tstamp")] <- colname_ts

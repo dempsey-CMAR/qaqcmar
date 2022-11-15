@@ -82,6 +82,7 @@ qc_test_grossrange <- function(dat, grossrange_table = NULL) {
     subset(select = -c(sensor_max, sensor_min, user_max, user_min)) %>%
     pivot_wider(
       names_from = variable,
-      values_from = c(value, grossrange_flag)
+      values_from = c(value, grossrange_flag),
+      names_sort = TRUE
     )
 }
