@@ -212,7 +212,7 @@ ss_ggplot_variables(qaqc_dat)
 
 
 # Export rds file
-saveRDS(qaqc_dat, file = here("inst/testdata/grossrange_test_data.RDS"))
+saveRDS(qaqc_dat, file = here("inst/testdata/test_data_grossrange.RDS"))
 
 # some quick checks
 gr_dat <- qc_test_grossrange(qaqc_dat) #%>%

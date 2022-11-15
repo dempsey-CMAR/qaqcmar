@@ -17,7 +17,7 @@
 
 path <- system.file("testdata", package = "qaqcmar")
 
-dat <- readRDS(paste0(path, "/test_data.RDS"))
+dat <- readRDS(paste0(path, "/test_data_grossrange.RDS"))
 
 # sensorstrings::ss_ggplot_variables(dat)
 
