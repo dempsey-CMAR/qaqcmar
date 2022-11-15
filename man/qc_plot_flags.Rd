@@ -8,7 +8,8 @@ qc_plot_flags(
   dat,
   qc_tests = c("climatology", "grossrange"),
   vars = "all",
-  labels = TRUE
+  labels = TRUE,
+  ncol = "waiver"
 )
 }
 \arguments{
@@ -21,6 +22,8 @@ Must include at least one column name with the string "_flag_variable".}
 
 \item{labels}{Logical argument indicating whether to convert numeric flag
 values to text labels for the legend.}
+
+\item{ncol}{Number of columns for faceted plots.}
 }
 \value{
 Returns a list of ggplot objects; one figure for each test in

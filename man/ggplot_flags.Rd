@@ -4,7 +4,7 @@
 \alias{ggplot_flags}
 \title{Create ggplot for one qc_test and variable}
 \usage{
-ggplot_flags(dat, qc_test, var)
+ggplot_flags(dat, qc_test, var, ncol = "waiver")
 }
 \arguments{
 \item{dat}{placeholder}
@@ -12,6 +12,8 @@ ggplot_flags(dat, qc_test, var)
 \item{qc_test}{qc test to plot}
 
 \item{var}{variable to plot}
+
+\item{ncol}{Number of columns for faceted plots.}
 }
 \value{
 ggplot object

@@ -8,6 +8,8 @@
 #' @param labels Logical argument indicating whether to convert numeric flag
 #'   values to text labels for the legend.
 #'
+#' @param ncol Number of columns for faceted plots.
+#'
 #' @inheritParams qc_test_all
 #'
 #' @return Returns a list of ggplot objects; one figure for each test in
@@ -31,7 +33,7 @@ qc_plot_flags <- function(
   dat,
   qc_tests = c("climatology", "grossrange"),
   vars = "all",
-  labels = TRUE
+  labels = TRUE, ncol = NULL
 ) {
 
   dat <- dat %>%
@@ -67,7 +69,9 @@ qc_plot_flags <- function(
 
       qc_test_j <- qc_tests[j]
 
-      p[[qc_test_j]] <- ggplot_flags(dat_i, qc_test = qc_test_j, var = var_i)
+      p[[qc_test_j]] <- ggplot_flags(
+        dat_i, qc_test = qc_test_j, var = var_i, ncol = ncol
+        )
       # might want to ggpubr these together
 
       p <- Filter(Negate(is.null), p) # remove empty list element
@@ -84,8 +88,12 @@ qc_plot_flags <- function(
 #' Create ggplot for one qc_test and variable
 #'
 #' @param dat placeholder
+#'
 #' @param qc_test qc test to plot
+#'
 #' @param var  variable to plot
+#'
+#' @param ncol Number of columns for faceted plots.
 #'
 #' @return ggplot object
 #'
@@ -93,7 +101,7 @@ qc_plot_flags <- function(
 #'   ggplot ggtitle guides guide_legend  scale_colour_manual scale_x_datetime
 #'   scale_y_continuous theme_light theme
 
-ggplot_flags <- function(dat, qc_test, var) {
+ggplot_flags <- function(dat, qc_test, var, ncol = NULL) {
 
   # https://www.visualisingdata.com/2019/08/five-ways-to-design-for-red-green-colour-blindness/
   flag_colours <- c("chartreuse4", "#E6E1BC", "#EDA247", "#DB4325", "grey24")
@@ -115,7 +123,7 @@ ggplot_flags <- function(dat, qc_test, var) {
     scale_y_continuous(var) +
     scale_x_datetime("Date") +
     scale_colour_manual("Flag Value", values = flag_colours, drop = FALSE) +
-    facet_wrap(~ depth + sensor) +
+    facet_wrap(~ depth + sensor, ncol = ncol) +
     theme_light() +
     theme(
       strip.text = element_text(colour = "black", size = 10),
