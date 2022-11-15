@@ -4,13 +4,16 @@
 \alias{qc_assign_max_flag}
 \title{Assign a single QC flag value for each observation}
 \usage{
-qc_assign_max_flag(dat)
+qc_assign_max_flag(dat, qc_tests = c("climatology", "grossrange"))
 }
 \arguments{
-\item{dat}{wide data frame with all flag columns}
+\item{dat}{Data frame in long or wide format with flag columns from multiple
+QC tests.}
+
+\item{qc_tests}{Quality control tests included in \code{dat}.}
 }
 \value{
-dat with only 1 flag column
+\code{dat} with only 1 flag column for each variable column.
 }
 \description{
 Assign a single QC flag value for each observation

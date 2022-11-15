@@ -21,11 +21,13 @@
 #
 # dat_qc <- qc_test_all(dat)
 
- qc_test_all <- function(dat,
-                    qc_tests = c("climatology", "grossrange"),
-                    climatology_table = NULL,
-                    seasons_table = NULL,
-                    grossrange_table = NULL) {
+qc_test_all <- function(
+  dat,
+  qc_tests = c("climatology", "grossrange"),
+  climatology_table = NULL,
+  seasons_table = NULL,
+  grossrange_table = NULL
+) {
 
   qc_tests <- tolower(qc_tests)
 
@@ -56,23 +58,30 @@
  }
 
 
-
-
 #' Assign a single QC flag value for each observation
 #'
-#' @param dat wide data frame with all flag columns
+#' @param dat Data frame in long or wide format with flag columns from multiple
+#'   QC tests.
 #'
-#' @return dat with only 1 flag column
+#' @param qc_tests Quality control tests included in \code{dat}.
+#'
+#' @return \code{dat} with only 1 flag column for each variable column.
 #'
 #' @importFrom dplyr %>% c_across contains mutate rename rowwise select ungroup
 #' @importFrom tidyr pivot_wider
 #'
 #' @export
 
- qc_assign_max_flag <- function(dat) {
+ qc_assign_max_flag <- function(
+   dat,
+   qc_tests =  c("climatology", "grossrange")
+ ) {
+
+   if(!("variable" %in% colnames(dat))) {
+     dat <- qc_pivot_longer(dat, qc_tests = qc_tests)
+   }
 
    dat %>%
-     qc_pivot_longer() %>%
      rowwise() %>%
      mutate(qc_col = max(c_across(contains("flag")))) %>%
      ungroup() %>%
@@ -83,7 +92,6 @@
        values_from = c(value, qc_flag),
        names_sort = TRUE
      )
-
  }
 
 

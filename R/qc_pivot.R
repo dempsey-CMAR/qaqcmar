@@ -2,8 +2,8 @@
 #'
 #' @param dat_wide Data frame of flagged sensor string data in wide format.
 #'
-#' @param qc_tests qc tests in \code{dat_wide}. If \code{dat_wide} only includes
-#'   the max flag, use \code{qc_tests = "qc"}.
+#' @param qc_tests Quality control tests included in \code{dat_wide}. If
+#'   \code{dat_wide} only includes the max flag, use \code{qc_tests = "qc"}.
 #'
 #' @return Returns \code{dat_wide}, with variables and flags pivoted to a long
 #'   format.
@@ -33,6 +33,16 @@ qc_pivot_longer <- function(
 ) {
 
   qc_tests <- tolower(qc_tests)
+
+  if(!(all(qc_tests %in% c("climatology", "grossrange", "qc")))) {
+
+    err <- qc_tests[which(!(qc_tests %in% c("climatology", "grossrange", "qc")))]
+
+    stop(
+      paste("<< ", err, " >> is not an accepted value for qc_tests.\nHINT: check spelling\n" ),
+      collapse = "\n"
+    )
+  }
 
   # pivot the variables
   dat <- dat_wide %>%

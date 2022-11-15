@@ -9,8 +9,8 @@ qc_pivot_longer(dat_wide, qc_tests = c("climatology", "grossrange"))
 \arguments{
 \item{dat_wide}{Data frame of flagged sensor string data in wide format.}
 
-\item{qc_tests}{qc tests in \code{dat_wide}. If \code{dat_wide} only includes
-the max flag, use \code{qc_tests = "qc"}.}
+\item{qc_tests}{Quality control tests included in \code{dat_wide}. If
+\code{dat_wide} only includes the max flag, use \code{qc_tests = "qc"}.}
 }
 \value{
 Returns \code{dat_wide}, with variables and flags pivoted to a long

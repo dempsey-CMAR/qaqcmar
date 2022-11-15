@@ -11,8 +11,6 @@
 #' only the expected flag value.
 #'
 
-
-
 #' @importFrom dplyr %>% anti_join
 
 path <- system.file("testdata", package = "qaqcmar")
