@@ -65,11 +65,7 @@ world, including the US Integrated Ocean Observing System (IOOS).
 `qaqcmar` is a quality control tool that automates assigning flags to
 each observation based on QARTOD recommendations.
 
-The QARTOD flagging scheme and tests have been implemented by
-organizations around the world, including the US Integrated Ocean
-Observing System (IOOS). QARTOD provides a relatively simple rating
-scale (Table X) and manuals for 34 EOVs with codeable instructions for
-implementing QC tests.
+\*\*
 
 -   Tests that we are planning to run (include table)
 

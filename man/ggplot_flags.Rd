@@ -4,7 +4,7 @@
 \alias{ggplot_flags}
 \title{Create ggplot for one qc_test and variable}
 \usage{
-ggplot_flags(dat, qc_test, var, ncol = "waiver")
+ggplot_flags(dat, qc_test, var, ncol = NULL)
 }
 \arguments{
 \item{dat}{placeholder}

@@ -9,7 +9,7 @@ qc_plot_flags(
   qc_tests = c("climatology", "grossrange"),
   vars = "all",
   labels = TRUE,
-  ncol = "waiver"
+  ncol = NULL
 )
 }
 \arguments{
