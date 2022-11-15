@@ -58,8 +58,8 @@ compiled. CMAR has adopted the QARTOD (Quality Assurance / Quality
 Control of Real-Time Oceanographic Data) flagging scheme and associated
 tests. QARTOD provides a relatively simple yet informative rating scale
 (Table X), and is very well documented. There are QARTOD manuals for 34
-EOVs that provided codeable instructions for implementing recommended QC
-tests. QARTOD has been adopted by oceanogrpahic organizations around the
+EOVs that provide codeable instructions for implementing recommended QC
+tests. QARTOD has been adopted by oceanographic organizations around the
 world, including the US Integrated Ocean Observing System (IOOS).
 
 `qaqcmar` is a quality control tool that automates assigning flags to
@@ -1314,3 +1314,14 @@ qc_plot_flags(dat_qc, qc_tests = "qc")
     #> $sensor_depth_measured_m$qc
 
 <img src="man/figures/README-fig3-5.png" width="100%" />
+
+## References
+
+Bushnell, M. et al. (2019). Quality Assurance of Oceanographic
+Observations: Standards and Guidance Adopted by an International
+Partnership. Frontiers in Marine Science, 6(706).
+<doi:10.3389/fmars.2019.00706>
+
+U.S. Integrated Ocean Observing System, 2020. QARTOD - Prospects for
+Real-Time Quality Control Manuals, How to Create Them, and a Vision for
+Advanced Implementation. 22 pp. DOI: 10.25923/ysj8-5n28
