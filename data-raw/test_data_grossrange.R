@@ -1,9 +1,17 @@
-library(readr)
-library(dplyr)
-library(lubridate)
-library(here)
-library(sensorstrings) # V. 0.1.0
-library(qaqcmar)       # V. 0.0.0.9000
+# library(readr)
+# library(dplyr)
+# library(lubridate)
+# library(here)
+# library(sensorstrings) # V. 0.1.0
+# library(qaqcmar)       # V. 0.0.0.9000
+
+
+#' @importfrom dplyr %>% filter mutate select
+#' @importFrom here here
+#' @importFrom lubridate as_datetime days
+#' @importFrom sensorstrings  ss_convert_depth_to_ordered_factor ss_ggplot_variables
+
+
 
 # Raw data ----------------------------------------------------------------
 

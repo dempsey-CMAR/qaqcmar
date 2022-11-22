@@ -65,7 +65,7 @@ qc_test_climatology <- function(
         value <= season_max & value >= season_min ~ 1,
         TRUE ~ 2
       ),
-      climatology_flag = ordered(climatology_flag, levels = c(1:4))
+      climatology_flag = ordered(climatology_flag, levels = 1:4)
     ) %>%
     #remove extra columns
     select(-c(season_min, season_max, numeric_month, season)) %>%

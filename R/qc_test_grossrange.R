@@ -49,7 +49,7 @@ qc_test_grossrange <- function(dat, grossrange_table = NULL) {
       which(!(grossrange_table$variable %in% dat_vars)), "variable"
     ])
 
-    for (i in 1:nrow(missing_var)) {
+    for (i in 1:seq_along(missing_var)) {
       message("Variable << ", unique(missing_var$variable[i]), " >>
             was found in grossrange_table, but does not exist in dat")
     }
@@ -76,10 +76,10 @@ qc_test_grossrange <- function(dat, grossrange_table = NULL) {
         value <= user_max | value >= user_min ~ 1,
         TRUE ~ 2
       ),
-      grossrange_flag = ordered(grossrange_flag, levels = c(1:4))
+      grossrange_flag = ordered(grossrange_flag, levels = 1:4)
     ) %>%
     #remove extra columns
-    subset(select = -c(sensor_max, sensor_min, user_max, user_min)) %>%
+    select(-c(sensor_max, sensor_min, user_max, user_min)) %>%
     pivot_wider(
       names_from = variable,
       values_from = c(value, grossrange_flag),
