@@ -29,14 +29,16 @@
 
 qc_pivot_longer <- function(
   dat_wide,
-  qc_tests = c("climatology", "grossrange")
+  qc_tests = c("climatology", "grossrange", "spike")
 ) {
 
   qc_tests <- tolower(qc_tests)
 
-  if(!(all(qc_tests %in% c("climatology", "grossrange", "qc")))) {
+  tests_foo <- c("climatology", "grossrange", "spike", "qc")
 
-    err <- qc_tests[which(!(qc_tests %in% c("climatology", "grossrange", "qc")))]
+  if(!(all(qc_tests %in% tests_foo))) {
+
+    err <- qc_tests[which(!(qc_tests %in% tests_foo))]
 
     stop(
       paste("<< ", err, " >> is not an accepted value for qc_tests.\nHINT: check spelling\n" ),
@@ -64,6 +66,10 @@ qc_pivot_longer <- function(
 
   if("grossrange" %in% qc_tests) {
     dat <- pivot_flags_longer(dat, qc_test = "grossrange")
+  }
+
+  if("spike" %in% qc_tests) {
+    dat <- pivot_flags_longer(dat, qc_test = "spike")
   }
 
   dat

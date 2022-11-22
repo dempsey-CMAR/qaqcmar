@@ -4,8 +4,9 @@
 #'
 #' @param qc_tests QC tests to run.
 #'
-#' @inheritParams qc_test_grossrange
 #' @inheritParams qc_test_climatology
+#' @inheritParams qc_test_grossrange
+#' @inheritParams qc_test_spike
 #'
 #' @return Tibble of \code{dat} with quality control flag columns.
 #'
@@ -23,10 +24,11 @@
 
 qc_test_all <- function(
   dat,
-  qc_tests = c("climatology", "grossrange"),
+  qc_tests = c("climatology", "grossrange", "spike"),
   climatology_table = NULL,
   seasons_table = NULL,
-  grossrange_table = NULL
+  grossrange_table = NULL,
+  spike_table = NULL
 ) {
 
   qc_tests <- tolower(qc_tests)
@@ -48,6 +50,13 @@ qc_test_all <- function(
     )
   }
 
+  if("spike" %in% qc_tests) {
+    dat_out[[3]] <- qc_test_spike(
+      dat,
+      spike_table = spike_table
+    )
+  }
+
   # remove empty list elements
   dat_out <- Filter(Negate(is.null), dat_out)
 
@@ -59,6 +68,8 @@ qc_test_all <- function(
 
 
 #' Assign a single QC flag value for each observation
+#'
+#' ** change the spike test values at beginning/end to NA instead of 2
 #'
 #' @param dat Data frame in long or wide format with flag columns from multiple
 #'   QC tests.
@@ -74,7 +85,7 @@ qc_test_all <- function(
 
  qc_assign_max_flag <- function(
    dat,
-   qc_tests =  c("climatology", "grossrange")
+   qc_tests =  c("climatology", "grossrange", "spike")
  ) {
 
    if(!("variable" %in% colnames(dat))) {
@@ -83,6 +94,7 @@ qc_test_all <- function(
 
    dat %>%
      rowwise() %>%
+     #mutate(qc_col = max(c_across(contains("flag"))), na.rm = TRUE) %>%
      mutate(qc_col = max(c_across(contains("flag")))) %>%
      ungroup() %>%
      select(-contains("flag")) %>%

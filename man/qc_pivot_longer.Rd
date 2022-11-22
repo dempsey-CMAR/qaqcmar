@@ -4,7 +4,7 @@
 \alias{qc_pivot_longer}
 \title{Pivot flagged sensor string data}
 \usage{
-qc_pivot_longer(dat_wide, qc_tests = c("climatology", "grossrange"))
+qc_pivot_longer(dat_wide, qc_tests = c("climatology", "grossrange", "spike"))
 }
 \arguments{
 \item{dat_wide}{Data frame of flagged sensor string data in wide format.}

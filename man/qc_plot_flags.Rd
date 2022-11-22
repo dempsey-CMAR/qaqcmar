@@ -6,7 +6,7 @@
 \usage{
 qc_plot_flags(
   dat,
-  qc_tests = c("climatology", "grossrange"),
+  qc_tests = c("climatology", "grossrange", "spike"),
   vars = "all",
   labels = TRUE,
   ncol = NULL

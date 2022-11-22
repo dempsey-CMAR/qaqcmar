@@ -33,6 +33,15 @@ utils::globalVariables(
     "variable",
     "value",
 
+    # qc_test_spike
+    "lag_value",
+    "lead_value",
+    "spike_ref",
+    "spike_flag",
+    "spike_value",
+    "threshold_high",
+    "threshold_low",
+
     # qc_assign_max_flag
     "qc_col",
     "qc_flag",

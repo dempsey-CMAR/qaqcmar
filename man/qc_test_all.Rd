@@ -6,10 +6,11 @@
 \usage{
 qc_test_all(
   dat,
-  qc_tests = c("climatology", "grossrange"),
+  qc_tests = c("climatology", "grossrange", "spike"),
   climatology_table = NULL,
   seasons_table = NULL,
-  grossrange_table = NULL
+  grossrange_table = NULL,
+  spike_table = NULL
 )
 }
 \arguments{
@@ -46,6 +47,12 @@ interest".
 Default is \code{grossrange_table = NULL}, which uses default values. To
 see the default \code{grossrange_table}, type
 \code{threshold_tables$grossrange_table}.}
+
+\item{spike_table}{Data frame with 3 columns: \code{variable}: should match
+the names of the variables being tested in \code{dat}.
+
+Default is \code{spike_table = NULL}, which uses default values. To see the
+default \code{spike_table}, type \code{threshold_tables$spike_table}.}
 }
 \value{
 Tibble of \code{dat} with quality control flag columns.

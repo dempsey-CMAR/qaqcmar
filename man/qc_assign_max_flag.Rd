@@ -4,7 +4,7 @@
 \alias{qc_assign_max_flag}
 \title{Assign a single QC flag value for each observation}
 \usage{
-qc_assign_max_flag(dat, qc_tests = c("climatology", "grossrange"))
+qc_assign_max_flag(dat, qc_tests = c("climatology", "grossrange", "spike"))
 }
 \arguments{
 \item{dat}{Data frame in long or wide format with flag columns from multiple
@@ -16,5 +16,5 @@ QC tests.}
 \code{dat} with only 1 flag column for each variable column.
 }
 \description{
-Assign a single QC flag value for each observation
+** change the spike test values at beginning/end to NA instead of 2
 }

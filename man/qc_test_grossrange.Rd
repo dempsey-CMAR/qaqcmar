@@ -29,6 +29,7 @@ Add flag columns for the grossrange test
 }
 \seealso{
 Other tests: 
-\code{\link{qc_test_climatology}()}
+\code{\link{qc_test_climatology}()},
+\code{\link{qc_test_spike}()}
 }
 \concept{tests}
