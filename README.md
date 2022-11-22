@@ -50,7 +50,7 @@ CMAR applies Quality Assurance (QA) and Quality Control (QC) processes
 to support the delivery of high quality data (Bushnell et al, 2019). QA
 processes are typically completed prior to sensor deployment (e.g.,
 sensor calibration and validation), and are documented in a series of
-Standard Operating Procedures(link here).
+Standard Operating Procedures (link here).
 
 Quality Control processes (e.g., automated data flags, manual review)
 are completed for each deployment after the data have been collected and
@@ -72,6 +72,12 @@ each observation based on QARTOD recommendations.
 -   Flagging scheme (include table)
 
 -   Thresholds … defaults built into the package
+
+Should we add a section or at least mention how this package could be
+used by other people collecting the same ocean data? And what their data
+format would have to be to match that? And that they can override the
+built in thresholds if they want to run these tests on their data with
+different thresholds?
 
 ## Example
 
