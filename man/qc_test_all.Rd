@@ -18,13 +18,14 @@ qc_test_all(
 
 \item{qc_tests}{QC tests to run.}
 
-\item{climatology_table}{Data frame with 4 columns: \code{variable}: should
-match the names of the variables being tested in \code{dat}. \code{season}:
-there should be an entry of "winter", "spring", "summer", and "fall" for
-each variable. \code{season_min}: minimum reasonable value for the
-corresponding variable during the corresponding season. \code{season_max}:
-maximum reasonable value for the corresponding variable during the
-corresponding season.
+\item{climatology_table}{UPDATE THIS.
+
+Data frame with 4 columns: \code{variable}: should match the names of the
+variables being tested in \code{dat}. \code{season}: there should be an
+entry of "winter", "spring", "summer", and "fall" for each variable.
+\code{season_min}: minimum reasonable value for the corresponding variable
+during the corresponding season. \code{season_max}: maximum reasonable
+value for the corresponding variable during the corresponding season.
 
 Default values are used if \code{climatology_table = NULL}. To see the
 default \code{climatology_table}, type

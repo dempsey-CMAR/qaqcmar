@@ -3,7 +3,7 @@
 #' testdata was generated such that we KNOW what flag should be assigned to each
 #' observation (data-raw/test_data.R)
 #'
-#' Here, qc_test_grossrange() is applied to the test data. The qc'd data is then
+#' Here, qc_test_spike() is applied to the test data. The qc'd data is then
 #' separated into a data frame for each variable and flag value, based on the
 #' timestamps used to generate the data in data-raw/test_data.R.
 #'

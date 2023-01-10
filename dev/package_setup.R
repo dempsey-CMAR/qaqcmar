@@ -20,10 +20,11 @@ use_package("purrr")
 use_package("ggplot2")
 use_package("lubridate")
 use_package("purrr")
-use_package("readxl")
+# use_package("readxl") # don't need this because only used in data-raw
 use_package("rlang")
 use_package("stringr")
 use_package("tidyr")
+#use_package("stringr")
 
 # add packages (not on CRAN)
 use_dev_pacakge("sensorstrings", remote = "dempsey-CMAR/sensorstrings")

@@ -20,7 +20,7 @@
 #'
 #' @importFrom dplyr %>% case_when contains left_join mutate select
 #' @importFrom sensorstrings ss_pivot_longer
-#' @importFrom stringr str_detect
+#' @importFrom stringr str_detect str_remove
 #' @importFrom tidyr pivot_wider separate
 #'
 #' @export
@@ -29,7 +29,11 @@ qc_test_grossrange <- function(dat, grossrange_table = NULL) {
 
   # import default thresholds from internal data file
   if (is.null(grossrange_table)) {
-    grossrange_table <- threshold_tables$grossrange_table
+    grossrange_table <- threshold_tables %>%
+      filter(qc_test == "grossrange") %>%
+      select(-qc_test, -season) %>%
+      mutate(threshold = str_remove(threshold, "am_|hobo_|vr2ar_")) %>%
+      pivot_wider(names_from = "threshold", values_from = "threshold_value")
   }
 
   # check the vars in table are in the colname and vice versa
@@ -42,28 +46,28 @@ qc_test_grossrange <- function(dat, grossrange_table = NULL) {
     ) %>%
     colnames()
 
-  # is this even helpful?
-  if (!all(unique(grossrange_table$variable) %in% dat_vars)) {
-
-    missing_var <- unique(grossrange_table[
-      which(!(grossrange_table$variable %in% dat_vars)), "variable"
-    ])
-
-    for (i in 1:seq_along(missing_var)) {
-      message("Variable << ", unique(missing_var$variable[i]), " >>
-            was found in grossrange_table, but does not exist in dat")
-    }
-  }
-
-  if (!all(dat_vars %in% unique(grossrange_table$variable))) {
-
-    missing_var <- unique(dat_vars[which(!(dat_vars %in% grossrange_table$variable))])
-
-    for (i in seq_along(missing_var)) {
-      message("Variable << ", missing_var[i], " >> was found in dat,
-            but not in grossrange_table")
-    }
-  }
+  # # is this even helpful?
+  # if (!all(unique(grossrange_table$variable) %in% dat_vars)) {
+  #
+  #   missing_var <- unique(grossrange_table[
+  #     which(!(grossrange_table$variable %in% dat_vars)), "variable"
+  #   ])
+  #
+  #   for (i in 1:seq_along(missing_var)) {
+  #     message("Variable << ", unique(missing_var$variable[i]), " >>
+  #           was found in grossrange_table, but does not exist in dat")
+  #   }
+  # }
+  #
+  # if (!all(dat_vars %in% unique(grossrange_table$variable))) {
+  #
+  #   missing_var <- unique(dat_vars[which(!(dat_vars %in% grossrange_table$variable))])
+  #
+  #   for (i in seq_along(missing_var)) {
+  #     message("Variable << ", missing_var[i], " >> was found in dat,
+  #           but not in grossrange_table")
+  #   }
+  # }
 
   dat %>%
     ss_pivot_longer() %>%

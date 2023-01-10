@@ -1,9 +1,14 @@
-#' Example of compiled Hobo data in wide format, as exported from
-#' compile_HOBO_data()
+#' Threshold tables
 #'
-#' @format Default thresholds for adding flags to water quality data. A list
-#'   with a separate data frame for each test: climatology_table and
-#'   grossrange_table.
+#' @format Default thresholds for adding flags to water quality data.
 #'
 #' @source Add references here
 "threshold_tables"
+
+
+#' Seasons tables
+#'
+#' @format Months assigned to seasons.
+#'
+#' @source Add references here
+"months_seasons"

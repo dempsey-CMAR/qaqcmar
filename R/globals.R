@@ -19,7 +19,10 @@ utils::globalVariables(
     "tstamp",
     "climatology_flag",
     "numeric_month",
+    "qc_test",
     "threshold_tables",
+    "months_seasons",
+    "threshold",
 
     # qc_test_grossrange
     "sensor",
@@ -39,8 +42,8 @@ utils::globalVariables(
     "spike_ref",
     "spike_flag",
     "spike_value",
-    "threshold_high",
-    "threshold_low",
+    "spike_high",
+    "spike_low",
 
     # qc_assign_max_flag
     "qc_col",

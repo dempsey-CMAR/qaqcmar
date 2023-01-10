@@ -2,13 +2,14 @@
 #'
 #' @param dat Data frame of sensor string data in wide format.
 #'
-#' @param climatology_table Data frame with 4 columns: \code{variable}: should
-#'   match the names of the variables being tested in \code{dat}. \code{season}:
-#'   there should be an entry of "winter", "spring", "summer", and "fall" for
-#'   each variable. \code{season_min}: minimum reasonable value for the
-#'   corresponding variable during the corresponding season. \code{season_max}:
-#'   maximum reasonable value for the corresponding variable during the
-#'   corresponding season.
+#' @param climatology_table UPDATE THIS.
+#'
+#'   Data frame with 4 columns: \code{variable}: should match the names of the
+#'   variables being tested in \code{dat}. \code{season}: there should be an
+#'   entry of "winter", "spring", "summer", and "fall" for each variable.
+#'   \code{season_min}: minimum reasonable value for the corresponding variable
+#'   during the corresponding season. \code{season_max}: maximum reasonable
+#'   value for the corresponding variable during the corresponding season.
 #'
 #'   Default values are used if \code{climatology_table = NULL}. To see the
 #'   default \code{climatology_table}, type
@@ -24,9 +25,9 @@
 #'
 #' @family tests
 #'
-#' @importFrom dplyr %>% case_when left_join mutate rename tibble
+#' @importFrom dplyr %>% as_tibble case_when left_join mutate rename tibble
 #' @importFrom lubridate month parse_date_time
-#' @importFrom stringr str_detect
+#' @importFrom stringr str_detect str_replace
 #'
 #' @export
 
@@ -42,16 +43,25 @@ qc_test_climatology <- function(
   seasons_table = NULL
 ) {
 
-  # import default thresholds from internal data file
+  # import default thresholds from internal data file & format
   if(is.null(climatology_table)) {
-    climatology_table <- threshold_tables$climatology_table
+    climatology_table <- threshold_tables %>%
+      filter(qc_test == "climatology") %>%
+      select(-qc_test, -sensor_type) %>%
+      mutate(
+        threshold = str_replace(threshold, "winter|spring|summer|fall", "season")
+      ) %>%
+      pivot_wider(names_from = "threshold", values_from = "threshold_value") %>%
+      as_tibble()
   }
 
   if(is.null(seasons_table)) {
-    seasons_table <- threshold_tables$seasons_table
+    seasons_table <- months_seasons
   }
 
   colname_ts <- colnames(dat)[which(str_detect(colnames(dat), "timestamp"))]
+
+  #browser()
 
   dat <- dat %>%
     ss_pivot_longer() %>%
