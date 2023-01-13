@@ -27,10 +27,8 @@ values to text labels for the legend.}
 \item{ncol}{Number of columns for faceted plots.}
 }
 \value{
-If there is only one element in \code{vars} and \code{qc_tests},
-returns a ggplot object. Otherwise, returns a list of ggplot objects; one
-figure for each test in \code{qc_tests} and variable in \code{vars},
-faceted by depth and sensor.
+Returns a list of ggplot objects; one figure for each test in
+\code{qc_tests} and variable in \code{vars}, faceted by depth and sensor.
 }
 \description{
 Plot sensor data coloured by flag value

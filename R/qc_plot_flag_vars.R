@@ -13,10 +13,8 @@
 #'
 #' @inheritParams qc_test_all
 #'
-#' @return If there is only one element in \code{vars} and \code{qc_tests},
-#'   returns a ggplot object. Otherwise, returns a list of ggplot objects; one
-#'   figure for each test in \code{qc_tests} and variable in \code{vars},
-#'   faceted by depth and sensor.
+#' @return Returns a list of ggplot objects; one figure for each test in
+#'   \code{qc_tests} and variable in \code{vars}, faceted by depth and sensor.
 #'
 #' @importFrom lubridate as_datetime
 #'
@@ -51,46 +49,37 @@ qc_plot_flags <- function(
 
   if(isTRUE(labels)) dat <- dat %>% qc_assign_flag_labels()
 
-  # if only need to make one plot, then don't need to save as list
-  if(length(qc_tests) == 1 & length(vars) == 1) {
+  p <- list(NULL)
+  p_out <- list(NULL)
 
-    p_out <- dat %>%
-      filter(variable == vars) %>%
-      ggplot_flags(qc_test = qc_tests, var = vars, ncol = ncol)
+  # plot for each variable
+  for (i in seq_along(vars)) {
 
-  } else {
+    var_i <- vars[i]
 
-    p <- list(NULL)
-    p_out <- list(NULL)
+    dat_i <- filter(dat, variable == var_i)
 
-    # plot for each variable
-    for (i in seq_along(vars)) {
-
-      var_i <- vars[i]
-
-      dat_i <- filter(dat, variable == var_i)
-
-      # if nrow is 0 don't make a plot
-      if(nrow(dat_i) == 0) {
-        message("No data for variable << ", var_i, " >>")
-        break
-      }
-
-      # plot for each test
-      for (j in seq_along(qc_tests)) {
-
-        qc_test_j <- qc_tests[j]
-
-        p[[qc_test_j]] <- ggplot_flags(
-          dat_i, qc_test = qc_test_j, var = var_i, ncol = ncol
-        )
-
-        p <- Filter(Negate(is.null), p) # remove empty list element
-      }
-      p_out[[var_i]] <- p
+    # if nrow is 0 don't make a plot
+    if(nrow(dat_i) == 0) {
+      message("No data for variable << ", var_i, " >>")
+      break
     }
-    p_out <- Filter(Negate(is.null), p_out)   # not sure why first element was null
+
+    # plot for each test
+    for (j in seq_along(qc_tests)) {
+
+      qc_test_j <- qc_tests[j]
+
+      p[[qc_test_j]] <- ggplot_flags(
+        dat_i, qc_test = qc_test_j, var = var_i, ncol = ncol
+      )
+
+      p <- Filter(Negate(is.null), p) # remove empty list element
+    }
+    p_out[[var_i]] <- p
   }
+  p_out <- Filter(Negate(is.null), p_out)   # not sure why first element was null
+
 
   p_out
 }
