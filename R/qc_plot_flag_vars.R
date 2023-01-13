@@ -3,7 +3,8 @@
 #' @param dat Data frame of flagged sensor string data in long or wide format.
 #'   Must include at least one column name with the string "_flag_variable".
 #'
-#' @param vars Character vector of variables to plot.
+#' @param vars Character vector of variables to plot. Default is \code{vars =
+#'   "all"}, which will make a plot for each recognized variable in \code{dat}.
 #'
 #' @param labels Logical argument indicating whether to convert numeric flag
 #'   values to text labels for the legend.
@@ -12,8 +13,10 @@
 #'
 #' @inheritParams qc_test_all
 #'
-#' @return Returns a list of ggplot objects; one figure for each test in
-#'   \code{qc_tests} and variable in \code{vars}, faceted by depth and sensor.
+#' @return If there is only one element in \code{vars} and \code{qc_tests},
+#'   returns a ggplot object. Otherwise, returns a list of ggplot objects; one
+#'   figure for each test in \code{qc_tests} and variable in \code{vars},
+#'   faceted by depth and sensor.
 #'
 #' @importFrom lubridate as_datetime
 #'
@@ -30,10 +33,10 @@
 # plots <- qc_plot_flag_vars(dat)
 
 qc_plot_flags <- function(
-  dat,
-  qc_tests = c("climatology", "grossrange", "spike"),
-  vars = "all",
-  labels = TRUE, ncol = NULL
+    dat,
+    qc_tests = c("climatology", "grossrange", "spike"),
+    vars = "all",
+    labels = TRUE, ncol = NULL
 ) {
 
   dat <- dat %>%
@@ -48,38 +51,46 @@ qc_plot_flags <- function(
 
   if(isTRUE(labels)) dat <- dat %>% qc_assign_flag_labels()
 
-  p <- list(NULL)
-  p_out <- list(NULL)
+  # if only need to make one plot, then don't need to save as list
+  if(length(qc_tests) == 1 & length(vars) == 1) {
 
-  # plot for each variable
-  for (i in seq_along(vars)) {
+    p_out <- dat %>%
+      filter(variable == vars) %>%
+      ggplot_flags(qc_test = qc_tests, var = vars, ncol = ncol)
 
-    var_i <- vars[i]
+  } else {
 
-    dat_i <- filter(dat, variable == var_i)
+    p <- list(NULL)
+    p_out <- list(NULL)
 
-    # if nrow is 0 don't make a plot
-    if(nrow(dat_i) == 0) {
-      message("No data for variable << ", var_i, " >>")
-      break
-    }
+    # plot for each variable
+    for (i in seq_along(vars)) {
 
-    # plot for each test
-    for (j in seq_along(qc_tests)) {
+      var_i <- vars[i]
 
-      qc_test_j <- qc_tests[j]
+      dat_i <- filter(dat, variable == var_i)
 
-      p[[qc_test_j]] <- ggplot_flags(
-        dat_i, qc_test = qc_test_j, var = var_i, ncol = ncol
+      # if nrow is 0 don't make a plot
+      if(nrow(dat_i) == 0) {
+        message("No data for variable << ", var_i, " >>")
+        break
+      }
+
+      # plot for each test
+      for (j in seq_along(qc_tests)) {
+
+        qc_test_j <- qc_tests[j]
+
+        p[[qc_test_j]] <- ggplot_flags(
+          dat_i, qc_test = qc_test_j, var = var_i, ncol = ncol
         )
-      # might want to ggpubr these together
 
-      p <- Filter(Negate(is.null), p) # remove empty list element
+        p <- Filter(Negate(is.null), p) # remove empty list element
+      }
+      p_out[[var_i]] <- p
     }
-    p_out[[var_i]] <- p
+    p_out <- Filter(Negate(is.null), p_out)   # not sure why first element was null
   }
-
-  p_out <- Filter(Negate(is.null), p_out)   # not sure why first element was null
 
   p_out
 }
@@ -87,11 +98,12 @@ qc_plot_flags <- function(
 
 #' Create ggplot for one qc_test and variable
 #'
-#' @param dat placeholder
+#' @param dat Data frame of flagged sensor string data in long format.
+#'   Must include a column named with the string "_flag_value".
 #'
-#' @param qc_test qc test to plot
+#' @param qc_test qc test to plot.
 #'
-#' @param var  variable to plot
+#' @param var variable to plot.
 #'
 #' @param ncol Number of columns for faceted plots.
 #'
@@ -100,12 +112,12 @@ qc_plot_flags <- function(
 #' @importFrom ggplot2  aes element_rect element_text facet_wrap geom_point
 #'   ggplot ggtitle guides guide_legend  scale_colour_manual scale_x_datetime
 #'   scale_y_continuous theme_light theme
+#'
 
 ggplot_flags <- function(dat, qc_test, var, ncol = NULL) {
 
   # https://www.visualisingdata.com/2019/08/five-ways-to-design-for-red-green-colour-blindness/
   flag_colours <- c("chartreuse4", "#E6E1BC", "#EDA247", "#DB4325", "grey24")
-  #"#006164",
 
   flag_column <- paste0(qc_test, "_flag_value")
 
@@ -127,8 +139,8 @@ ggplot_flags <- function(dat, qc_test, var, ncol = NULL) {
     theme_light() +
     theme(
       strip.text = element_text(colour = "black", size = 10),
-          strip.background = element_rect(fill = "white", colour = "darkgrey")
-      ) +
+      strip.background = element_rect(fill = "white", colour = "darkgrey")
+    ) +
     guides(color = guide_legend(override.aes = list(size = 4))) +
     ggtitle(paste0(qc_test, " test: ", var))
 

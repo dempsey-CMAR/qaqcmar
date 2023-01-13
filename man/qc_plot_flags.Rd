@@ -18,7 +18,8 @@ Must include at least one column name with the string "_flag_variable".}
 
 \item{qc_tests}{QC tests to run.}
 
-\item{vars}{Character vector of variables to plot.}
+\item{vars}{Character vector of variables to plot. Default is \code{vars =
+"all"}, which will make a plot for each recognized variable in \code{dat}.}
 
 \item{labels}{Logical argument indicating whether to convert numeric flag
 values to text labels for the legend.}
@@ -26,8 +27,10 @@ values to text labels for the legend.}
 \item{ncol}{Number of columns for faceted plots.}
 }
 \value{
-Returns a list of ggplot objects; one figure for each test in
-\code{qc_tests} and variable in \code{vars}, faceted by depth and sensor.
+If there is only one element in \code{vars} and \code{qc_tests},
+returns a ggplot object. Otherwise, returns a list of ggplot objects; one
+figure for each test in \code{qc_tests} and variable in \code{vars},
+faceted by depth and sensor.
 }
 \description{
 Plot sensor data coloured by flag value
