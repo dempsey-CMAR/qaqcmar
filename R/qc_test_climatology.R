@@ -63,8 +63,6 @@ qc_test_climatology <- function(
 
   colname_ts <- colnames(dat)[which(str_detect(colnames(dat), "timestamp"))]
 
-  #browser()
-
   dat <- dat %>%
     ss_pivot_longer() %>%
     rename(tstamp = contains("timestamp")) %>%

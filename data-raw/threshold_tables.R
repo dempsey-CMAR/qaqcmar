@@ -10,7 +10,7 @@ months_seasons <- readxl::read_excel(
 )
 
 climatology_table <- readxl::read_excel(
- here::here("data-raw/qc_thresholds.xlsx"), sheet = "climatology"
+ here::here("data-raw/qc_thresholds.xlsx"), sheet = "climatology", na = "NA"
 )
 
 grossrange_table <- readxl::read_excel(
