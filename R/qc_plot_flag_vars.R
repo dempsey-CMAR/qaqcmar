@@ -11,6 +11,9 @@
 #'
 #' @param ncol Number of columns for faceted plots.
 #'
+#' @param flag_title Logical argument indicating whether to include a ggtitle
+#'   indicating the qc test and variable plotted.
+#'
 #' @inheritParams qc_test_all
 #'
 #' @return Returns a list of ggplot objects; one figure for each test in
@@ -34,7 +37,7 @@ qc_plot_flags <- function(
     dat,
     qc_tests = c("climatology", "grossrange", "spike"),
     vars = "all",
-    labels = TRUE, ncol = NULL
+    labels = TRUE, ncol = NULL, flag_title = TRUE
 ) {
 
   dat <- dat %>%
@@ -87,8 +90,8 @@ qc_plot_flags <- function(
 
 #' Create ggplot for one qc_test and variable
 #'
-#' @param dat Data frame of flagged sensor string data in long format.
-#'   Must include a column named with the string "_flag_value".
+#' @param dat Data frame of flagged sensor string data in long format. Must
+#'   include a column named with the string "_flag_value".
 #'
 #' @param qc_test qc test to plot.
 #'
@@ -96,41 +99,53 @@ qc_plot_flags <- function(
 #'
 #' @param ncol Number of columns for faceted plots.
 #'
+#' @param flag_title Logical argument indicating whether to include a ggtitle
+#'   indicating the qc test and variable plotted.
+#'
 #' @return ggplot object
 #'
 #' @importFrom ggplot2  aes element_rect element_text facet_wrap geom_point
 #'   ggplot ggtitle guides guide_legend  scale_colour_manual scale_x_datetime
 #'   scale_y_continuous theme_light theme
 #'
+#' @importFrom gtools mixedsort
 
-ggplot_flags <- function(dat, qc_test, var, ncol = NULL) {
+
+ggplot_flags <- function(dat, qc_test, var, ncol = NULL, flag_title = TRUE) {
 
   # https://www.visualisingdata.com/2019/08/five-ways-to-design-for-red-green-colour-blindness/
   flag_colours <- c("chartreuse4", "#E6E1BC", "#EDA247", "#DB4325", "grey24")
 
   flag_column <- paste0(qc_test, "_flag_value")
 
-  dat %>%
+  p <- dat %>%
     mutate(
       sensor = paste(sensor_type, sensor_serial_number, sep = "-"),
+      # depth = ordered(
+      #   sensor_depth_at_low_tide_m,
+      #   levels = sort(unique(dat$sensor_depth_at_low_tide_m))
+      # ),
+      depth = paste0(sensor_depth_at_low_tide_m, " m", " (", sensor, ")"),
       depth = ordered(
-        sensor_depth_at_low_tide_m,
-        levels = sort(unique(dat$sensor_depth_at_low_tide_m))
-      ),
-      depth = paste0(depth, " m")
+        depth,
+        levels = gtools::mixedsort(unique(depth))
+      )
     ) %>%
     ggplot(aes(tstamp, value, colour = !!sym(flag_column))) +
     geom_point() +
     scale_y_continuous(var) +
     scale_x_datetime("Date") +
     scale_colour_manual("Flag Value", values = flag_colours, drop = FALSE) +
-    facet_wrap(~ depth + sensor, ncol = ncol) +
+    facet_wrap(~ depth, ncol = ncol) +
     theme_light() +
     theme(
       strip.text = element_text(colour = "black", size = 10),
       strip.background = element_rect(fill = "white", colour = "darkgrey")
     ) +
-    guides(color = guide_legend(override.aes = list(size = 4))) +
-    ggtitle(paste0(qc_test, " test: ", var))
+    guides(color = guide_legend(override.aes = list(size = 4)))
+
+  if(isTRUE(flag_title)) p + ggtitle(paste0(qc_test, " test: ", var))
+
+  p
 
 }

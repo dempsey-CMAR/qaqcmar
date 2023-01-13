@@ -9,7 +9,8 @@ qc_plot_flags(
   qc_tests = c("climatology", "grossrange", "spike"),
   vars = "all",
   labels = TRUE,
-  ncol = NULL
+  ncol = NULL,
+  flag_title = TRUE
 )
 }
 \arguments{
@@ -25,6 +26,9 @@ Must include at least one column name with the string "_flag_variable".}
 values to text labels for the legend.}
 
 \item{ncol}{Number of columns for faceted plots.}
+
+\item{flag_title}{Logical argument indicating whether to include a ggtitle
+indicating the qc test and variable plotted.}
 }
 \value{
 Returns a list of ggplot objects; one figure for each test in

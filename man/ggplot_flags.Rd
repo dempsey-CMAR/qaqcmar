@@ -4,17 +4,20 @@
 \alias{ggplot_flags}
 \title{Create ggplot for one qc_test and variable}
 \usage{
-ggplot_flags(dat, qc_test, var, ncol = NULL)
+ggplot_flags(dat, qc_test, var, ncol = NULL, flag_title = TRUE)
 }
 \arguments{
-\item{dat}{Data frame of flagged sensor string data in long format.
-Must include a column named with the string "_flag_value".}
+\item{dat}{Data frame of flagged sensor string data in long format. Must
+include a column named with the string "_flag_value".}
 
 \item{qc_test}{qc test to plot.}
 
 \item{var}{variable to plot.}
 
 \item{ncol}{Number of columns for faceted plots.}
+
+\item{flag_title}{Logical argument indicating whether to include a ggtitle
+indicating the qc test and variable plotted.}
 }
 \value{
 ggplot object

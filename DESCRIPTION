@@ -10,6 +10,7 @@ BugReports: https://github.com/dempsey-CMAR/qaqcmar/issues
 Imports: 
     dplyr,
     ggplot2,
+    gtools,
     lubridate,
     purrr,
     rlang,

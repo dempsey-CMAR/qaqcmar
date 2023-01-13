@@ -25,6 +25,7 @@ use_package("rlang")
 use_package("stringr")
 use_package("tidyr")
 #use_package("stringr")
+use_package("gtools")
 
 # add packages (not on CRAN)
 use_dev_pacakge("sensorstrings", remote = "dempsey-CMAR/sensorstrings")
