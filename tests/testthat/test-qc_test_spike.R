@@ -10,13 +10,13 @@ test_that("qc_test_spike() assigns 'Not evaluated' to first and last observation
 test_that("qc_test_spike() assigns correct flags to temperature data", {
 
   expect_equal(
-    as.numeric(unique(temp_sp_1$spike_flag_temperature_degree_C)), 1
+    as.numeric(unique(temp_sp_1$spike_flag_temperature_degree_c)), 1
   )
   expect_equal(
-    as.numeric(unique(temp_sp_3$spike_flag_temperature_degree_C)), 3
+    as.numeric(unique(temp_sp_3$spike_flag_temperature_degree_c)), 3
   )
   expect_equal(
-    as.numeric(unique(temp_sp_4$spike_flag_temperature_degree_C)), 4
+    as.numeric(unique(temp_sp_4$spike_flag_temperature_degree_c)), 4
   )
 
 })
@@ -28,17 +28,17 @@ test_that("qc_test_spike() assigns correct flags to dissolved oxygen concentrati
 
   expect_equal(
     as.numeric(unique(
-      do_conc_sp_1$spike_flag_dissolved_oxygen_uncorrected_mg_per_L
+      do_conc_sp_1$spike_flag_dissolved_oxygen_uncorrected_mg_per_l
     )), 1
   )
   expect_equal(
     as.numeric(unique(
-      do_conc_sp_3$spike_flag_dissolved_oxygen_uncorrected_mg_per_L
+      do_conc_sp_3$spike_flag_dissolved_oxygen_uncorrected_mg_per_l
     )), 3
   )
   expect_equal(
     as.numeric(unique(
-      do_conc_sp_4$spike_flag_dissolved_oxygen_uncorrected_mg_per_L
+      do_conc_sp_4$spike_flag_dissolved_oxygen_uncorrected_mg_per_l
     )), 4
   )
 

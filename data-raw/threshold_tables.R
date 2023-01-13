@@ -1,3 +1,4 @@
+#' @importFrom dplyr bind_rows
 #' @importFrom readxl read_excel
 #' @importFrom here here
 #' @importFrom stringr str_remove

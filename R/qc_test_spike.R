@@ -28,13 +28,17 @@ qc_test_spike <- function(dat, spike_table = NULL) {
   if (is.null(spike_table)) {
     spike_table <- threshold_tables %>%
       filter(qc_test == "spike") %>%
-      select(-c(qc_test, season, sensor_type)) %>%
-      pivot_wider(names_from = "threshold", values_from = "threshold_value")
+      select(-c(qc_test, season, sensor_type)) #%>%
+     # pivot_wider(names_from = "threshold", values_from = "threshold_value")
   }
+
+  spike_table <- spike_table %>%
+    select(variable, threshold, threshold_value)
 
   dat %>%
     ss_pivot_longer() %>%
     left_join(spike_table, by = "variable") %>%
+    pivot_wider(names_from = "threshold", values_from = "threshold_value") %>%
     mutate(sensor = paste(sensor_type, sensor_serial_number, sep = "-")) %>%
     group_by(sensor, variable) %>%
     dplyr::arrange(timestamp_utc, .by_group = TRUE) %>%

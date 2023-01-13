@@ -3,17 +3,17 @@
 test_that("qc_test_grossrange() assigns correct flags to temperature data", {
 
   expect_equal(
-    sort(as.numeric(unique(qc_gr$grossrange_flag_temperature_degree_C))),
+    sort(as.numeric(unique(qc_gr$grossrange_flag_temperature_degree_c))),
     c(1, 3, 4)
   )
   expect_equal(
-    as.numeric(unique(temp_gr_1$grossrange_flag_temperature_degree_C)), 1
+    as.numeric(unique(temp_gr_1$grossrange_flag_temperature_degree_c)), 1
   )
   expect_equal(
-    as.numeric(unique(temp_gr_3$grossrange_flag_temperature_degree_C)), 3
+    as.numeric(unique(temp_gr_3$grossrange_flag_temperature_degree_c)), 3
   )
   expect_equal(
-    as.numeric(unique(temp_gr_4$grossrange_flag_temperature_degree_C)), 4
+    as.numeric(unique(temp_gr_4$grossrange_flag_temperature_degree_c)), 4
   )
 
 })
@@ -56,23 +56,23 @@ test_that("qc_test_grossrange() assigns correct flags to dissolved oxygen
 
   expect_equal(
     sort(as.numeric(
-      unique(qc_gr$grossrange_flag_dissolved_oxygen_uncorrected_mg_per_L))
+      unique(qc_gr$grossrange_flag_dissolved_oxygen_uncorrected_mg_per_l))
     ),
     c(1, 3, 4)
   )
   expect_equal(
     as.numeric(
-      unique(do_conc_gr_1$grossrange_flag_dissolved_oxygen_uncorrected_mg_per_L)
+      unique(do_conc_gr_1$grossrange_flag_dissolved_oxygen_uncorrected_mg_per_l)
     ), 1
   )
   expect_equal(
     as.numeric(
-      unique(do_conc_gr_3$grossrange_flag_dissolved_oxygen_uncorrected_mg_per_L)
+      unique(do_conc_gr_3$grossrange_flag_dissolved_oxygen_uncorrected_mg_per_l)
     ), 3
   )
   expect_equal(
     as.numeric(
-      unique(do_conc_gr_4$grossrange_flag_dissolved_oxygen_uncorrected_mg_per_L)
+      unique(do_conc_gr_4$grossrange_flag_dissolved_oxygen_uncorrected_mg_per_l)
     ), 4
   )
 

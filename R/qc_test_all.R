@@ -43,6 +43,8 @@ qc_test_all <- function(
     )
   }
 
+#  browser()
+
   if("grossrange" %in% qc_tests) {
     dat_out[[2]] <- qc_test_grossrange(
       dat,

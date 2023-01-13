@@ -10,6 +10,7 @@ utils::globalVariables(
   c(
 
     "sensor_serial_number",
+    "threshold_value",
 
     # qc_test_climatology
     "flag",

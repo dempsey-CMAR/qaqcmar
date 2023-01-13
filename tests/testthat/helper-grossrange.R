@@ -31,13 +31,13 @@ qc_gr <- dat %>%
 
 join_cols <- c(
   "latitude", "longitude", "sensor_type", "sensor_serial_number",
-  "timestamp_utc", "sensor_depth_at_low_tide_m", "value_temperature_degree_C",
+  "timestamp_utc", "sensor_depth_at_low_tide_m", "value_temperature_degree_c",
   "value_salinity_psu", "value_dissolved_oxygen_percent_saturation",
-  "value_dissolved_oxygen_uncorrected_mg_per_L",
-  "value_sensor_depth_measured_m", "grossrange_flag_temperature_degree_C",
+  "value_dissolved_oxygen_uncorrected_mg_per_l",
+  "value_sensor_depth_measured_m", "grossrange_flag_temperature_degree_c",
   "grossrange_flag_salinity_psu",
   "grossrange_flag_dissolved_oxygen_percent_saturation",
-  "grossrange_flag_dissolved_oxygen_uncorrected_mg_per_L",
+  "grossrange_flag_dissolved_oxygen_uncorrected_mg_per_l",
   "grossrange_flag_sensor_depth_measured_m"
 )
 
@@ -87,7 +87,7 @@ temp_gr_3 <- qc_gr %>%
          timestamp_utc < as_datetime("2021-10-19 06:00:00"))
   ) %>%
   rbind(
-    x <- qc_gr %>%
+    qc_gr %>%
       filter(
         # aquameasure data
         sensor_serial_number == 670354,

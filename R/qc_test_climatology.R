@@ -50,14 +50,16 @@ qc_test_climatology <- function(
       select(-qc_test, -sensor_type) %>%
       mutate(
         threshold = str_replace(threshold, "winter|spring|summer|fall", "season")
-      ) %>%
-      pivot_wider(names_from = "threshold", values_from = "threshold_value") %>%
-      as_tibble()
+      ) #%>%
+      #pivot_wider(names_from = "threshold", values_from = "threshold_value")
   }
 
   if(is.null(seasons_table)) {
     seasons_table <- months_seasons
   }
+
+  climatology_table <- climatology_table %>%
+    select(variable, season, threshold, threshold_value)
 
   colname_ts <- colnames(dat)[which(str_detect(colnames(dat), "timestamp"))]
 
@@ -69,6 +71,7 @@ qc_test_climatology <- function(
     mutate(numeric_month = lubridate::month(tstamp)) %>%
     left_join(seasons_table, by = "numeric_month") %>%
     left_join(climatology_table, by = c("season", "variable")) %>%
+    pivot_wider(names_from = "threshold", values_from = "threshold_value") %>%
     mutate(
       climatology_flag = case_when(
         value > season_max | value < season_min ~ 3,

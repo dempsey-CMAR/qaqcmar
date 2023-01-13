@@ -22,14 +22,14 @@ dat <- readRDS(paste0(path, "/test_data_grossrange.RDS"))
 # sensorstrings::ss_ggplot_variables(dat)
 
 qc_sp <- dat %>%
-  filter(timestamp_utc > as_datetime("2020-10-18")) %>%
+  filter(timestamp_utc > as_datetime("2021-10-24")) %>%
   qc_test_spike()
 
-p <- qc_plot_flags(
-  qc_sp,
-  qc_tests = "spike"
-  #vars = "temperature_degree_C"
-)#
+# p <- qc_plot_flags(
+#   qc_sp,
+#   qc_tests = "spike",
+#   vars = "temperature_degree_c"
+# )#
 
 
 qc_sp_long <- qc_sp %>%
@@ -57,56 +57,50 @@ temp_sp_4 <- qc_sp %>%
   filter(
     # hobo data
     sensor_serial_number == 20495248,
-    timestamp_utc == as_datetime("2021-10-13 23:45:00") |
-      timestamp_utc == as_datetime("2021-10-14 01:15:00") |
-      timestamp_utc == as_datetime("2021-10-14 05:45:00") |
-      timestamp_utc == as_datetime("2021-10-14 07:15:00")
-  ) %>%
-  rbind(
-    qc_sp %>%
-      filter(
-        sensor_serial_number == 670354,
-        timestamp_utc == as_datetime("2021-10-17 23:47:00") |
-          timestamp_utc == as_datetime("2021-10-18 00:47:00") |
-          timestamp_utc == as_datetime("2021-10-18 05:47:00") |
-          timestamp_utc == as_datetime("2021-10-18 06:47:00")
+    timestamp_utc %in% as_datetime(
+      c(
+        "2021-10-28 23:30:00",
+        "2021-10-14 01:00:00",
+        "2021-10-14 05:30:00",
+        "2021-10-14 07:0:00"
       )
-  ) %>%
+    )
+  )%>%
   rbind(
     qc_sp %>%
       filter(
         sensor_serial_number == 549340,
-        timestamp_utc == as_datetime("2021-10-20 00:00:00") |
-          timestamp_utc == as_datetime("2021-10-20 06:00:00") |
-          timestamp_utc == as_datetime("2021-10-20 12:0:00")
+        timestamp_utc %in% as_datetime(
+          c(
+            "2021-10-24 20:00:00",
+            "2021-10-25 02:00:00",
+            "2021-10-25 08:0:00",
+            "2021-10-25 14:0:00",
+            "2012-10-29 20:00:00",
+            "2012-10-30 02:00:00",
+            "2012-10-30 08:00:00",
+            "2012-10-30 14:00:00"
+          )
+        )
       )
   )
 
 # this might change with thresholds
 temp_sp_3 <- qc_sp %>%
   filter(
-    # hobo data
-    sensor_serial_number == 20495248,
-    timestamp_utc == as_datetime("2021-10-29 01:15:00") |
-      timestamp_utc == as_datetime("2021-10-29 05:45:00") |
-      timestamp_utc == as_datetime("2021-10-29 07:15:00")
-  ) %>%
-  rbind(
-    qc_sp %>%
-      filter(
-        sensor_serial_number == 670354,
-        timestamp_utc == as_datetime("2021-10-26 23:43:00") |
-          timestamp_utc == as_datetime("2021-10-27 00:43:00") |
-          timestamp_utc == as_datetime("2021-10-27 05:43:00") |
-          timestamp_utc == as_datetime("2021-10-27 06:43:00")
-      )
+    sensor_serial_number == 670354,
+    timestamp_utc == as_datetime("2021-10-26 23:13:00") |
+      timestamp_utc == as_datetime("2021-10-27 00:13:00") |
+      timestamp_utc == as_datetime("2021-10-27 05:13:00") |
+      timestamp_utc == as_datetime("2021-10-27 06:13:00")
   )
 
+# remove first and last observations (because flag should be 2)
 temp_sp_1 <- qc_sp %>%
   filter(
     sensor_serial_number == 680360 | sensor_serial_number == 20827226,
-    timestamp_utc > as_datetime("2021-10-01 01:10:00") &
-      timestamp_utc < as_datetime("2021-10-23 23:30:00")
+    timestamp_utc > as_datetime("2021-10-25") &
+      timestamp_utc < as_datetime("2021-10-31")
   )
 
 
@@ -116,28 +110,28 @@ do_conc_sp_4 <- qc_sp %>%
   filter(
     # hobo data
     sensor_serial_number == 20827226,
-    timestamp_utc == as_datetime("2021-10-17 11:37:44") |
-      timestamp_utc == as_datetime("2021-10-17 13:07:44") |
-      timestamp_utc == as_datetime("2021-10-17 17:37:44") |
-      timestamp_utc == as_datetime("2021-10-17 19:07:44")
+    timestamp_utc == as_datetime("2021-10-24 10:52:44") |
+      timestamp_utc == as_datetime("2021-10-24 12:22:44") |
+      timestamp_utc == as_datetime("2021-10-24 16:52:44") |
+      timestamp_utc == as_datetime("2021-10-24 18:22:44")
   )
 
 do_conc_sp_3 <- qc_sp %>%
   filter(
     # hobo data
     sensor_serial_number == 20827226,
-    timestamp_utc == as_datetime("2021-10-30 11:37:44") |
-      timestamp_utc == as_datetime("2021-10-30 13:07:44") |
-      timestamp_utc == as_datetime("2021-10-30 17:37:44") |
-      timestamp_utc == as_datetime("2021-10-30 19:07:44")
+    timestamp_utc == as_datetime("2021-10-30 10:52:44") |
+      timestamp_utc == as_datetime("2021-10-30 12:22:44") |
+      timestamp_utc == as_datetime("2021-10-30 16:52:44") |
+      timestamp_utc == as_datetime("2021-10-30 18:22:44")
   )
 
 do_conc_sp_1 <- qc_sp %>%
   filter(
     # hobo data
     sensor_serial_number == 20827226,
-    timestamp_utc > as_datetime("2021-10-04"),
-      timestamp_utc < as_datetime("2021-10-09")
+    timestamp_utc > as_datetime("2021-10-25") &
+      timestamp_utc < as_datetime("2021-10-30")
   )
 
 
@@ -146,17 +140,17 @@ do_conc_sp_1 <- qc_sp %>%
 do_sat_sp_4 <- qc_sp %>%
   filter(
     sensor_serial_number == 670354,
-    timestamp_utc == as_datetime("2021-10-27 23:43:00") |
-      timestamp_utc == as_datetime("2021-10-28 00:43:00") |
-      timestamp_utc == as_datetime("2021-10-28 05:42:00") |
-      timestamp_utc == as_datetime("2021-10-28 06:42:00")
+    timestamp_utc == as_datetime("2021-10-27 23:13:00") |
+      timestamp_utc == as_datetime("2021-10-28 00:13:00") |
+      timestamp_utc == as_datetime("2021-10-28 05:12:00") |
+      timestamp_utc == as_datetime("2021-10-28 06:12:00")
   )
 
 do_sat_sp_1 <- qc_sp %>%
   filter(
     sensor_serial_number == 670354,
-    timestamp_utc > as_datetime("2021-10-07 07:00:00"),
-    timestamp_utc < as_datetime("2021-10-12 22:50:00")
+    timestamp_utc > as_datetime("2021-10-25") &
+      timestamp_utc < as_datetime("2021-10-27")
   )
 
 
@@ -165,24 +159,22 @@ do_sat_sp_1 <- qc_sp %>%
 sal_sp_4 <- qc_sp %>%
   filter(
     sensor_serial_number == 680360,
-    timestamp_utc == as_datetime("2021-10-15 23:54:00") |
-      timestamp_utc == as_datetime("2021-10-16 00:54:00") |
-      timestamp_utc == as_datetime("2021-10-16 05:54:00") |
-      timestamp_utc == as_datetime("2021-10-16 06:54:00")
+    timestamp_utc == as_datetime("2021-10-25 23:25:00") |
+      timestamp_utc == as_datetime("2021-10-26 05:25:00")
   )
 
 sal_sp_3 <- qc_sp %>%
   filter(
     sensor_serial_number == 680360,
-    timestamp_utc == as_datetime("2021-10-26 00:55:00") |
-      timestamp_utc == as_datetime("2021-10-26 06:55:00")
+    timestamp_utc == as_datetime("2021-10-26 00:25:00") |
+      timestamp_utc == as_datetime("2021-10-26 06:25:00")
   )
 
 sal_sp_1 <- qc_sp %>%
   filter(
     sensor_serial_number == 680360,
-    timestamp_utc > as_datetime("2021-10-07 00:00:00"),
-      timestamp_utc < as_datetime("2021-10-15 06:55:00")
+    timestamp_utc > as_datetime("2021-10-27") &
+      timestamp_utc < as_datetime("2021-10-31")
   )
 
 

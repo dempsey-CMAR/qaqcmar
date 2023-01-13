@@ -32,19 +32,19 @@ qc_test_grossrange <- function(dat, grossrange_table = NULL) {
     grossrange_table <- threshold_tables %>%
       filter(qc_test == "grossrange") %>%
       select(-qc_test, -season) %>%
-      mutate(threshold = str_remove(threshold, "am_|hobo_|vr2ar_")) %>%
-      pivot_wider(names_from = "threshold", values_from = "threshold_value")
+      mutate(threshold = str_remove(threshold, "am_|hobo_|vr2ar_")) #%>%
+     # pivot_wider(names_from = "threshold", values_from = "threshold_value")
   }
 
   # check the vars in table are in the colname and vice versa
-  dat_vars <- dat %>%
-    select(
-      contains("depth_measured"),
-      contains("dissolved_oxygen"),
-      contains("salinity"),
-      contains("temperature")
-    ) %>%
-    colnames()
+  # dat_vars <- dat %>%
+  #   select(
+  #     contains("depth_measured"),
+  #     contains("dissolved_oxygen"),
+  #     contains("salinity"),
+  #     contains("temperature")
+  #   ) %>%
+  #   colnames()
 
   # # is this even helpful?
   # if (!all(unique(grossrange_table$variable) %in% dat_vars)) {
@@ -69,9 +69,13 @@ qc_test_grossrange <- function(dat, grossrange_table = NULL) {
   #   }
   # }
 
+  grossrange_table <- grossrange_table %>%
+    select(variable, sensor_type, threshold, threshold_value)
+
   dat %>%
     ss_pivot_longer() %>%
     left_join(grossrange_table, by = c("sensor_type", "variable")) %>%
+    pivot_wider(names_from = "threshold", values_from = "threshold_value") %>%
     mutate(
       grossrange_flag = case_when(
         value > sensor_max | value < sensor_min  ~ 4,

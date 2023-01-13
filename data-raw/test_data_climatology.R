@@ -8,9 +8,9 @@ library(qaqcmar)       # V. 0.0.1
 # Raw data ----------------------------------------------------------------
 
 depl1 <- ss_compile_deployment_data(here("data-raw/Wedgeport_2021-07-08")) %>%
-  mutate(dissolved_oxygen_uncorrected_mg_per_L = NA) %>%
+  mutate(dissolved_oxygen_uncorrected_mg_per_l = NA) %>%
   relocate(
-    dissolved_oxygen_uncorrected_mg_per_L,
+    dissolved_oxygen_uncorrected_mg_per_l,
     .after = dissolved_oxygen_percent_saturation
   )
 
@@ -22,7 +22,7 @@ depl2 <- ss_compile_deployment_data(
  ) %>%
    mutate(
      salinity_psu = NA,
-     temperature_degree_C = NA,
+     temperature_degree_c = NA,
      dissolved_oxygen_percent_saturation = NA,
      sensor_depth_measured_m = NA
    )
@@ -54,13 +54,13 @@ dat <- dat_raw %>%
   select(-c(county, waterbody, station, lease, deployment_range, mooring_type)) %>%
   ss_pivot_longer() %>%
   filter(
-    !(variable == "dissolved_oxygen_uncorrected_mg_per_L" &
+    !(variable == "dissolved_oxygen_uncorrected_mg_per_l" &
         value < 13 & numeric_month == 11),
-    !(variable == "dissolved_oxygen_uncorrected_mg_per_L" &
+    !(variable == "dissolved_oxygen_uncorrected_mg_per_l" &
         value < 13 & numeric_month == 5),
-    !(variable == "dissolved_oxygen_uncorrected_mg_per_L" &
+    !(variable == "dissolved_oxygen_uncorrected_mg_per_l" &
         value > 15 & numeric_month == 11),
-    !(variable == "temperature_degree_C" &
+    !(variable == "temperature_degree_c" &
         value < -0.7 & numeric_month == 11)
   ) %>%
   ss_pivot_wider()
@@ -99,28 +99,33 @@ spring_high2 <- spring_high1 + days(3)
 
 # base on thresholds so test will work even if thresholds are adjusted
 
-climatology_table <- threshold_tables$climatology_table %>%
+climatology_table <- threshold_tables %>%
+  filter(qc_test == "climatology") %>%
+  select(-c(qc_test, sensor_type)) %>%
+  mutate(
+    threshold = str_replace(threshold, "winter|spring|summer|fall", "season")
+    ) %>%
+  pivot_wider(names_from = "threshold", values_from = "threshold_value") %>%
   mutate(
     obs_low = case_when(
-      variable == "temperature_degree_C" | variable == "salinity_psu" ~
+      variable == "temperature_degree_c" | variable == "salinity_psu"  ~
         season_min - 5,
-      TRUE ~  season_min - 10
+      TRUE ~  season_min  - 10
     ),
     obs_high = case_when(
-      variable == "temperature_degree_C" | variable == "salinity_psu" ~
+      variable == "temperature_degree_c" | variable == "salinity_psu" ~
         season_max + 5,
       TRUE ~  season_max + 10
     )
-
   )
 
-seasons_table <- threshold_tables$seasons_table
+#seasons_table <- threshold_tables$seasons_table
 
 # add observations to flag ------------------------------------------------
 
 dat_qc <- dat %>%
   ss_pivot_longer() %>%
-  left_join(seasons_table, by = "numeric_month") %>%
+  left_join(months_seasons, by = "numeric_month") %>%
   left_join(climatology_table, by = c("season", "variable")) %>%
   mutate(
     # DO % saturation
@@ -146,45 +151,45 @@ dat_qc <- dat %>%
       timestamp_utc > spring_high1 & timestamp_utc < spring_high2 ~ obs_high,
 
       # DO concentration
-      variable == "dissolved_oxygen_uncorrected_mg_per_L" &
+      variable == "dissolved_oxygen_uncorrected_mg_per_l" &
         timestamp_utc > summer_low1 & timestamp_utc < summer_low2 ~ obs_low,
-      variable == "dissolved_oxygen_uncorrected_mg_per_L" &
+      variable == "dissolved_oxygen_uncorrected_mg_per_l" &
         timestamp_utc > summer_high1 & timestamp_utc < summer_high2 ~ obs_high,
 
-      variable == "dissolved_oxygen_uncorrected_mg_per_L" &
+      variable == "dissolved_oxygen_uncorrected_mg_per_l" &
         timestamp_utc > fall_low1 & timestamp_utc < fall_low2 ~ obs_low,
-      variable == "dissolved_oxygen_uncorrected_mg_per_L" &
+      variable == "dissolved_oxygen_uncorrected_mg_per_l" &
         timestamp_utc > fall_high1 & timestamp_utc < fall_high2 ~ obs_high,
 
-      variable == "dissolved_oxygen_uncorrected_mg_per_L" &
+      variable == "dissolved_oxygen_uncorrected_mg_per_l" &
         timestamp_utc > winter_low1 & timestamp_utc < winter_low2 ~ obs_low,
-      variable == "dissolved_oxygen_uncorrected_mg_per_L" &
+      variable == "dissolved_oxygen_uncorrected_mg_per_l" &
         timestamp_utc > winter_high1 & timestamp_utc < winter_high2 ~ obs_high,
 
-      variable == "dissolved_oxygen_uncorrected_mg_per_L" &
+      variable == "dissolved_oxygen_uncorrected_mg_per_l" &
         timestamp_utc > spring_low1 & timestamp_utc < spring_low2 ~ obs_low,
-      variable == "dissolved_oxygen_uncorrected_mg_per_L" &
+      variable == "dissolved_oxygen_uncorrected_mg_per_l" &
         timestamp_utc > spring_high1 & timestamp_utc < spring_high2 ~ obs_high,
 
       # temperature
-      variable == "temperature_degree_C" &
+      variable == "temperature_degree_c" &
         timestamp_utc > summer_low1 & timestamp_utc < summer_low2 ~ obs_low,
-      variable == "temperature_degree_C" &
+      variable == "temperature_degree_c" &
         timestamp_utc > summer_high1 & timestamp_utc < summer_high2 ~ obs_high,
 
-      variable == "temperature_degree_C" &
+      variable == "temperature_degree_c" &
         timestamp_utc > fall_low1 & timestamp_utc < fall_low2 ~ obs_low,
-      variable == "temperature_degree_C" &
+      variable == "temperature_degree_c" &
         timestamp_utc > fall_high1 & timestamp_utc < fall_high2 ~ obs_high,
 
-      variable == "temperature_degree_C" &
+      variable == "temperature_degree_c" &
         timestamp_utc > winter_low1 & timestamp_utc < winter_low2 ~ obs_low,
-      variable == "temperature_degree_C" &
+      variable == "temperature_degree_c" &
         timestamp_utc > winter_high1 & timestamp_utc < winter_high2 ~ obs_high,
 
-      variable == "temperature_degree_C" &
+      variable == "temperature_degree_c" &
         timestamp_utc > spring_low1 & timestamp_utc < spring_low2 ~ obs_low,
-      variable == "temperature_degree_C" &
+      variable == "temperature_degree_c" &
         timestamp_utc > spring_high1 & timestamp_utc < spring_high2 ~ obs_high,
 
       # salinity
