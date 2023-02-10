@@ -54,27 +54,19 @@ The Centre for Marine Applied Research ([CMAR](https://cmar.ca/)) coordinates an
 
 CMAR applies Quality Assurance (QA) and Quality Control (QC) processes to support the delivery of high quality data (Bushnell et al, 2019). QA processes are typically completed prior to sensor deployment (e.g., sensor calibration and validation), and are documented in a series of Standard Operating Procedures (link here). 
 
-Quality Control processes (e.g., automated data flags, manual review) are completed for each deployment after the data have been collected and compiled. CMAR has adopted the QARTOD (Quality Assurance / Quality Control of Real-Time Oceanographic Data) flagging scheme and associated tests. QARTOD provides a relatively simple yet informative rating scale (Table X), and is very well documented. There are QARTOD manuals for 34 EOVs that provide codeable instructions for implementing recommended QC tests. QARTOD has been adopted by oceanographic organizations around the world, including the US Integrated Ocean Observing System (IOOS).
-
+Quality Control processes (e.g., automated data flags, manual review) are completed for each deployment after the data have been collected and compiled. CMAR has adopted the QARTOD (Quality Assurance / Quality Control of Real-Time Oceanographic Data) flagging scheme and associated tests. QARTOD provides a relatively simple yet informative rating scale (Table X), and is very well documented. There are QARTOD manuals for 14 EOVs that provide codeable instructions for implementing recommended QC tests. QARTOD has been adopted by oceanographic organizations around the world, including the US Integrated Ocean Observing System (IOOS).
 
 `qaqcmar` is a quality control tool that automates assigning flags to each observation based on QARTOD recommendations.
 
 
-
-**
-
-- Tests that we are planning to run (include table)
-
-- Flagging scheme (include table)
-
-- Thresholds ... defaults built into the package
-
-Should we add a section or at least mention how this package could be used by other people collecting the same ocean data? And what their data format would have to be to match that? And that they can override the built in thresholds if they want to run these tests on their data with different thresholds? 
+- link to thresholds analysis document
+  - Tests that we are planning to run (include table)
+  - Flagging scheme (include table)
 
 ## Example
 
-
 ```{r, message=FALSE}
+library(ggplot2)
 library(qaqcmar)
 library(sensorstrings)
 library(dplyr)
@@ -84,8 +76,7 @@ library(lubridate)
 
 ### Example Sensor String Data
 
-Consider example Water Quality data collected from October 1, 2021 to October 31, 2021. Note that some observations are far higher or lower than what would be reasonably expected.
-(Note: this is fake data generated from two deployments for illustrative purposes.)
+Consider simulated Water Quality data from January 1 to December 2023.(Note: this data was simulated to illustrate quality control processes and does not reflect expected profiles.)
 
 
 ```{r}
@@ -93,14 +84,14 @@ Consider example Water Quality data collected from October 1, 2021 to October 31
 path <- system.file("testdata", package = "qaqcmar")
 
 dat <- readRDS(paste0(path, "/test_data_grossrange.RDS")) %>% 
-  select(-c(latitude, longitude))
+  mutate(sensor_serial_number = "123")
 
 kable(dat[1:5, ])
 
 ```
 
-```{r fig1, fig.height=8}
-ss_ggplot_variables(dat)
+```{r fig1, fig.height=6}
+ss_ggplot_variables(dat) + geom_point(size = 1)
 ```
 
 
@@ -112,8 +103,8 @@ ss_ggplot_variables(dat)
 #### Gross Range Test
 
 Apply test:
-```{r}
-dat_gr <- qc_test_grossrange(dat)
+```{r, message=FALSE}
+dat_gr <- qc_test_grossrange(dat, county = "Lunenburg")
 
 kable(dat_gr[1:5, ])
 ```
@@ -128,9 +119,9 @@ qc_plot_flags(dat_gr, qc_tests = "grossrange", ncol = 2)
 
 `qc_test_all()` will apply all specified QC tests to `dat`.
 
-```{r}
+```{r, message=FALSE}
 dat_qc <- dat %>% 
-  qc_test_all(qc_tests = c("climatology", "grossrange")) 
+  qc_test_all(qc_tests = c("climatology", "grossrange"), county = "Lunenburg") 
 
 kable(dat_qc[1:5, ])
 ```
@@ -141,7 +132,7 @@ There are now `r ncol(dat_qc)` columns in `dat_qc`!
 
 ```{r}
 dat_qc <- dat_qc %>% 
- qc_assign_max_flag()
+ qc_assign_max_flag(qc_tests = c("climatology", "grossrange"))
 
 kable(dat_qc[1:5, ])
 ```

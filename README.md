@@ -9,7 +9,7 @@
 
 [![License: GPL
 v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-[![](https://img.shields.io/badge/devel%20version-0.0.1-blue.svg)](https://github.com/dempsey-cmar/qaqcmar)
+[![](https://img.shields.io/badge/devel%20version-0.0.3-blue.svg)](https://github.com/dempsey-cmar/qaqcmar)
 [![CodeFactor](https://www.codefactor.io/repository/github/dempsey-cmar/qaqcmar/badge)](https://www.codefactor.io/repository/github/dempsey-cmar/qaqcmar)
 [![R-CMD-check](https://github.com/dempsey-CMAR/qaqcmar/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/dempsey-CMAR/qaqcmar/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
@@ -57,7 +57,7 @@ are completed for each deployment after the data have been collected and
 compiled. CMAR has adopted the QARTOD (Quality Assurance / Quality
 Control of Real-Time Oceanographic Data) flagging scheme and associated
 tests. QARTOD provides a relatively simple yet informative rating scale
-(Table X), and is very well documented. There are QARTOD manuals for 34
+(Table X), and is very well documented. There are QARTOD manuals for 14
 EOVs that provide codeable instructions for implementing recommended QC
 tests. QARTOD has been adopted by oceanographic organizations around the
 world, including the US Integrated Ocean Observing System (IOOS).
@@ -65,23 +65,14 @@ world, including the US Integrated Ocean Observing System (IOOS).
 `qaqcmar` is a quality control tool that automates assigning flags to
 each observation based on QARTOD recommendations.
 
-\*\*
-
--   Tests that we are planning to run (include table)
-
--   Flagging scheme (include table)
-
--   Thresholds … defaults built into the package
-
-Should we add a section or at least mention how this package could be
-used by other people collecting the same ocean data? And what their data
-format would have to be to match that? And that they can override the
-built in thresholds if they want to run these tests on their data with
-different thresholds?
+- link to thresholds analysis document
+  - Tests that we are planning to run (include table)
+  - Flagging scheme (include table)
 
 ## Example
 
 ``` r
+library(ggplot2)
 library(qaqcmar)
 library(sensorstrings)
 library(dplyr)
@@ -91,17 +82,16 @@ library(lubridate)
 
 ### Example Sensor String Data
 
-Consider example Water Quality data collected from October 1, 2021 to
-October 31, 2021. Note that some observations are far higher or lower
-than what would be reasonably expected. (Note: this is fake data
-generated from two deployments for illustrative purposes.)
+Consider simulated Water Quality data from January 1 to December
+2023.(Note: this data was simulated to illustrate quality control
+processes and does not reflect expected profiles.)
 
 ``` r
 # read in example data
 path <- system.file("testdata", package = "qaqcmar")
 
 dat <- readRDS(paste0(path, "/test_data_grossrange.RDS")) %>% 
-  select(-c(latitude, longitude))
+  mutate(sensor_serial_number = "123")
 
 kable(dat[1:5, ])
 ```
@@ -113,28 +103,19 @@ kable(dat[1:5, ])
 sensor_type
 </th>
 <th style="text-align:right;">
-sensor_serial_number
+sensor_depth_at_low_tide_m
 </th>
 <th style="text-align:left;">
 timestamp_utc
-</th>
-<th style="text-align:left;">
-sensor_depth_at_low_tide_m
 </th>
 <th style="text-align:right;">
 dissolved_oxygen_percent_saturation
 </th>
 <th style="text-align:right;">
-dissolved_oxygen_uncorrected_mg_per_L
+temperature_degree_c
 </th>
-<th style="text-align:right;">
-salinity_psu
-</th>
-<th style="text-align:right;">
-sensor_depth_measured_m
-</th>
-<th style="text-align:right;">
-temperature_degree_C
+<th style="text-align:left;">
+sensor_serial_number
 </th>
 </tr>
 </thead>
@@ -144,28 +125,19 @@ temperature_degree_C
 aquameasure
 </td>
 <td style="text-align:right;">
-680360
+5
 </td>
 <td style="text-align:left;">
-2021-10-01 00:54:00
+2023-01-01
+</td>
+<td style="text-align:right;">
+-5
+</td>
+<td style="text-align:right;">
+-10
 </td>
 <td style="text-align:left;">
-2
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-28.0
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-15.68
+123
 </td>
 </tr>
 <tr>
@@ -173,28 +145,19 @@ NA
 aquameasure
 </td>
 <td style="text-align:right;">
-680360
+5
 </td>
 <td style="text-align:left;">
-2021-10-01 01:54:00
+2023-02-01
+</td>
+<td style="text-align:right;">
+-5
+</td>
+<td style="text-align:right;">
+-10
 </td>
 <td style="text-align:left;">
-2
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-27.7
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-16.00
+123
 </td>
 </tr>
 <tr>
@@ -202,28 +165,19 @@ NA
 aquameasure
 </td>
 <td style="text-align:right;">
-680360
+5
 </td>
 <td style="text-align:left;">
-2021-10-01 02:54:00
+2023-03-01
+</td>
+<td style="text-align:right;">
+-5
+</td>
+<td style="text-align:right;">
+-10
 </td>
 <td style="text-align:left;">
-2
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-27.5
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-16.16
+123
 </td>
 </tr>
 <tr>
@@ -231,28 +185,19 @@ NA
 aquameasure
 </td>
 <td style="text-align:right;">
-680360
+5
 </td>
 <td style="text-align:left;">
-2021-10-01 03:54:00
+2023-04-01
+</td>
+<td style="text-align:right;">
+-5
+</td>
+<td style="text-align:right;">
+-10
 </td>
 <td style="text-align:left;">
-2
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-27.2
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-16.16
+123
 </td>
 </tr>
 <tr>
@@ -260,35 +205,26 @@ NA
 aquameasure
 </td>
 <td style="text-align:right;">
-680360
+5
 </td>
 <td style="text-align:left;">
-2021-10-01 04:54:00
+2023-05-01
+</td>
+<td style="text-align:right;">
+-5
+</td>
+<td style="text-align:right;">
+-10
 </td>
 <td style="text-align:left;">
-2
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-27.5
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-16.09
+123
 </td>
 </tr>
 </tbody>
 </table>
 
 ``` r
-ss_ggplot_variables(dat)
+ss_ggplot_variables(dat) + geom_point(size = 1)
 ```
 
 <img src="man/figures/README-fig1-1.png" width="100%" />
@@ -304,7 +240,7 @@ ss_ggplot_variables(dat)
 Apply test:
 
 ``` r
-dat_gr <- qc_test_grossrange(dat)
+dat_gr <- qc_test_grossrange(dat, county = "Lunenburg")
 
 kable(dat_gr[1:5, ])
 ```
@@ -316,43 +252,25 @@ kable(dat_gr[1:5, ])
 sensor_type
 </th>
 <th style="text-align:right;">
-sensor_serial_number
+sensor_depth_at_low_tide_m
 </th>
 <th style="text-align:left;">
 timestamp_utc
 </th>
 <th style="text-align:left;">
-sensor_depth_at_low_tide_m
+sensor_serial_number
 </th>
 <th style="text-align:right;">
 value_dissolved_oxygen_percent_saturation
 </th>
 <th style="text-align:right;">
-value_dissolved_oxygen_uncorrected_mg_per_L
-</th>
-<th style="text-align:right;">
-value_salinity_psu
-</th>
-<th style="text-align:right;">
-value_sensor_depth_measured_m
-</th>
-<th style="text-align:right;">
-value_temperature_degree_C
+value_temperature_degree_c
 </th>
 <th style="text-align:left;">
 grossrange_flag_dissolved_oxygen_percent_saturation
 </th>
 <th style="text-align:left;">
-grossrange_flag_dissolved_oxygen_uncorrected_mg_per_L
-</th>
-<th style="text-align:left;">
-grossrange_flag_salinity_psu
-</th>
-<th style="text-align:left;">
-grossrange_flag_sensor_depth_measured_m
-</th>
-<th style="text-align:left;">
-grossrange_flag_temperature_degree_C
+grossrange_flag_temperature_degree_c
 </th>
 </tr>
 </thead>
@@ -362,43 +280,25 @@ grossrange_flag_temperature_degree_C
 aquameasure
 </td>
 <td style="text-align:right;">
-680360
+5
 </td>
 <td style="text-align:left;">
-2021-10-01 00:54:00
+2023-01-01
 </td>
 <td style="text-align:left;">
-2
+123
 </td>
 <td style="text-align:right;">
-NA
+-5
 </td>
 <td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-28.0
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-15.68
+-10
 </td>
 <td style="text-align:left;">
-NA
+4
 </td>
 <td style="text-align:left;">
-NA
-</td>
-<td style="text-align:left;">
-1
-</td>
-<td style="text-align:left;">
-NA
-</td>
-<td style="text-align:left;">
-1
+4
 </td>
 </tr>
 <tr>
@@ -406,43 +306,25 @@ NA
 aquameasure
 </td>
 <td style="text-align:right;">
-680360
+5
 </td>
 <td style="text-align:left;">
-2021-10-01 01:54:00
+2023-02-01
 </td>
 <td style="text-align:left;">
-2
+123
 </td>
 <td style="text-align:right;">
-NA
+-5
 </td>
 <td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-27.7
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-16.00
+-10
 </td>
 <td style="text-align:left;">
-NA
+4
 </td>
 <td style="text-align:left;">
-NA
-</td>
-<td style="text-align:left;">
-1
-</td>
-<td style="text-align:left;">
-NA
-</td>
-<td style="text-align:left;">
-1
+4
 </td>
 </tr>
 <tr>
@@ -450,43 +332,25 @@ NA
 aquameasure
 </td>
 <td style="text-align:right;">
-680360
+5
 </td>
 <td style="text-align:left;">
-2021-10-01 02:54:00
+2023-03-01
 </td>
 <td style="text-align:left;">
-2
+123
 </td>
 <td style="text-align:right;">
-NA
+-5
 </td>
 <td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-27.5
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-16.16
+-10
 </td>
 <td style="text-align:left;">
-NA
+4
 </td>
 <td style="text-align:left;">
-NA
-</td>
-<td style="text-align:left;">
-1
-</td>
-<td style="text-align:left;">
-NA
-</td>
-<td style="text-align:left;">
-1
+4
 </td>
 </tr>
 <tr>
@@ -494,43 +358,25 @@ NA
 aquameasure
 </td>
 <td style="text-align:right;">
-680360
+5
 </td>
 <td style="text-align:left;">
-2021-10-01 03:54:00
+2023-04-01
 </td>
 <td style="text-align:left;">
-2
+123
 </td>
 <td style="text-align:right;">
-NA
+-5
 </td>
 <td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-27.2
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-16.16
+-10
 </td>
 <td style="text-align:left;">
-NA
+4
 </td>
 <td style="text-align:left;">
-NA
-</td>
-<td style="text-align:left;">
-1
-</td>
-<td style="text-align:left;">
-NA
-</td>
-<td style="text-align:left;">
-1
+4
 </td>
 </tr>
 <tr>
@@ -538,43 +384,25 @@ NA
 aquameasure
 </td>
 <td style="text-align:right;">
-680360
+5
 </td>
 <td style="text-align:left;">
-2021-10-01 04:54:00
+2023-05-01
 </td>
 <td style="text-align:left;">
-2
+123
 </td>
 <td style="text-align:right;">
-NA
+-5
 </td>
 <td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-27.5
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-16.09
+-10
 </td>
 <td style="text-align:left;">
-NA
+4
 </td>
 <td style="text-align:left;">
-NA
-</td>
-<td style="text-align:left;">
-1
-</td>
-<td style="text-align:left;">
-NA
-</td>
-<td style="text-align:left;">
-1
+4
 </td>
 </tr>
 </tbody>
@@ -585,39 +413,18 @@ argument `qc_tests = "grossrange"`.
 
 ``` r
 qc_plot_flags(dat_gr, qc_tests = "grossrange", ncol = 2)
-#> $salinity_psu
-#> $salinity_psu$grossrange
+#> $dissolved_oxygen_percent_saturation
+#> $dissolved_oxygen_percent_saturation$grossrange
 ```
 
 <img src="man/figures/README-fig2-1.png" width="100%" />
 
     #> 
     #> 
-    #> $temperature_degree_C
-    #> $temperature_degree_C$grossrange
+    #> $temperature_degree_c
+    #> $temperature_degree_c$grossrange
 
 <img src="man/figures/README-fig2-2.png" width="100%" />
-
-    #> 
-    #> 
-    #> $dissolved_oxygen_percent_saturation
-    #> $dissolved_oxygen_percent_saturation$grossrange
-
-<img src="man/figures/README-fig2-3.png" width="100%" />
-
-    #> 
-    #> 
-    #> $dissolved_oxygen_uncorrected_mg_per_L
-    #> $dissolved_oxygen_uncorrected_mg_per_L$grossrange
-
-<img src="man/figures/README-fig2-4.png" width="100%" />
-
-    #> 
-    #> 
-    #> $sensor_depth_measured_m
-    #> $sensor_depth_measured_m$grossrange
-
-<img src="man/figures/README-fig2-5.png" width="100%" />
 
 #### All Tests
 
@@ -625,11 +432,7 @@ qc_plot_flags(dat_gr, qc_tests = "grossrange", ncol = 2)
 
 ``` r
 dat_qc <- dat %>% 
-  qc_test_all(qc_tests = c("climatology", "grossrange")) 
-#> Joining, by = c("sensor_type", "sensor_serial_number", "timestamp_utc",
-#> "sensor_depth_at_low_tide_m", "value_dissolved_oxygen_percent_saturation",
-#> "value_dissolved_oxygen_uncorrected_mg_per_L", "value_salinity_psu",
-#> "value_sensor_depth_measured_m", "value_temperature_degree_C")
+  qc_test_all(qc_tests = c("climatology", "grossrange"), county = "Lunenburg") 
 
 kable(dat_qc[1:5, ])
 ```
@@ -641,58 +444,31 @@ kable(dat_qc[1:5, ])
 sensor_type
 </th>
 <th style="text-align:right;">
-sensor_serial_number
+sensor_depth_at_low_tide_m
 </th>
 <th style="text-align:left;">
 timestamp_utc
 </th>
 <th style="text-align:left;">
-sensor_depth_at_low_tide_m
+sensor_serial_number
 </th>
 <th style="text-align:right;">
 value_dissolved_oxygen_percent_saturation
 </th>
 <th style="text-align:right;">
-value_dissolved_oxygen_uncorrected_mg_per_L
-</th>
-<th style="text-align:right;">
-value_salinity_psu
-</th>
-<th style="text-align:right;">
-value_sensor_depth_measured_m
-</th>
-<th style="text-align:right;">
-value_temperature_degree_C
+value_temperature_degree_c
 </th>
 <th style="text-align:left;">
 climatology_flag_dissolved_oxygen_percent_saturation
 </th>
 <th style="text-align:left;">
-climatology_flag_dissolved_oxygen_uncorrected_mg_per_L
-</th>
-<th style="text-align:left;">
-climatology_flag_salinity_psu
-</th>
-<th style="text-align:left;">
-climatology_flag_sensor_depth_measured_m
-</th>
-<th style="text-align:left;">
-climatology_flag_temperature_degree_C
+climatology_flag_temperature_degree_c
 </th>
 <th style="text-align:left;">
 grossrange_flag_dissolved_oxygen_percent_saturation
 </th>
 <th style="text-align:left;">
-grossrange_flag_dissolved_oxygen_uncorrected_mg_per_L
-</th>
-<th style="text-align:left;">
-grossrange_flag_salinity_psu
-</th>
-<th style="text-align:left;">
-grossrange_flag_sensor_depth_measured_m
-</th>
-<th style="text-align:left;">
-grossrange_flag_temperature_degree_C
+grossrange_flag_temperature_degree_c
 </th>
 </tr>
 </thead>
@@ -702,58 +478,31 @@ grossrange_flag_temperature_degree_C
 aquameasure
 </td>
 <td style="text-align:right;">
-680360
+5
 </td>
 <td style="text-align:left;">
-2021-10-01 00:54:00
+2023-01-01
 </td>
 <td style="text-align:left;">
-2
+123
 </td>
 <td style="text-align:right;">
-NA
+-5
 </td>
 <td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-28.0
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-15.68
+-10
 </td>
 <td style="text-align:left;">
-NA
+3
 </td>
 <td style="text-align:left;">
-NA
+3
 </td>
 <td style="text-align:left;">
-1
+4
 </td>
 <td style="text-align:left;">
-NA
-</td>
-<td style="text-align:left;">
-1
-</td>
-<td style="text-align:left;">
-NA
-</td>
-<td style="text-align:left;">
-NA
-</td>
-<td style="text-align:left;">
-1
-</td>
-<td style="text-align:left;">
-NA
-</td>
-<td style="text-align:left;">
-1
+4
 </td>
 </tr>
 <tr>
@@ -761,58 +510,31 @@ NA
 aquameasure
 </td>
 <td style="text-align:right;">
-680360
+5
 </td>
 <td style="text-align:left;">
-2021-10-01 01:54:00
+2023-02-01
 </td>
 <td style="text-align:left;">
-2
+123
 </td>
 <td style="text-align:right;">
-NA
+-5
 </td>
 <td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-27.7
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-16.00
+-10
 </td>
 <td style="text-align:left;">
-NA
+3
 </td>
 <td style="text-align:left;">
-NA
+3
 </td>
 <td style="text-align:left;">
-1
+4
 </td>
 <td style="text-align:left;">
-NA
-</td>
-<td style="text-align:left;">
-1
-</td>
-<td style="text-align:left;">
-NA
-</td>
-<td style="text-align:left;">
-NA
-</td>
-<td style="text-align:left;">
-1
-</td>
-<td style="text-align:left;">
-NA
-</td>
-<td style="text-align:left;">
-1
+4
 </td>
 </tr>
 <tr>
@@ -820,58 +542,31 @@ NA
 aquameasure
 </td>
 <td style="text-align:right;">
-680360
+5
 </td>
 <td style="text-align:left;">
-2021-10-01 02:54:00
+2023-03-01
 </td>
 <td style="text-align:left;">
-2
+123
 </td>
 <td style="text-align:right;">
-NA
+-5
 </td>
 <td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-27.5
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-16.16
+-10
 </td>
 <td style="text-align:left;">
-NA
+3
 </td>
 <td style="text-align:left;">
-NA
+3
 </td>
 <td style="text-align:left;">
-1
+4
 </td>
 <td style="text-align:left;">
-NA
-</td>
-<td style="text-align:left;">
-1
-</td>
-<td style="text-align:left;">
-NA
-</td>
-<td style="text-align:left;">
-NA
-</td>
-<td style="text-align:left;">
-1
-</td>
-<td style="text-align:left;">
-NA
-</td>
-<td style="text-align:left;">
-1
+4
 </td>
 </tr>
 <tr>
@@ -879,58 +574,31 @@ NA
 aquameasure
 </td>
 <td style="text-align:right;">
-680360
+5
 </td>
 <td style="text-align:left;">
-2021-10-01 03:54:00
+2023-04-01
 </td>
 <td style="text-align:left;">
-2
+123
 </td>
 <td style="text-align:right;">
-NA
+-5
 </td>
 <td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-27.2
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-16.16
+-10
 </td>
 <td style="text-align:left;">
-NA
+3
 </td>
 <td style="text-align:left;">
-NA
+3
 </td>
 <td style="text-align:left;">
-1
+4
 </td>
 <td style="text-align:left;">
-NA
-</td>
-<td style="text-align:left;">
-1
-</td>
-<td style="text-align:left;">
-NA
-</td>
-<td style="text-align:left;">
-NA
-</td>
-<td style="text-align:left;">
-1
-</td>
-<td style="text-align:left;">
-NA
-</td>
-<td style="text-align:left;">
-1
+4
 </td>
 </tr>
 <tr>
@@ -938,71 +606,44 @@ NA
 aquameasure
 </td>
 <td style="text-align:right;">
-680360
+5
 </td>
 <td style="text-align:left;">
-2021-10-01 04:54:00
+2023-05-01
 </td>
 <td style="text-align:left;">
-2
+123
 </td>
 <td style="text-align:right;">
-NA
+-5
 </td>
 <td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-27.5
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-16.09
+-10
 </td>
 <td style="text-align:left;">
-NA
+3
 </td>
 <td style="text-align:left;">
-NA
+3
 </td>
 <td style="text-align:left;">
-1
+4
 </td>
 <td style="text-align:left;">
-NA
-</td>
-<td style="text-align:left;">
-1
-</td>
-<td style="text-align:left;">
-NA
-</td>
-<td style="text-align:left;">
-NA
-</td>
-<td style="text-align:left;">
-1
-</td>
-<td style="text-align:left;">
-NA
-</td>
-<td style="text-align:left;">
-1
+4
 </td>
 </tr>
 </tbody>
 </table>
 
-There are now 19 columns in `dat_qc`!
+There are now 10 columns in `dat_qc`!
 
 `qc_assign_max_flag()` reduces the number of columns in `dat_qc` by
 keeping the *worst* flag for each variable.
 
 ``` r
 dat_qc <- dat_qc %>% 
- qc_assign_max_flag()
+ qc_assign_max_flag(qc_tests = c("climatology", "grossrange"))
 
 kable(dat_qc[1:5, ])
 ```
@@ -1014,43 +655,25 @@ kable(dat_qc[1:5, ])
 sensor_type
 </th>
 <th style="text-align:right;">
-sensor_serial_number
+sensor_depth_at_low_tide_m
 </th>
 <th style="text-align:left;">
 timestamp_utc
 </th>
 <th style="text-align:left;">
-sensor_depth_at_low_tide_m
+sensor_serial_number
 </th>
 <th style="text-align:right;">
 value_dissolved_oxygen_percent_saturation
 </th>
 <th style="text-align:right;">
-value_dissolved_oxygen_uncorrected_mg_per_L
-</th>
-<th style="text-align:right;">
-value_salinity_psu
-</th>
-<th style="text-align:right;">
-value_sensor_depth_measured_m
-</th>
-<th style="text-align:right;">
-value_temperature_degree_C
+value_temperature_degree_c
 </th>
 <th style="text-align:left;">
 qc_flag_dissolved_oxygen_percent_saturation
 </th>
 <th style="text-align:left;">
-qc_flag_dissolved_oxygen_uncorrected_mg_per_L
-</th>
-<th style="text-align:left;">
-qc_flag_salinity_psu
-</th>
-<th style="text-align:left;">
-qc_flag_sensor_depth_measured_m
-</th>
-<th style="text-align:left;">
-qc_flag_temperature_degree_C
+qc_flag_temperature_degree_c
 </th>
 </tr>
 </thead>
@@ -1060,43 +683,25 @@ qc_flag_temperature_degree_C
 aquameasure
 </td>
 <td style="text-align:right;">
-680360
+5
 </td>
 <td style="text-align:left;">
-2021-10-01 00:54:00
+2023-01-01
 </td>
 <td style="text-align:left;">
-2
+123
 </td>
 <td style="text-align:right;">
-NA
+-5
 </td>
 <td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-28.0
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-15.68
+-10
 </td>
 <td style="text-align:left;">
-NA
+4
 </td>
 <td style="text-align:left;">
-NA
-</td>
-<td style="text-align:left;">
-1
-</td>
-<td style="text-align:left;">
-NA
-</td>
-<td style="text-align:left;">
-1
+4
 </td>
 </tr>
 <tr>
@@ -1104,43 +709,25 @@ NA
 aquameasure
 </td>
 <td style="text-align:right;">
-680360
+5
 </td>
 <td style="text-align:left;">
-2021-10-01 01:54:00
+2023-02-01
 </td>
 <td style="text-align:left;">
-2
+123
 </td>
 <td style="text-align:right;">
-NA
+-5
 </td>
 <td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-27.7
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-16.00
+-10
 </td>
 <td style="text-align:left;">
-NA
+4
 </td>
 <td style="text-align:left;">
-NA
-</td>
-<td style="text-align:left;">
-1
-</td>
-<td style="text-align:left;">
-NA
-</td>
-<td style="text-align:left;">
-1
+4
 </td>
 </tr>
 <tr>
@@ -1148,43 +735,25 @@ NA
 aquameasure
 </td>
 <td style="text-align:right;">
-680360
+5
 </td>
 <td style="text-align:left;">
-2021-10-01 02:54:00
+2023-03-01
 </td>
 <td style="text-align:left;">
-2
+123
 </td>
 <td style="text-align:right;">
-NA
+-5
 </td>
 <td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-27.5
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-16.16
+-10
 </td>
 <td style="text-align:left;">
-NA
+4
 </td>
 <td style="text-align:left;">
-NA
-</td>
-<td style="text-align:left;">
-1
-</td>
-<td style="text-align:left;">
-NA
-</td>
-<td style="text-align:left;">
-1
+4
 </td>
 </tr>
 <tr>
@@ -1192,43 +761,25 @@ NA
 aquameasure
 </td>
 <td style="text-align:right;">
-680360
+5
 </td>
 <td style="text-align:left;">
-2021-10-01 03:54:00
+2023-04-01
 </td>
 <td style="text-align:left;">
-2
+123
 </td>
 <td style="text-align:right;">
-NA
+-5
 </td>
 <td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-27.2
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-16.16
+-10
 </td>
 <td style="text-align:left;">
-NA
+4
 </td>
 <td style="text-align:left;">
-NA
-</td>
-<td style="text-align:left;">
-1
-</td>
-<td style="text-align:left;">
-NA
-</td>
-<td style="text-align:left;">
-1
+4
 </td>
 </tr>
 <tr>
@@ -1236,43 +787,25 @@ NA
 aquameasure
 </td>
 <td style="text-align:right;">
-680360
+5
 </td>
 <td style="text-align:left;">
-2021-10-01 04:54:00
+2023-05-01
 </td>
 <td style="text-align:left;">
-2
+123
 </td>
 <td style="text-align:right;">
-NA
+-5
 </td>
 <td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-27.5
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:right;">
-16.09
+-10
 </td>
 <td style="text-align:left;">
-NA
+4
 </td>
 <td style="text-align:left;">
-NA
-</td>
-<td style="text-align:left;">
-1
-</td>
-<td style="text-align:left;">
-NA
-</td>
-<td style="text-align:left;">
-1
+4
 </td>
 </tr>
 </tbody>
@@ -1283,39 +816,18 @@ argument `qc_tests = "qc"`.
 
 ``` r
 qc_plot_flags(dat_qc, qc_tests = "qc")
-#> $salinity_psu
-#> $salinity_psu$qc
+#> $dissolved_oxygen_percent_saturation
+#> $dissolved_oxygen_percent_saturation$qc
 ```
 
 <img src="man/figures/README-fig3-1.png" width="100%" />
 
     #> 
     #> 
-    #> $temperature_degree_C
-    #> $temperature_degree_C$qc
+    #> $temperature_degree_c
+    #> $temperature_degree_c$qc
 
 <img src="man/figures/README-fig3-2.png" width="100%" />
-
-    #> 
-    #> 
-    #> $dissolved_oxygen_percent_saturation
-    #> $dissolved_oxygen_percent_saturation$qc
-
-<img src="man/figures/README-fig3-3.png" width="100%" />
-
-    #> 
-    #> 
-    #> $dissolved_oxygen_uncorrected_mg_per_L
-    #> $dissolved_oxygen_uncorrected_mg_per_L$qc
-
-<img src="man/figures/README-fig3-4.png" width="100%" />
-
-    #> 
-    #> 
-    #> $sensor_depth_measured_m
-    #> $sensor_depth_measured_m$qc
-
-<img src="man/figures/README-fig3-5.png" width="100%" />
 
 ## References
 
