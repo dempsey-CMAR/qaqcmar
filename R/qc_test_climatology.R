@@ -15,19 +15,21 @@
 #'   default \code{climatology_table}, type
 #'   \code{threshold_tables$climatology_table} in the console.
 #'
-#' @param seasons_table Data frame with 2 columns: \code{month}: numeric value
-#'   of the month and \code{season}, the corresponding season (entries of
-#'   "winter", "spring", "summer", and "fall"). Default table is used if
-#'   \code{seasons = NULL}. To see the default values, type
-#'   \code{threshold_tables$seasons} in the console.
+#' @param county Character string indicating the county from which \code{dat}
+#'   was collected. Required to filter user thresholds if
+#'   \code{climatology_table} is not provided. Could switch to looking it up
+#'   from AREA_INFO tab, but that would be slower. Will depend on the final data
+#'   processing workflow.
 #'
 #' @return placeholder for now
 #'
 #' @family tests
 #'
-#' @importFrom dplyr %>% as_tibble case_when left_join mutate rename tibble
+#' @importFrom dplyr %>% as_tibble bind_rows case_when left_join mutate rename
+#'   tibble
 #' @importFrom lubridate month parse_date_time
 #' @importFrom stringr str_detect str_replace
+#' @importFrom tidyr pivot_wider
 #'
 #' @export
 
@@ -40,36 +42,60 @@
 qc_test_climatology <- function(
   dat,
   climatology_table = NULL,
-  seasons_table = NULL
+  county = NULL
 ) {
 
   # import default thresholds from internal data file & format
   if(is.null(climatology_table)) {
+
+    if(is.null(county)) {
+      stop("Must specify << county >> in qc_test_grossrange()")
+    }
+
     climatology_table <- threshold_tables %>%
-      filter(qc_test == "climatology") %>%
-      select(-qc_test, -sensor_type) %>%
-      mutate(
-        threshold = str_replace(threshold, "winter|spring|summer|fall", "season")
-      ) #%>%
-      #pivot_wider(names_from = "threshold", values_from = "threshold_value")
+      filter(qc_test == "climatology", county == !!county) %>%
+      select(-c(qc_test, county, sensor_type)) %>%
+      tidyr::pivot_wider(
+        names_from = "threshold", values_from = "threshold_value"
+      ) %>%
+      # placeholder
+      bind_rows(
+        data.frame(
+          variable = rep("dissolved_oxygen_percent_saturation", 12),
+          month = seq(1, 12),
+          season_min = rep(95, 12),
+          season_max = rep(105, 12)
+        )
+      )
   }
 
-  if(is.null(seasons_table)) {
-    seasons_table <- months_seasons
-  }
+  #  warning if there are variables in dat that do not have threshold --------
+  dat_vars <- dat %>%
+    select(
+      contains("depth_measured"),
+      contains("dissolved_oxygen"),
+      contains("salinity"),
+      contains("temperature")
+    ) %>%
+    colnames()
 
-  climatology_table <- climatology_table %>%
-    select(variable, season, threshold, threshold_value)
+  # if (!all(dat_vars %in% unique(climatology_table$variable))) {
+  #
+  #   missing_var <- unique(dat_vars[which(!(dat_vars %in% climatology_table$variable))])
+  #
+  #   message(
+  #     "Variable(s)", paste("\n <<", missing_var, collapse = " >> \n"),
+  #     " >> \n found in dat, but not in climatology_table"
+  #   )
+  # }
 
   colname_ts <- colnames(dat)[which(str_detect(colnames(dat), "timestamp"))]
 
   dat <- dat %>%
     ss_pivot_longer() %>%
     rename(tstamp = contains("timestamp")) %>%
-    mutate(numeric_month = lubridate::month(tstamp)) %>%
-    left_join(seasons_table, by = "numeric_month") %>%
-    left_join(climatology_table, by = c("season", "variable")) %>%
-    pivot_wider(names_from = "threshold", values_from = "threshold_value") %>%
+    mutate(month = lubridate::month(tstamp)) %>%
+    left_join(climatology_table, by = c("month", "variable")) %>%
     mutate(
       climatology_flag = case_when(
         value > season_max | value < season_min ~ 3,
@@ -79,7 +105,7 @@ qc_test_climatology <- function(
       climatology_flag = ordered(climatology_flag, levels = 1:4)
     ) %>%
     #remove extra columns
-    select(-c(season_min, season_max, numeric_month, season)) %>%
+    select(-c(season_min, season_max, month)) %>%
     pivot_wider(
       names_from = variable,
       values_from = c(value, climatology_flag),
