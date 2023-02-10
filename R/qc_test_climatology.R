@@ -1,27 +1,23 @@
-#' Add flag column for the climatology test
+#' Apply the climatology test
 #'
 #' @param dat Data frame of sensor string data in wide format.
 #'
-#' @param climatology_table UPDATE THIS.
-#'
-#'   Data frame with 4 columns: \code{variable}: should match the names of the
-#'   variables being tested in \code{dat}. \code{season}: there should be an
-#'   entry of "winter", "spring", "summer", and "fall" for each variable.
-#'   \code{season_min}: minimum reasonable value for the corresponding variable
-#'   during the corresponding season. \code{season_max}: maximum reasonable
-#'   value for the corresponding variable during the corresponding season.
+#' @param climatology_table Data frame with 4 columns: \code{variable}: must
+#'   match the names of the variables being tested in \code{dat}; \code{month}:
+#'   numeric values from 1 to 12 for each variable; \code{season_min}: minimum
+#'   reasonable value for the corresponding variable and month;
+#'   \code{season_max}: maximum reasonable value for the corresponding variable
+#'   and month.
 #'
 #'   Default values are used if \code{climatology_table = NULL}. To see the
-#'   default \code{climatology_table}, type
-#'   \code{threshold_tables$climatology_table} in the console.
+#'   default \code{climatology_table}, type \code{subset(threshold_tables,
+#'   qc_test == "climatology")} in the console.
 #'
 #' @param county Character string indicating the county from which \code{dat}
-#'   was collected. Required to filter user thresholds if
-#'   \code{climatology_table} is not provided. Could switch to looking it up
-#'   from AREA_INFO tab, but that would be slower. Will depend on the final data
-#'   processing workflow.
+#'   was collected. Required if the default \code{climatology_table} is used.
 #'
-#' @return placeholder for now
+#' @return Returns \code{dat} in a wide format, with climatology flag columns
+#'   for each variable in the form "climatology_flag_variable".
 #'
 #' @family tests
 #'
@@ -49,7 +45,7 @@ qc_test_climatology <- function(
   if(is.null(climatology_table)) {
 
     if(is.null(county)) {
-      stop("Must specify << county >> in qc_test_grossrange()")
+      stop("Must specify << county >> in qc_test_climatology()")
     }
 
     climatology_table <- threshold_tables %>%
@@ -79,15 +75,15 @@ qc_test_climatology <- function(
     ) %>%
     colnames()
 
-  # if (!all(dat_vars %in% unique(climatology_table$variable))) {
-  #
-  #   missing_var <- unique(dat_vars[which(!(dat_vars %in% climatology_table$variable))])
-  #
-  #   message(
-  #     "Variable(s)", paste("\n <<", missing_var, collapse = " >> \n"),
-  #     " >> \n found in dat, but not in climatology_table"
-  #   )
-  # }
+  if (!all(dat_vars %in% unique(climatology_table$variable))) {
+
+    missing_var <- unique(dat_vars[which(!(dat_vars %in% climatology_table$variable))])
+
+    message(
+      "Variable(s)", paste("\n <<", missing_var, collapse = " >> \n"),
+      " >> \n found in dat, but not in climatology_table"
+    )
+  }
 
   colname_ts <- colnames(dat)[which(str_detect(colnames(dat), "timestamp"))]
 

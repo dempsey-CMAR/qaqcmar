@@ -13,10 +13,10 @@ Must include at least one column name with the string "flag".}
 \value{
 Returns \code{dat} with entries in the flag columns converted from
 numeric values to text labels (an ordered factor with levels "Pass", "Not
-Evaluated", "Suspect", "Fail", "Missing Data").
+Evaluated", "Suspect/Of Interest", "Fail", "Missing Data").
 }
 \description{
 All columns with the string "flag" in the name will be converted from numeric
-flags to text flags (e.g., 1 = Pass, 2 = Not Evaluated, 3 = Suspect, 4 =
-Fail).
+flags to text flags (e.g., 1 = Pass, 2 = Not Evaluated, 3 = Suspect/Of
+Interest, 4 = Fail).
 }

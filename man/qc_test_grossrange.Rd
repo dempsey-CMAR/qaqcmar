@@ -2,30 +2,39 @@
 % Please edit documentation in R/qc_test_grossrange.R
 \name{qc_test_grossrange}
 \alias{qc_test_grossrange}
-\title{Add flag columns for the grossrange test}
+\title{Apply the gross range test}
 \usage{
-qc_test_grossrange(dat, grossrange_table = NULL)
+qc_test_grossrange(dat, grossrange_table = NULL, county = NULL, message = TRUE)
 }
 \arguments{
 \item{dat}{Data frame of sensor string data in wide format.}
 
-\item{grossrange_table}{Data frame with 6 columns: \code{variable}: should
+\item{grossrange_table}{Data frame with 8 columns: \code{variable}: must
 match the names of the variables being tested in \code{dat}.
-\code{sensor_make}: this may change \code{sensor_min}: minimum value the
-sensor can record. \code{sensor_max}: maximum value the sensor can record.
-\code{user_min}: minimum reasonable value; smaller values are "of
-interest". \code{user_max}: maximum reasonable value; larger values are "of
-interest".
+\code{sensor_type}: type of sensor that recorded the observation;
+\code{sensor_min}: minimum value the sensor can record; \code{sensor_max}:
+maximum value the sensor can record. \code{user_min}: minimum reasonable
+value; \code{user_max}: maximum reasonable value.
 
-Default is \code{grossrange_table = NULL}, which uses default values. To
-see the default \code{grossrange_table}, type
-\code{threshold_tables$grossrange_table}.}
+Default values are used if \code{grossrange_table = NULL}. To see the
+default \code{grossrange_table}, type \code{subset(threshold_tables,
+  qc_test == "grossrange")} in the console.}
+
+\item{county}{Character string indicating the county from which \code{dat}
+was collected. Required if the default \code{grossrange_table} is used.}
+
+\item{message}{Logical argument indicating whether to display a message if
+any \code{user_min} < \code{sensor_min} and/or \code{user_max} >
+\code{sensor_max} (i.e., flag of 3 cannot be applied).}
 }
 \value{
-placeholder for now
+Returns \code{dat} in a wide format, with grossrange flag columns for
+each variable in the form "grossrange_flag_variable".
 }
 \description{
-Add flag columns for the grossrange test
+The value must be greater than the threshold to trigger flag (e.g., value >
+sensor_max is assigned a flag of 4; value == sensor_max is assigned a flag of
+3).
 }
 \seealso{
 Other tests: 

@@ -2,7 +2,7 @@
 % Please edit documentation in R/qc_pivot.R
 \name{pivot_flags_longer}
 \alias{pivot_flags_longer}
-\title{Pivot flagged sensor string data flag columns}
+\title{Complete pivot of flagged sensor string data}
 \usage{
 pivot_flags_longer(dat_wide, qc_test)
 }
@@ -17,5 +17,5 @@ Returns \code{dat_wide} with the qc_test flag columns pivoted to a
 long format.
 }
 \description{
-Pivot flagged sensor string data flag columns
+Complete pivot of flagged sensor string data
 }

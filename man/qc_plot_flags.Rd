@@ -17,7 +17,9 @@ qc_plot_flags(
 \item{dat}{Data frame of flagged sensor string data in long or wide format.
 Must include at least one column name with the string "_flag_variable".}
 
-\item{qc_tests}{QC tests to run.}
+\item{qc_tests}{Character vector of quality control tests to apply to
+\code{dat}. Defaults to all available tests: \code{qc_tests =
+  c("climatology", "grossrange", "spike")}}
 
 \item{vars}{Character vector of variables to plot. Default is \code{vars =
 "all"}, which will make a plot for each recognized variable in \code{dat}.}
@@ -27,12 +29,14 @@ values to text labels for the legend.}
 
 \item{ncol}{Number of columns for faceted plots.}
 
-\item{flag_title}{Logical argument indicating whether to include a ggtitle
-indicating the qc test and variable plotted.}
+\item{flag_title}{Logical argument indicating whether to include a ggtitle of
+the qc test and variable plotted.}
 }
 \value{
 Returns a list of ggplot objects; one figure for each test in
-\code{qc_tests} and variable in \code{vars}, faceted by depth and sensor.
+\code{qc_tests} and variable in \code{vars}. Points are coloured by the
+flag value and panels are faceted by depth and sensor. faceted by depth and
+sensor.
 }
 \description{
 Plot sensor data coloured by flag value

@@ -1,40 +1,49 @@
-#' Add flag columns for the grossrange test
+#' Apply the gross range test
 #'
-#' Must be > threshold to trigger flag (e.g., > sensor_max to fail test)
+#' The value must be greater than the threshold to trigger flag (e.g., value >
+#' sensor_max is assigned a flag of 4; value == sensor_max is assigned a flag of
+#' 3).
 #'
 #' @param dat Data frame of sensor string data in wide format.
 #'
-#' @param grossrange_table UPDATE THIS
-#'
-#'   Data frame with 6 columns: \code{variable}: should match the names of the
-#'   variables being tested in \code{dat}. \code{sensor_make}: this may change
-#'   \code{sensor_min}: minimum value the sensor can record. \code{sensor_max}:
+#' @param grossrange_table Data frame with 8 columns: \code{variable}: must
+#'   match the names of the variables being tested in \code{dat}.
+#'   \code{sensor_type}: type of sensor that recorded the observation;
+#'   \code{sensor_min}: minimum value the sensor can record; \code{sensor_max}:
 #'   maximum value the sensor can record. \code{user_min}: minimum reasonable
-#'   value; smaller values are "of interest". \code{user_max}: maximum
-#'   reasonable value; larger values are "of interest".
+#'   value; \code{user_max}: maximum reasonable value.
 #'
-#'   Default is \code{grossrange_table = NULL}, which uses default values. To
-#'   see the default \code{grossrange_table}, type
-#'   \code{threshold_tables$grossrange_table}.
+#'   Default values are used if \code{grossrange_table = NULL}. To see the
+#'   default \code{grossrange_table}, type \code{subset(threshold_tables,
+#'   qc_test == "grossrange")} in the console.
 #'
 #' @param county Character string indicating the county from which \code{dat}
-#'   was collected. Required to filter user thresholds if
-#'   \code{grossrange_table} is not provided. Could switch to looking it up from
-#'   AREA_INFO tab, but that would be slower. Will depend on the final data
-#'   processing workflow.
+#'   was collected. Required if the default \code{grossrange_table} is used.
 #'
-#' @return placeholder for now
+#' @param message Logical argument indicating whether to display a message if
+#'   any \code{user_min} < \code{sensor_min} and/or \code{user_max} >
+#'   \code{sensor_max} (i.e., flag of 3 cannot be applied).
+#'
+#' @return Returns \code{dat} in a wide format, with grossrange flag columns for
+#'   each variable in the form "grossrange_flag_variable".
 #'
 #' @family tests
 #'
-#' @importFrom dplyr %>% case_when contains left_join mutate select
+#' @importFrom dplyr %>% case_when contains distinct inner_join left_join mutate
+#'   select
 #' @importFrom sensorstrings ss_pivot_longer
 #' @importFrom stringr str_detect str_remove
 #' @importFrom tidyr pivot_wider separate
+#' @importFrom utils capture.output
 #'
 #' @export
 
-qc_test_grossrange <- function(dat, grossrange_table = NULL, county = NULL) {
+qc_test_grossrange <- function(
+    dat,
+    grossrange_table = NULL,
+    county = NULL,
+    message = TRUE
+) {
 
   # import default thresholds from internal data file -----------------------
   if (is.null(grossrange_table)) {
@@ -80,19 +89,21 @@ qc_test_grossrange <- function(dat, grossrange_table = NULL, county = NULL) {
     distinct(sensor_type, variable) %>%
     as.data.frame()
 
-  if(nrow(check_max) > 0) {
-    message("<< user_max >> is greater than << sensor_max >> for: ")
-    message(paste(capture.output(check_max), collapse = "\n"))
-  }
+  if(isTRUE(message)) {
+    if(nrow(check_max) > 0) {
+      message("<< user_max >> is greater than << sensor_max >> for: ")
+      message(paste(utils::capture.output(check_max), collapse = "\n"))
+    }
 
-  check_min <- grossrange_check %>%
-    filter(check_min == 1) %>%
-    distinct(sensor_type, variable) %>%
-    as.data.frame()
+    check_min <- grossrange_check %>%
+      filter(check_min == 1) %>%
+      distinct(sensor_type, variable) %>%
+      as.data.frame()
 
-  if(nrow(check_min) > 0) {
-    message("<< user_min >> is less than << sensor_min >> for: ")
-    message(paste(capture.output(check_min), collapse = "\n"))
+    if(nrow(check_min) > 0) {
+      message("<< user_min >> is less than << sensor_min >> for: ")
+      message(paste(utils::capture.output(check_min), collapse = "\n"))
+    }
   }
 
   #  warning if there are variables in dat that do not have threshold --------
@@ -119,18 +130,6 @@ qc_test_grossrange <- function(dat, grossrange_table = NULL, county = NULL) {
   dat %>%
     ss_pivot_longer() %>%
     left_join(grossrange_table, by = c("sensor_type", "variable")) %>%
-    # left_join(
-    #   grossrange_table %>%
-    #     select(sensor_type, variable, contains("sensor")) %>%
-    #     filter(!is.na(sensor_type)),
-    #   by = c("sensor_type", "variable")
-    # ) %>%
-    # left_join(
-    #   grossrange_table %>%
-    #     select(variable, contains("user")) %>%
-    #     filter(!is.na(user_min) & !is.na(user_max)),
-    #   by = "variable"
-    # ) %>%
     # sensor_max and sensor_min get evaluated first, so don't need to worry
     # about if user_min < sensor_min (it will get assigned a flag of 4)
     mutate(

@@ -77,7 +77,7 @@ qc_pivot_longer <- function(
 }
 
 
-#' Pivot flagged sensor string data flag columns
+#' Complete pivot of flagged sensor string data
 #'
 #' @param dat_wide Data frame of flagged sensor string data with the variables
 #'   in a long format and flags in wide format.

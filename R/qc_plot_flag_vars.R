@@ -11,13 +11,15 @@
 #'
 #' @param ncol Number of columns for faceted plots.
 #'
-#' @param flag_title Logical argument indicating whether to include a ggtitle
-#'   indicating the qc test and variable plotted.
+#' @param flag_title Logical argument indicating whether to include a ggtitle of
+#'   the qc test and variable plotted.
 #'
 #' @inheritParams qc_test_all
 #'
 #' @return Returns a list of ggplot objects; one figure for each test in
-#'   \code{qc_tests} and variable in \code{vars}, faceted by depth and sensor.
+#'   \code{qc_tests} and variable in \code{vars}. Points are coloured by the
+#'   flag value and panels are faceted by depth and sensor. faceted by depth and
+#'   sensor.
 #'
 #' @importFrom lubridate as_datetime
 #'
@@ -64,8 +66,7 @@ qc_plot_flags <- function(
 
     # if nrow is 0 don't make a plot
     if(nrow(dat_i) == 0) {
-      message("No data for variable << ", var_i, " >>")
-      break
+      stop("No data for variable << ", var_i, " >>")
     }
 
     # plot for each test
@@ -83,7 +84,6 @@ qc_plot_flags <- function(
   }
   p_out <- Filter(Negate(is.null), p_out)   # not sure why first element was null
 
-
   p_out
 }
 
@@ -97,14 +97,13 @@ qc_plot_flags <- function(
 #'
 #' @param var variable to plot.
 #'
-#' @param ncol Number of columns for faceted plots.
+#' @inheritParams qc_plot_flags
 #'
-#' @param flag_title Logical argument indicating whether to include a ggtitle
-#'   indicating the qc test and variable plotted.
+#' @return Returns a ggplot object; a figure for \code{qc_test} and \code{var}.
+#'   Points are coloured by the flag value and panels are faceted by depth and
+#'   sensor.
 #'
-#' @return ggplot object
-#'
-#' @importFrom ggplot2  aes element_rect element_text facet_wrap geom_point
+#' @importFrom ggplot2 aes element_rect element_text facet_wrap geom_point
 #'   ggplot ggtitle guides guide_legend  scale_colour_manual scale_x_datetime
 #'   scale_y_continuous theme_light theme
 #'
@@ -121,10 +120,6 @@ ggplot_flags <- function(dat, qc_test, var, ncol = NULL, flag_title = TRUE) {
   p <- dat %>%
     mutate(
       sensor = paste(sensor_type, sensor_serial_number, sep = "-"),
-      # depth = ordered(
-      #   sensor_depth_at_low_tide_m,
-      #   levels = sort(unique(dat$sensor_depth_at_low_tide_m))
-      # ),
       depth = paste0(sensor_depth_at_low_tide_m, " m", " (", sensor, ")"),
       depth = ordered(
         depth,

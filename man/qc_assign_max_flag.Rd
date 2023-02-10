@@ -2,18 +2,19 @@
 % Please edit documentation in R/qc_test_all.R
 \name{qc_assign_max_flag}
 \alias{qc_assign_max_flag}
-\title{Assign a single QC flag value for each observation}
+\title{Assign each observation the maximum flag from applied QC tests.}
 \usage{
 qc_assign_max_flag(dat, qc_tests = c("climatology", "grossrange", "spike"))
 }
 \arguments{
 \item{dat}{Data frame in long or wide format with flag columns from multiple
-QC tests.}
+quality control tests.}
 
 \item{qc_tests}{Quality control tests included in \code{dat}.}
 }
 \value{
-\code{dat} with only 1 flag column for each variable column.
+Returns \code{dat} in a wide format, with a single flag column for
+each variable column.
 }
 \description{
 ** change the spike test values at beginning/end to NA instead of 2

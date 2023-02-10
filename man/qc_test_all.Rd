@@ -2,62 +2,63 @@
 % Please edit documentation in R/qc_test_all.R
 \name{qc_test_all}
 \alias{qc_test_all}
-\title{Run specified quality control tests}
+\title{Apply multiple quality control tests}
 \usage{
 qc_test_all(
   dat,
   qc_tests = c("climatology", "grossrange", "spike"),
   climatology_table = NULL,
-  seasons_table = NULL,
   grossrange_table = NULL,
-  spike_table = NULL
+  spike_table = NULL,
+  county,
+  message = TRUE
 )
 }
 \arguments{
-\item{dat}{Data in a wide format. Add more here}
+\item{dat}{Data frame of sensor string data in a wide format.}
 
-\item{qc_tests}{QC tests to run.}
+\item{qc_tests}{Character vector of quality control tests to apply to
+\code{dat}. Defaults to all available tests: \code{qc_tests =
+  c("climatology", "grossrange", "spike")}}
 
-\item{climatology_table}{UPDATE THIS.
-
-Data frame with 4 columns: \code{variable}: should match the names of the
-variables being tested in \code{dat}. \code{season}: there should be an
-entry of "winter", "spring", "summer", and "fall" for each variable.
-\code{season_min}: minimum reasonable value for the corresponding variable
-during the corresponding season. \code{season_max}: maximum reasonable
-value for the corresponding variable during the corresponding season.
+\item{climatology_table}{Data frame with 4 columns: \code{variable}: must
+match the names of the variables being tested in \code{dat}; \code{month}:
+numeric values from 1 to 12 for each variable; \code{season_min}: minimum
+reasonable value for the corresponding variable and month;
+\code{season_max}: maximum reasonable value for the corresponding variable
+and month.
 
 Default values are used if \code{climatology_table = NULL}. To see the
-default \code{climatology_table}, type
-\code{threshold_tables$climatology_table} in the console.}
+default \code{climatology_table}, type \code{subset(threshold_tables,
+  qc_test == "climatology")} in the console.}
 
-\item{seasons_table}{Data frame with 2 columns: \code{month}: numeric value
-of the month and \code{season}, the corresponding season (entries of
-"winter", "spring", "summer", and "fall"). Default table is used if
-\code{seasons = NULL}. To see the default values, type
-\code{threshold_tables$seasons} in the console.}
-
-\item{grossrange_table}{Data frame with 6 columns: \code{variable}: should
+\item{grossrange_table}{Data frame with 8 columns: \code{variable}: must
 match the names of the variables being tested in \code{dat}.
-\code{sensor_make}: this may change \code{sensor_min}: minimum value the
-sensor can record. \code{sensor_max}: maximum value the sensor can record.
-\code{user_min}: minimum reasonable value; smaller values are "of
-interest". \code{user_max}: maximum reasonable value; larger values are "of
-interest".
+\code{sensor_type}: type of sensor that recorded the observation;
+\code{sensor_min}: minimum value the sensor can record; \code{sensor_max}:
+maximum value the sensor can record. \code{user_min}: minimum reasonable
+value; \code{user_max}: maximum reasonable value.
 
-Default is \code{grossrange_table = NULL}, which uses default values. To
-see the default \code{grossrange_table}, type
-\code{threshold_tables$grossrange_table}.}
+Default values are used if \code{grossrange_table = NULL}. To see the
+default \code{grossrange_table}, type \code{subset(threshold_tables,
+  qc_test == "grossrange")} in the console.}
 
 \item{spike_table}{Data frame with 3 columns: \code{variable}: should match
 the names of the variables being tested in \code{dat}.
 
 Default is \code{spike_table = NULL}, which uses default values. To see the
 default \code{spike_table}, type \code{threshold_tables$spike_table}.}
+
+\item{county}{Character string indicating the county from which \code{dat}
+was collected. Required if the default \code{climatology_table} is used.}
+
+\item{message}{Logical argument indicating whether to display a message if
+any \code{user_min} < \code{sensor_min} and/or \code{user_max} >
+\code{sensor_max} (i.e., flag of 3 cannot be applied).}
 }
 \value{
-Tibble of \code{dat} with quality control flag columns.
+Returns \code{dat} with additional quality control flag columns.
 }
 \description{
-Run specified quality control tests
+Apply multiple quality control tests
 }

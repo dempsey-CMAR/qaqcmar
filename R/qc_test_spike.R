@@ -28,7 +28,7 @@ qc_test_spike <- function(dat, spike_table = NULL) {
   if (is.null(spike_table)) {
     spike_table <- threshold_tables %>%
       filter(qc_test == "spike") %>%
-      select(-c(qc_test, season, sensor_type)) #%>%
+      select(-c(qc_test, month, sensor_type)) #%>%
      # pivot_wider(names_from = "threshold", values_from = "threshold_value")
   }
 

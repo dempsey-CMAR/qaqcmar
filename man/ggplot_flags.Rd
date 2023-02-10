@@ -16,11 +16,13 @@ include a column named with the string "_flag_value".}
 
 \item{ncol}{Number of columns for faceted plots.}
 
-\item{flag_title}{Logical argument indicating whether to include a ggtitle
-indicating the qc test and variable plotted.}
+\item{flag_title}{Logical argument indicating whether to include a ggtitle of
+the qc test and variable plotted.}
 }
 \value{
-ggplot object
+Returns a ggplot object; a figure for \code{qc_test} and \code{var}.
+Points are coloured by the flag value and panels are faceted by depth and
+sensor.
 }
 \description{
 Create ggplot for one qc_test and variable

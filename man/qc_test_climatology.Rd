@@ -2,37 +2,33 @@
 % Please edit documentation in R/qc_test_climatology.R
 \name{qc_test_climatology}
 \alias{qc_test_climatology}
-\title{Add flag column for the climatology test}
+\title{Apply the climatology test}
 \usage{
-qc_test_climatology(dat, climatology_table = NULL, seasons_table = NULL)
+qc_test_climatology(dat, climatology_table = NULL, county = NULL)
 }
 \arguments{
 \item{dat}{Data frame of sensor string data in wide format.}
 
-\item{climatology_table}{UPDATE THIS.
-
-Data frame with 4 columns: \code{variable}: should match the names of the
-variables being tested in \code{dat}. \code{season}: there should be an
-entry of "winter", "spring", "summer", and "fall" for each variable.
-\code{season_min}: minimum reasonable value for the corresponding variable
-during the corresponding season. \code{season_max}: maximum reasonable
-value for the corresponding variable during the corresponding season.
+\item{climatology_table}{Data frame with 4 columns: \code{variable}: must
+match the names of the variables being tested in \code{dat}; \code{month}:
+numeric values from 1 to 12 for each variable; \code{season_min}: minimum
+reasonable value for the corresponding variable and month;
+\code{season_max}: maximum reasonable value for the corresponding variable
+and month.
 
 Default values are used if \code{climatology_table = NULL}. To see the
-default \code{climatology_table}, type
-\code{threshold_tables$climatology_table} in the console.}
+default \code{climatology_table}, type \code{subset(threshold_tables,
+  qc_test == "climatology")} in the console.}
 
-\item{seasons_table}{Data frame with 2 columns: \code{month}: numeric value
-of the month and \code{season}, the corresponding season (entries of
-"winter", "spring", "summer", and "fall"). Default table is used if
-\code{seasons = NULL}. To see the default values, type
-\code{threshold_tables$seasons} in the console.}
+\item{county}{Character string indicating the county from which \code{dat}
+was collected. Required if the default \code{climatology_table} is used.}
 }
 \value{
-placeholder for now
+Returns \code{dat} in a wide format, with climatology flag columns
+for each variable in the form "climatology_flag_variable".
 }
 \description{
-Add flag column for the climatology test
+Apply the climatology test
 }
 \seealso{
 Other tests: 

@@ -1,14 +1,16 @@
-#' Run specified quality control tests
+#' Apply multiple quality control tests
 #'
-#' @param dat Data in a wide format. Add more here
+#' @param dat Data frame of sensor string data in a wide format.
 #'
-#' @param qc_tests QC tests to run.
+#' @param qc_tests Character vector of quality control tests to apply to
+#'   \code{dat}. Defaults to all available tests: \code{qc_tests =
+#'   c("climatology", "grossrange", "spike")}
 #'
 #' @inheritParams qc_test_climatology
 #' @inheritParams qc_test_grossrange
 #' @inheritParams qc_test_spike
 #'
-#' @return Tibble of \code{dat} with quality control flag columns.
+#' @return Returns \code{dat} with additional quality control flag columns.
 #'
 #' @importFrom dplyr %>% left_join
 #' @importFrom purrr reduce
@@ -26,9 +28,10 @@ qc_test_all <- function(
   dat,
   qc_tests = c("climatology", "grossrange", "spike"),
   climatology_table = NULL,
-  seasons_table = NULL,
   grossrange_table = NULL,
-  spike_table = NULL
+  spike_table = NULL,
+  county,
+  message = TRUE
 ) {
 
   qc_tests <- tolower(qc_tests)
@@ -39,16 +42,16 @@ qc_test_all <- function(
     dat_out[[1]] <- qc_test_climatology(
       dat,
       climatology_table = climatology_table,
-      seasons_table = seasons_table
+      county = county
     )
   }
-
-#  browser()
 
   if("grossrange" %in% qc_tests) {
     dat_out[[2]] <- qc_test_grossrange(
       dat,
-      grossrange_table = grossrange_table
+      grossrange_table = grossrange_table,
+      county = county,
+      message = message
     )
   }
 
@@ -65,20 +68,20 @@ qc_test_all <- function(
   # join by all common columns
   dat_out %>%
     purrr::reduce(dplyr::left_join)
-
  }
 
 
-#' Assign a single QC flag value for each observation
+#' Assign each observation the maximum flag from applied QC tests.
 #'
 #' ** change the spike test values at beginning/end to NA instead of 2
 #'
 #' @param dat Data frame in long or wide format with flag columns from multiple
-#'   QC tests.
+#'   quality control tests.
 #'
 #' @param qc_tests Quality control tests included in \code{dat}.
 #'
-#' @return \code{dat} with only 1 flag column for each variable column.
+#' @return Returns \code{dat} in a wide format, with a single flag column for
+#'   each variable column.
 #'
 #' @importFrom dplyr %>% c_across contains mutate rename rowwise select ungroup
 #' @importFrom tidyr pivot_wider
