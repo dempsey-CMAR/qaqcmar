@@ -1,15 +1,24 @@
-# November 8, 2022
+# February 10, 2023
 
-#' testdata was generated such that we KNOW what flag should be assigned to each
-#' observation (data-raw/test_data.R)
-#'
-#' Here, qc_test_grossrange() is applied to the test data. The qc'd data is then
-#' separated into a data frame for each variable and flag value, based on the
-#' timestamps used to generate the data in data-raw/test_data.R.
-#'
-#' The tests check that each data frame include the expected flag value, and
-#' only the expected flag value.
-#'
+# testdata was generated such that we KNOW what flag should be assigned to each
+# observation (data-raw/test_data.R)
+
+# Simulated data for the gross range test
+# was constructed so there are 4 observations per month
+# Day 1: Gross Range Flag 4 (low)
+# Day 5: Gross Range Flag 3 (low)*
+# Day 10: Gross Range Flag 1
+# Day 15: Gross Range Flag 4 (high)
+# Day 28: Gross Range Flag 3 (high)
+
+# * for the aquameasure and vr2ar sensors, the user_min is less than the sensor_min,
+# which means a flag of 3 (low) will not be assigned
+
+# Here, qc_test_grossrange() is applied to the test data. The qc'd data is then
+# separated by day.
+# The tests check that each day include the expected flag value, and
+# only the expected flag value.
+
 
 #' @importFrom dplyr %>% anti_join
 
@@ -20,195 +29,34 @@ dat <- readRDS(paste0(path, "/test_data_grossrange.RDS"))
 # sensorstrings::ss_ggplot_variables(dat)
 
 qc_gr <- dat %>%
-  qc_test_grossrange()
+  qc_test_grossrange(county = "Lunenburg", message = FALSE) %>%
+  mutate(sensor_serial_number = "") %>%
+  qc_pivot_longer(qc_tests = "grossrange") %>%
+  mutate(day = lubridate::day(timestamp_utc))
 
-# qc_plot_all_tests(
+# qc_plot_flags(
 #   qc_gr,
 #   qc_tests = "grossrange",
-#   vars = "salinity_psu"
+#   vars = "temperature_degree_c"
 # )
-#
+# qc_plot_flags(
+#   qc_gr,
+#   qc_tests = "grossrange",
+#   vars = "dissolved_oxygen_percent_saturation"
+# )
 
-join_cols <- c(
-  "latitude", "longitude", "sensor_type", "sensor_serial_number",
-  "timestamp_utc", "sensor_depth_at_low_tide_m", "value_temperature_degree_c",
-  "value_salinity_psu", "value_dissolved_oxygen_percent_saturation",
-  "value_dissolved_oxygen_uncorrected_mg_per_l",
-  "value_sensor_depth_measured_m", "grossrange_flag_temperature_degree_c",
-  "grossrange_flag_salinity_psu",
-  "grossrange_flag_dissolved_oxygen_percent_saturation",
-  "grossrange_flag_dissolved_oxygen_uncorrected_mg_per_l",
-  "grossrange_flag_sensor_depth_measured_m"
-)
+# filter by day flagged observations ------------------------------------------------
 
-  # temperature - fail --------------------------------------------------------------------
+qc_gr_1 <- qc_gr %>%
+  filter(day == 10)
 
-temp_gr_4 <- qc_gr %>%
-  filter(
-    # hobo data
-    sensor_serial_number == 20495248,
-    (timestamp_utc > as_datetime("2021-10-04 00:00:00") &
-       timestamp_utc < as_datetime("2021-10-04 06:00:00")) |
-      (timestamp_utc > as_datetime("2021-10-09 00:00:00") &
-         timestamp_utc < as_datetime("2021-10-09 06:00:00"))
-  ) %>%
-  rbind(
-    qc_gr %>%
-      filter(
-        # aquameasure data
-        sensor_serial_number == 670354,
-        (timestamp_utc > as_datetime("2021-10-02 00:00:00") &
-           timestamp_utc < as_datetime("2021-10-02 06:00:00")) |
-          (timestamp_utc > as_datetime("2021-10-08 00:00:00") &
-             timestamp_utc < as_datetime("2021-10-08 06:00:00"))
-      )
-  ) %>%
-  rbind(
-    # vemco data
-    qc_gr %>%
-      filter(
-        sensor_serial_number == 549340,
-        (timestamp_utc > as_datetime("2021-10-05 00:00:00") &
-           timestamp_utc < as_datetime("2021-10-05 12:00:00")) |
-          (timestamp_utc > as_datetime("2021-10-10 00:00:00") &
-             timestamp_utc < as_datetime("2021-10-10 12:00:00"))
-      )
-  )
+qc_gr_3 <- qc_gr %>%
+  filter(day == 5 | day == 28)
 
-# temperature - suspect -----------------------------------------------------
-
-temp_gr_3 <- qc_gr %>%
-  filter(
-    # hobo data
-    sensor_serial_number == 20495248,
-    (timestamp_utc > as_datetime("2021-10-14 00:00:00") &
-       timestamp_utc < as_datetime("2021-10-14 06:00:00")) |
-      (timestamp_utc > as_datetime("2021-10-19 00:00:00") &
-         timestamp_utc < as_datetime("2021-10-19 06:00:00"))
-  ) %>%
-  rbind(
-    qc_gr %>%
-      filter(
-        # aquameasure data
-        sensor_serial_number == 670354,
-        (timestamp_utc > as_datetime("2021-10-12 00:00:00")) &
-          (timestamp_utc < as_datetime("2021-10-12 06:00:00")) |
-          (timestamp_utc > as_datetime("2021-10-18 00:00:00")) &
-          (timestamp_utc < as_datetime("2021-10-18 06:00:00"))
-      )
-  ) %>%
-  rbind(
-    qc_gr %>%
-      filter(
-        sensor_serial_number == 549340,
-        (timestamp_utc > as_datetime("2021-10-15 00:00:00") &
-           timestamp_utc < as_datetime("2021-10-15 12:00:00")) |
-          (timestamp_utc > as_datetime("2021-10-20 00:00:00") &
-             timestamp_utc < as_datetime("2021-10-20 12:00:00"))
-      )
-  )
-
-# temperature - pass --------------------------------------------------------
-
-temp_gr_1 <- qc_gr %>%
-  filter(sensor_serial_number %in% c(670354, 20495248, 549340)) %>%
-  dplyr::anti_join(temp_gr_4, by = join_cols) %>%
-  dplyr::anti_join(temp_gr_3, by = join_cols)
+qc_gr_4 <- qc_gr %>%
+  filter(day == 1 | day == 15)
 
 
-# do_percent_saturation - fail ----------------------------------------------
-
-do_sat_gr_4 <- qc_gr %>%
-  filter(
-    # aquameasure data
-    sensor_serial_number == 670354,
-    (timestamp_utc > as_datetime("2021-10-03 00:00:00") &
-      timestamp_utc < as_datetime("2021-10-03 06:00:00")) |
-    timestamp_utc > as_datetime("2021-10-07 00:00:00") &
-      timestamp_utc < as_datetime("2021-10-07 06:00:00")
-  )
-
-# do percent saturation - suspect -------------------------------------------
-
-do_sat_gr_3 <- qc_gr %>%
-  filter(
-    # aquameasure data
-    sensor_serial_number == 670354,
-    (timestamp_utc > as_datetime("2021-10-13 00:00:00") &
-      timestamp_utc < as_datetime("2021-10-13 06:00:00")) |
-    (timestamp_utc > as_datetime("2021-10-17 00:00:00") &
-      timestamp_utc < as_datetime("2021-10-17 06:00:00"))
-  )
-
-# do percent saturation - pass ----------------------------------------------
-
-do_sat_gr_1 <- qc_gr %>%
-  filter(sensor_serial_number == 670354) %>%
-  dplyr::anti_join(do_sat_gr_4, by = join_cols) %>%
-  dplyr::anti_join(do_sat_gr_3, by = join_cols)
 
 
-# do concentration - fail ---------------------------------------------------
-
-do_conc_gr_4 <- qc_gr %>%
-  filter(
-    # hobo data
-    sensor_serial_number == 20827226,
-    (timestamp_utc > as_datetime("2021-10-03 12:00:00") &
-       timestamp_utc < as_datetime("2021-10-03 18:00:00")) |
-      (timestamp_utc > as_datetime("2021-10-10 12:00:00") &
-         timestamp_utc < as_datetime("2021-10-10 18:00:00"))
-  )
-
-# do concentration - suspect ------------------------------------------------
-
-do_conc_gr_3 <- qc_gr %>%
-  filter(
-    # hobo data
-    sensor_serial_number == 20827226,
-    timestamp_utc > as_datetime("2021-10-17 12:00:00") &
-      timestamp_utc < as_datetime("2021-10-17 18:00:00")
-  )
-
-# do percent saturation - pass ----------------------------------------------
-
-do_conc_gr_1 <- qc_gr %>%
-  filter(sensor_serial_number == 20827226) %>%
-  dplyr::anti_join(do_conc_gr_4, by = join_cols) %>%
-  dplyr::anti_join(do_conc_gr_3, by = join_cols)
-
-# salinity - fail ---------------------------------------------------------
-
-salinity_gr_4 <- qc_gr %>%
-  filter(
-    sensor_serial_number == 680360,
-    (timestamp_utc > as_datetime("2021-10-06 00:00:00") &
-      timestamp_utc < as_datetime("2021-10-06 06:00:00")) |
-    (timestamp_utc > as_datetime("2021-10-16 00:00:00") &
-      timestamp_utc < as_datetime("2021-10-16 06:00:00"))
-  )
-
-
-# salinity - suspect ------------------------------------------------------
-
-salinity_gr_3 <- qc_gr %>%
-  filter(
-    sensor_serial_number == 680360,
-    timestamp_utc > as_datetime("2021-10-26 00:00:00") &
-      timestamp_utc < as_datetime("2021-10-26 06:00:00")
-  )
-
-
-# salinity - pass ---------------------------------------------------------
-
-salinity_gr_1 <- qc_gr %>%
-  filter(sensor_serial_number == 680360) %>%
-  dplyr::anti_join(salinity_gr_4, by = join_cols) %>%
-  dplyr::anti_join(salinity_gr_3, by = join_cols)
-
-
-# labels ------------------------------------------------------------------
-
-flag_labels <- data.frame(flag = c(1, 2, 3, 4, 9)) %>%
-  qc_assign_flag_labels()
 

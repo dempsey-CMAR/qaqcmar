@@ -5,7 +5,6 @@
 flag_labels <- data.frame(flag = c(1, 2, 3, 4, 9)) %>%
   qc_assign_flag_labels()
 
-
 # pivot -------------------------------------------------------------------
 
 path <- system.file("testdata", package = "qaqcmar")
@@ -13,7 +12,11 @@ path <- system.file("testdata", package = "qaqcmar")
 qc_tests <- c("climatology", "grossrange")
 
 dat_wide <- readRDS(paste0(path, "/test_data_grossrange.RDS")) %>%
-  qc_test_all(qc_tests = qc_tests)
+  qc_test_all(
+    qc_tests = qc_tests,
+    county = "Lunenburg",
+    message = FALSE
+  )
 
 dat_long <- dat_wide %>%
   qc_pivot_longer(qc_tests = qc_tests)
