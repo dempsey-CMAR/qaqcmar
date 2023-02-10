@@ -38,7 +38,6 @@ sensor_max is assigned a flag of 4; value == sensor_max is assigned a flag of
 }
 \seealso{
 Other tests: 
-\code{\link{qc_test_climatology}()},
-\code{\link{qc_test_spike}()}
+\code{\link{qc_test_climatology}()}
 }
 \concept{tests}

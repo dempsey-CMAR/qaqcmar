@@ -8,7 +8,7 @@
 #'
 #' @inheritParams qc_test_climatology
 #' @inheritParams qc_test_grossrange
-#' @inheritParams qc_test_spike
+
 #'
 #' @return Returns \code{dat} with additional quality control flag columns.
 #'
@@ -17,6 +17,7 @@
 #'
 #' @export
 
+#@inheritParams qc_test_spike
 
 # path <- system.file("testdata", package = "qaqcmar")
 # dat <- read.csv(paste0(path, "/example_data.csv"))
@@ -29,7 +30,7 @@ qc_test_all <- function(
   qc_tests = c("climatology", "grossrange", "spike"),
   climatology_table = NULL,
   grossrange_table = NULL,
-  spike_table = NULL,
+  #spike_table = NULL,
   county,
   message = TRUE
 ) {
@@ -55,12 +56,12 @@ qc_test_all <- function(
     )
   }
 
-  if("spike" %in% qc_tests) {
-    dat_out[[3]] <- qc_test_spike(
-      dat,
-      spike_table = spike_table
-    )
-  }
+  # if("spike" %in% qc_tests) {
+  #   dat_out[[3]] <- qc_test_spike(
+  #     dat,
+  #     spike_table = spike_table
+  #   )
+  # }
 
   # remove empty list elements
   dat_out <- Filter(Negate(is.null), dat_out)

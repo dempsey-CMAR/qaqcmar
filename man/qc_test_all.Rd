@@ -9,7 +9,6 @@ qc_test_all(
   qc_tests = c("climatology", "grossrange", "spike"),
   climatology_table = NULL,
   grossrange_table = NULL,
-  spike_table = NULL,
   county,
   message = TRUE
 )
@@ -42,12 +41,6 @@ value; \code{user_max}: maximum reasonable value.
 Default values are used if \code{grossrange_table = NULL}. To see the
 default \code{grossrange_table}, type \code{subset(threshold_tables,
   qc_test == "grossrange")} in the console.}
-
-\item{spike_table}{Data frame with 3 columns: \code{variable}: should match
-the names of the variables being tested in \code{dat}.
-
-Default is \code{spike_table = NULL}, which uses default values. To see the
-default \code{spike_table}, type \code{threshold_tables$spike_table}.}
 
 \item{county}{Character string indicating the county from which \code{dat}
 was collected. Required if the default \code{climatology_table} is used.}
