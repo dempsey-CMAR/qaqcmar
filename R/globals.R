@@ -46,6 +46,16 @@ utils::globalVariables(
     "spike_high",
     "spike_low",
 
+    # qc_test_rate_of_change
+    "county",
+    "station",
+    "deployment_range",
+    "int_sample",
+    "n_sample",
+    "stdev_max",
+    "rate_of_change_flag",
+    "sd_roll",
+
     # qc_assign_max_flag
     "qc_col",
     "qc_flag",

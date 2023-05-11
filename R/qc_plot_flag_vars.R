@@ -37,7 +37,7 @@
 
 qc_plot_flags <- function(
     dat,
-    qc_tests = c("climatology", "grossrange", "spike"),
+    qc_tests = c("climatology", "grossrange", "rate_of_change", "spike"),
     vars = "all",
     labels = TRUE, ncol = NULL, flag_title = TRUE
 ) {
