@@ -32,6 +32,8 @@ Apply the climatology test
 }
 \seealso{
 Other tests: 
-\code{\link{qc_test_grossrange}()}
+\code{\link{qc_test_grossrange}()},
+\code{\link{qc_test_rate_of_change}()},
+\code{\link{qc_test_spike}()}
 }
 \concept{tests}
