@@ -54,6 +54,8 @@ qc_plot_flags <- function(
 
   if(isTRUE(labels)) dat <- dat %>% qc_assign_flag_labels()
 
+  if(is.null(ncol)) ncol <- 1
+
   p <- list(NULL)
   p_out <- list(NULL)
 
