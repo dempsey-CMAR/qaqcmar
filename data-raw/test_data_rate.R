@@ -58,7 +58,8 @@ ts3 <-   data.frame(
     sensor_depth_at_low_tide_m = 5,
     sensor_type = "aquameasure",
     sensor_serial_number = 1,
-    status = "Moderate biofouling"
+    #status = "Moderate biofouling"
+    status = "Biofouling"
   )
 
 
@@ -74,7 +75,8 @@ ts4 <-   data.frame(
     sensor_depth_at_low_tide_m = 5,
     sensor_type = "aquameasure",
     sensor_serial_number = 1,
-    status = "Intense biofouling"
+   # status = "Intense biofouling"
+   status = "Biofouling"
   )
 
 dat <- bind_rows(ts1, ts3, ts4) %>%

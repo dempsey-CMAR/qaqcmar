@@ -122,9 +122,12 @@ dat <- dat %>% select(-day)
 saveRDS(dat, file = here("inst/testdata/test_data_grossrange.RDS"))
 
 
-# ss_ggplot_variables(dat) +
+
+# dat %>%
+#   mutate(sensor_serial_number = "") %>%
+# ss_ggplot_variables() +
 #   geom_point(size = 3)
-#
+
 
 
 # qc_gr <- dat %>%

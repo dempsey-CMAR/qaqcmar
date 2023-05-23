@@ -1,12 +1,6 @@
 qc_test,variable,county,sensor_type,month,threshold,threshold_value
-grossrange,dissolved_oxygen_uncorrected_mg_per_l,NA,hobo do,NA,sensor_min,0
-grossrange,dissolved_oxygen_uncorrected_mg_per_l,NA,hobo do,NA,sensor_max,30
-grossrange,dissolved_oxygen_percent_saturation,NA,aquameasure,NA,sensor_min,0
-grossrange,dissolved_oxygen_percent_saturation,NA,aquameasure,NA,sensor_max,150
-grossrange,salinity_psu,NA,aquameasure,NA,sensor_min,0
-grossrange,salinity_psu,NA,aquameasure,NA,sensor_max,40
-grossrange,sensor_depth_measured_m,NA,aquameasure,NA,sensor_min,0
-grossrange,sensor_depth_measured_m,NA,aquameasure,NA,sensor_max,100
+grossrange,temperature_degree_c,NA,aquameasure,NA,sensor_min,-5
+grossrange,temperature_degree_c,NA,aquameasure,NA,sensor_max,35
 grossrange,temperature_degree_c,NA,aquameasure,NA,sensor_min,-5
 grossrange,temperature_degree_c,NA,aquameasure,NA,sensor_max,35
 grossrange,temperature_degree_c,NA,hobo,NA,sensor_min,-40
@@ -15,8 +9,6 @@ grossrange,temperature_degree_c,NA,vr2ar,NA,sensor_min,-5
 grossrange,temperature_degree_c,NA,vr2ar,NA,sensor_max,40
 grossrange,temperature_degree_c,NA,tidbit,NA,sensor_min,-20
 grossrange,temperature_degree_c,NA,tidbit,NA,sensor_max,50
-grossrange,sensor_depth_measured_m,NA,vr2ar,NA,sensor_min,0
-grossrange,sensor_depth_measured_m,NA,vr2ar,NA,sensor_max,500
 grossrange,temperature_degree_c,NA,hobo do,NA,sensor_min,-5
 grossrange,temperature_degree_c,NA,hobo do,NA,sensor_max,40
 grossrange,temperature_degree_c,Annapolis,NA,NA,user_min,-2.1689999999999987
