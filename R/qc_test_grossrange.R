@@ -64,18 +64,21 @@ qc_test_grossrange <- function(
         )
       )
 
-    user_thresh <- grossrange_table %>%
-      select(variable, contains("user")) %>%
-      filter(!is.na(user_min) & !is.na(user_max))
-
-    sensor_thresh <- grossrange_table %>%
-      select(sensor_type, variable, contains("sensor")) %>%
-      filter(!is.na(sensor_type))
-
-    grossrange_table <- sensor_thresh %>%
-      inner_join(user_thresh, by = "variable")
-
   }
+
+
+# re-format the threshold table -------------------------------------------
+  user_thresh <- grossrange_table %>%
+    select(variable, contains("user")) %>%
+    filter(!is.na(user_min) & !is.na(user_max))
+
+  sensor_thresh <- grossrange_table %>%
+    select(sensor_type, variable, contains("sensor")) %>%
+    filter(!is.na(sensor_type))
+
+  grossrange_table <- sensor_thresh %>%
+    inner_join(user_thresh, by = "variable")
+
 
   # message if user thresholds are larger than sensor thresholds --------------
   grossrange_check <- grossrange_table %>%
