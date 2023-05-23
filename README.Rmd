@@ -97,7 +97,7 @@ ss_ggplot_variables(dat) + geom_point(size = 1)
 
 ### Apply QC flags
 
-`qcqcmar` includes a separate function for each QC test. For example, `qc_test_grossrange()` applies the gross range test by adding a a `grossrange_flag_**` column for each variable in `dat`.
+`qaqcmar` includes a separate function for each QC test. For example, `qc_test_grossrange()` applies the gross range test by adding a a `grossrange_flag_**` column for each variable in `dat`.
 
 
 #### Gross Range Test

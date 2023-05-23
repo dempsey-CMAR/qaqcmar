@@ -73,6 +73,7 @@ each observation based on QARTOD recommendations.
 
 ``` r
 library(ggplot2)
+#> Warning: package 'ggplot2' was built under R version 4.2.3
 library(qaqcmar)
 library(sensorstrings)
 library(dplyr)
@@ -231,7 +232,7 @@ ss_ggplot_variables(dat) + geom_point(size = 1)
 
 ### Apply QC flags
 
-`qcqcmar` includes a separate function for each QC test. For example,
+`qaqcmar` includes a separate function for each QC test. For example,
 `qc_test_grossrange()` applies the gross range test by adding a a
 `grossrange_flag_**` column for each variable in `dat`.
 
