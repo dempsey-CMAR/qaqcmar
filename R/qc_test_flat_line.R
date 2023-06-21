@@ -1,15 +1,21 @@
 #' Add flag columns for the flat line test
 #'
-#' Only checks if values are *equal* (no tolerance)
+#' Only checks if values are *equal* (no tolerance).
+#'
+#' Flag of 2 assigned until can evaluate if it fails.
 #'
 #' @param dat Data frame of sensor string data in wide format.
 #'
-#' @return placeholder for now
+#' @param flat_line_table text
+#'
+#' @param keep_lag_cols text
+#'
+#' @return Format depends on keep_lag_cols
 #'
 #' @family tests
 #'
 #' @importFrom dplyr %>% arrange case_when contains group_by if_else lag lead
-#'   left_join mutate select
+#'   left_join mutate n_distinct select
 #' @importFrom lubridate day
 #' @importFrom sensorstrings ss_pivot_longer
 #' @importFrom stringr str_detect
@@ -17,25 +23,25 @@
 #'
 #' @export
 
-qc_test_spike <- function(dat, flat_line_table = NULL, keep_lag_cols = FALSE) {
+qc_test_flat_line <- function(dat,
+                              flat_line_table = NULL,
+                              keep_lag_cols = FALSE) {
 
   # import default thresholds from internal data file
-  if (is.null(flat__table)) {
-    flat_line_table <- threshold_tables %>%
-      filter(qc_test == "flat_line") %>%
-      select(-c(qc_test, month, sensor_type))
-  }
-#
-#   spike_table <- spike_table %>%
-#     select(variable, threshold, threshold_value)
+  if (is.null(flat_line_table)) {
 
-  flat_line_table <- data.frame(
-    count_suspect = 3,
-    count_fail = 5
-  )
+    flat_line_table <- data.frame(
+      count_suspect = 10,
+      count_fail = 20
+    )
+    # flat_line_table <- threshold_tables %>%
+    #   filter(qc_test == "flat_line") %>%
+    #   select(-c(qc_test, month, sensor_type))
+  }
 
   cols_suspect <- c(
     "value",
+    # Subtract 1 because "value" column counts as lag0
     paste("value_lag", 1:(flat_line_table$count_suspect-1), sep = "")
   )
 
@@ -44,13 +50,17 @@ qc_test_spike <- function(dat, flat_line_table = NULL, keep_lag_cols = FALSE) {
     paste("value_lag", 1:(flat_line_table$count_fail-1), sep = "")
   )
 
-
-  x <- dat %>%
+  dat <- dat %>%
     ss_pivot_longer() %>%
     mutate(sensor = paste(sensor_type, sensor_serial_number, sep = "-")) %>%
     group_by(sensor, variable) %>%
     dplyr::arrange(timestamp_utc, .by_group = TRUE) %>%
     add_n_lag_columns(value, 1:flat_line_table$count_fail) %>%
+    # pivot_wider(
+    #   names_from = variable,
+    #   values_from = c(contains("lag"), value),
+    #   names_sort = TRUE
+    # )
     rowwise() %>%
     mutate(
       # TRUE if value, value_lag1... value_lag_suspect are the same value
@@ -60,39 +70,29 @@ qc_test_spike <- function(dat, flat_line_table = NULL, keep_lag_cols = FALSE) {
 
       flat_line_flag = case_when(
         isTRUE(fail) ~ 4,
+        # if this is below ~3, then there could be suspect obs between Not Evaluated
+        is.na(sum(c_across(contains("lag")))) ~ 2,
         isTRUE(suspect) ~ 3,
-
-        #  is.na(suspect) & is.na(fail) ~ 2,
-
         TRUE ~ 1
       ),
       flat_line_flag = ordered(flat_line_flag, levels = 1:4)
     ) %>%
-    ungroup() %>%
-    pivot_wider(
-      names_from = variable,
-      values_from = c(value, flat_line_flag),
-      names_sort = TRUE
-    )
+    ungroup() #%>%
 
 
+  if(isFALSE(keep_lag_cols)) {
+    dat <- dat %>%
+      select(-contains("_lag"), -suspect, -fail) %>%
+      pivot_wider(
+        names_from = variable,
+        values_from = c(value, flat_line_flag),
+        names_sort = TRUE
+      )
+  }
 
-   qc_plot_flags(x, qc_tests = "flat_line")
-#
-# # NAs for when lag vals are NA
-#   # suspect for when 4 in a row
-#     ungroup() %>%
-#     #remove extra columns
-#     select(
-#       -c(lag_value, lead_value, spike_ref, spike_value, sensor,
-#          spike_high, spike_low)
-#     ) %>%
-#     pivot_wider(
-#       names_from = variable,
-#       values_from = c(value, spike_flag),
-#       names_sort = TRUE
-#     )
+  dat
 
+  # qc_plot_flags(dat2, qc_tests = "flat_line")
 }
 
 
