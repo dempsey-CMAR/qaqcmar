@@ -57,6 +57,7 @@ utils::globalVariables(
     "deployment_range",
     "int_sample",
     "n_sample",
+    "effective_sample",
     "stdev_max",
     "rolling_sd_flag",
     "sd_roll",

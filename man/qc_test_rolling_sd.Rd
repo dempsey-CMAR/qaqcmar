@@ -6,24 +6,31 @@
 \usage{
 qc_test_rolling_sd(
   dat,
-  period_hours = 24,
   rolling_sd_table = NULL,
+  period_hours = 24,
+  min_interval_hours = 2,
   align_window = "center",
-  keep_sd_cols = FALSE,
-  log_sd = FALSE,
-  offset = 0.005
+  keep_sd_cols = FALSE
 )
 }
 \arguments{
 \item{dat}{Data frame of sensor string data in wide format.}
 
-\item{period_hours}{Length of a full cycle in hours. Default assumes a daily
-cycle of \code{period_hours = 24}.}
-
 \item{rolling_sd_table}{Data frame with two columns: \code{variable}: must
 match the names of the variables being tested in \code{dat}.
 \code{stdev_max}: minimum accepted value for the rolling standard
 deviation. Default values are used if \code{rolling_sd_table = NULL}.}
+
+\item{period_hours}{Length of a full cycle in hours. Default assumes a daily
+cycle of \code{period_hours = 24}.}
+
+\item{min_interval_hours}{Minimum accepted interval between two observations.
+If the interval between two observations is greater than this value, the
+rolling standard deviation will be set to \code{NA}. This is important
+because for large intervals, the number of observations in
+\code{period_hours} will be small. For example, if samples are collected
+every 6 hours, only 4 observations would be used to calculate
+\code{roll_sd}.}
 
 \item{align_window}{Alignment for the window used to calculate the rolling
 standard deviation. Passed to \code{zoo:rollapply()}. Default is
@@ -33,18 +40,21 @@ window) and \code{"left"} (forward window).}
 \item{keep_sd_cols}{Logical value. If \code{TRUE}, the columns used to
 produce the rolling standard deviation (int_sample, n_sample, and sd_roll)
 are returned in \code{dat}. Default is \code{FALSE}.}
-
-\item{log_sd}{Logical value. If \code{TRUE}, the natural log of the standard
-deviation is used. (Because more normal distribution. Make sure to use
-appropriate threshold.)}
-
-\item{offset}{default 0.005}
 }
 \value{
 Returns \code{dat} in a wide format, with rolling standard deviation
 flag columns for each variable in the form "rolling_sd_flag_variable".
 }
 \description{
+For large data gaps n_int will be really large so n_sample will -> 0 and
+sd_roll will be NA.
+}
+\details{
+When n_interval = period_hours, sd_roll = NA
+
+Going to explicitly set n_sample to 0 when sample_int > n_period (when there
+is potentially 1 or less samples in the time frame of interest).
+
 \code{sd_roll} is rounded to 2 decimal places.
 }
 \seealso{

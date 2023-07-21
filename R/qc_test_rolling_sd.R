@@ -1,7 +1,12 @@
 #' Apply the rolling standard deviation test
 #'
 #' For large data gaps n_int will be really large so n_sample will -> 0 and
-#' sd_roll will be NA
+#' sd_roll will be NA.
+#'
+#' When n_interval = period_hours, sd_roll = NA
+#'
+#' Going to explicitly set n_sample to 0 when sample_int > n_period (when there
+#' is potentially 1 or less samples in the time frame of interest).
 #'
 #' \code{sd_roll} is rounded to 2 decimal places.
 #'
@@ -15,6 +20,14 @@
 #' @param period_hours Length of a full cycle in hours. Default assumes a daily
 #'   cycle of \code{period_hours = 24}.
 #'
+#' @param min_interval_hours Minimum accepted interval between two observations.
+#'   If the interval between two observations is greater than this value, the
+#'   rolling standard deviation will be set to \code{NA}. This is important
+#'   because for large intervals, the number of observations in
+#'   \code{period_hours} will be small. For example, if samples are collected
+#'   every 6 hours, only 4 observations would be used to calculate
+#'   \code{roll_sd}.
+#'
 #' @param align_window Alignment for the window used to calculate the rolling
 #'   standard deviation. Passed to \code{zoo:rollapply()}. Default is
 #'   \code{align_window = "center"}. Other options are \code{"right"} (backward
@@ -23,12 +36,6 @@
 #' @param keep_sd_cols Logical value. If \code{TRUE}, the columns used to
 #'   produce the rolling standard deviation (int_sample, n_sample, and sd_roll)
 #'   are returned in \code{dat}. Default is \code{FALSE}.
-#'
-#' @param log_sd Logical value. If \code{TRUE}, the natural log of the standard
-#'   deviation is used. (Because more normal distribution. Make sure to use
-#'   appropriate threshold.)
-#'
-#' @param offset default 0.005
 #'
 #' @return Returns \code{dat} in a wide format, with rolling standard deviation
 #'   flag columns for each variable in the form "rolling_sd_flag_variable".
@@ -46,13 +53,11 @@
 
 qc_test_rolling_sd <- function(
     dat,
-    period_hours = 24,
     rolling_sd_table = NULL,
+    period_hours = 24,
+    min_interval_hours = 2,
     align_window = "center",
-    keep_sd_cols = FALSE,
-    log_sd = FALSE,
-    offset = 0.005
-) {
+    keep_sd_cols = FALSE) {
 
   # import default thresholds from internal data file -----------------------
   if (is.null(rolling_sd_table)) {
@@ -87,20 +92,25 @@ qc_test_rolling_sd <- function(
       # number of samples in  period_hours
       # 60 mins / hour * 1 sample / int_sample mins * 24 hours / period
       n_sample = round((60 / int_sample) * period_hours),
-      n_sample = if_else(is.na(n_sample), 1, n_sample), # first obs
+      # n_sample = if_else(is.na(n_sample), 1, n_sample), # first obs
+      effective_sample = case_when(
+        # first observation of each group is NA, which will give error in rollapply
+        is.na(n_sample) ~ 0,
+        # if the sample interval is greater than acceptable limit, set n_sample to 0
+        # so that roll_sd will be 0
+        int_sample > min_interval_hours * 60 ~ 0,
+        TRUE ~ n_sample
+      ),
 
       # rolling sd
       sd_roll = rollapply(
-        value, width = n_sample, align = align_window, FUN = sd, fill = NA
+        value, width = effective_sample,
+        align = align_window, FUN = sd, fill = NA
       ),
 
       sd_roll = round(sd_roll, digits = 2)
     )
 
-  if(isTRUE(log_sd)) {
-    dat <- dat %>%
-      mutate(sd_roll = round(log(sd_roll + offset), digits = 2))
-  }
 
   # assign flags
   dat <- dat %>%
@@ -121,7 +131,7 @@ qc_test_rolling_sd <- function(
     )
 
   if(isFALSE(keep_sd_cols)) {
-    dat <- dat %>% select(-c(int_sample, n_sample, sd_roll))
+    dat <- dat %>% select(-c(int_sample, n_sample, effective_sample, sd_roll))
   }
 
   dat

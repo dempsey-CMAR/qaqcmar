@@ -35,38 +35,43 @@ dat <- readRDS(paste0(path, "/test_data_rolling_sd.RDS"))
 #   geom_point(size = 2) +
 #   geom_line(aes(group = sensor_type))
 
-qc_roc <- dat %>%
-  qc_test_rolling_sd() %>%
+# make sure the interval argument works as expected
+qc_roll_int <- dat %>%
+  qc_test_rolling_sd(keep_sd_cols = TRUE, min_interval_hours = 0.25) %>%
   qc_pivot_longer(qc_tests = "rolling_sd")
 
-p <- qc_plot_flags(
-  qc_roc,
-  qc_tests = "rolling_sd",
-  vars = "dissolved_oxygen_percent_saturation"
-)
+# general test
+qc_roll_sd <- dat %>%
+  qc_test_rolling_sd(keep_sd_cols = TRUE) %>%
+  qc_pivot_longer(qc_tests = "rolling_sd")
 
+# p <- qc_plot_flags(
+#   qc_roll_sd,
+#   qc_tests = "rolling_sd",
+#   vars = "dissolved_oxygen_percent_saturation"
+# )
+#
 # ggplotly(p$dissolved_oxygen_percent_saturation$rolling_sd)
 
-qc_roc_1 <- qc_roc %>%
+qc_roll_sd_1 <- qc_roll_sd %>%
   filter(
-    timestamp_utc >= as_datetime("2023-01-02 11:30:00"),
-    timestamp_utc <= as_datetime("2023-01-15 05:00:00")
+    timestamp_utc >= as_datetime("2023-01-01 23:30:00"),
+    timestamp_utc <= as_datetime("2023-01-07 06:30:00")
   )
 
-
-qc_roc_2 <- qc_roc %>%
+qc_roll_sd_2 <- qc_roll_sd %>%
   filter(
     (timestamp_utc >= as_datetime("2023-01-01 12:00:00") &
        timestamp_utc <= as_datetime("2023-01-01 23:00:00")) |
-      (timestamp_utc >= as_datetime("2023-02-15 00:30:00") &
+      (timestamp_utc >= as_datetime("2023-01-22 00:30:00") &
          timestamp_utc <= as_datetime("2023-02-15 12:00:00"))
   )
 
 
-qc_roc_3 <- qc_roc %>%
+qc_roll_sd_3 <- qc_roll_sd %>%
   filter(
-    timestamp_utc > as_datetime("2023-01-15 08:00:00"),
-    timestamp_utc <= as_datetime("2023-02-15 00:00:00")
+    timestamp_utc > as_datetime("2023-01-07 07:00:00"),
+    timestamp_utc <= as_datetime("2023-01-22 00:00:00")
   )
 
 
