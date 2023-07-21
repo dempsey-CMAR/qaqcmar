@@ -36,10 +36,18 @@ The value must be greater than the threshold to trigger flag (e.g., value >
 sensor_max is assigned a flag of 4; value == sensor_max is assigned a flag of
 3).
 }
+\details{
+Behind the scenes: Assigns sensor_type as "hobo do" if sensor_type = hobo and
+do_concentration is not NA.This is because grossrange for hobo temperature is
+xx to yy, while grossrange for hobo do temperature is zz to aa. If for some
+reason there is an NA for DO, but a value for temp, the temp value will be
+evaluated against the hobo grossrange.
+}
 \seealso{
 Other tests: 
 \code{\link{qc_test_climatology}()},
-\code{\link{qc_test_rate_of_change}()},
+\code{\link{qc_test_flat_line}()},
+\code{\link{qc_test_rolling_sd}()},
 \code{\link{qc_test_spike}()}
 }
 \concept{tests}

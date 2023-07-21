@@ -14,8 +14,8 @@
 #'
 #' @family tests
 #'
-#' @importFrom dplyr %>% arrange case_when contains group_by if_else lag lead
-#'   left_join mutate n_distinct select
+#' @importFrom dplyr %>% all_of arrange case_when contains group_by if_else lag
+#'   lead left_join mutate n_distinct select
 #' @importFrom lubridate day
 #' @importFrom sensorstrings ss_pivot_longer
 #' @importFrom stringr str_detect
@@ -23,16 +23,17 @@
 #'
 #' @export
 
-qc_test_flat_line <- function(dat,
-                              flat_line_table = NULL,
-                              keep_lag_cols = FALSE) {
+qc_test_flat_line <- function(
+    dat,
+    flat_line_table = NULL,
+    keep_lag_cols = FALSE) {
 
   # import default thresholds from internal data file
   if (is.null(flat_line_table)) {
 
     flat_line_table <- data.frame(
-      count_suspect = 10,
-      count_fail = 20
+      count_suspect = 3,
+      count_fail = 5
     )
     # flat_line_table <- threshold_tables %>%
     #   filter(qc_test == "flat_line") %>%
@@ -68,6 +69,11 @@ qc_test_flat_line <- function(dat,
       # TRUE if value, value_lag1... value_lag_fail are the same value
       fail = n_distinct(c_across(all_of(cols_fail))) == 1,
 
+      # # TRUE if value, value_lag1... value_lag_suspect are the same value
+      # suspect = var(c_across(all_of(cols_suspect))) < 0.0001,
+      # # # TRUE if value, value_lag1... value_lag_fail are the same value
+      # fail = var(c_across(all_of(cols_fail))) < 0.0001,
+
       flat_line_flag = case_when(
         isTRUE(fail) ~ 4,
         # if this is below ~3, then there could be suspect obs between Not Evaluated
@@ -77,8 +83,7 @@ qc_test_flat_line <- function(dat,
       ),
       flat_line_flag = ordered(flat_line_flag, levels = 1:4)
     ) %>%
-    ungroup() #%>%
-
+    ungroup()
 
   if(isFALSE(keep_lag_cols)) {
     dat <- dat %>%
@@ -92,7 +97,7 @@ qc_test_flat_line <- function(dat,
 
   dat
 
-  # qc_plot_flags(dat2, qc_tests = "flat_line")
+  #qc_plot_flags(dat4, qc_tests = "flat_line")
 }
 
 

@@ -39,6 +39,20 @@ dat <- expand.grid(
         (sensor_type == "tidbit" | sensor_type == "hobo" | sensor_type == "vr2ar")),
     !(variable == "dissolved_oxygen_percent_saturation" & sensor_type == "hobo do")
   ) %>%
+  # consider changing to only keep possible sensor-variable combinations
+  # filter(
+  #   (sensor_type == "aquameasure" &
+  #      variable %in% c("temperature_degree_c",
+  #                      "dissolved_oxygen_percent_saturation",
+  #                      "salinity_psu",
+  #                      "sensor_depth_measured_m")) |
+  #     (sensor_type == "hobo" &
+  #        variable %in% c("temperature_degree_c", "
+  #                     dissolved_oxygen_mg_per_l_uncorrected")) |
+  #     (sensor_type == "tidbit" & variable == "temperature_degree_c") |
+  #     (sensor_type == "vr2ar" &
+  #        variable %in% c("temperature_degree_c","sensor_depth_measured_m"))
+  # )
   mutate(
     # add depths (so easier to view simulated data when plotted)
     sensor_depth_at_low_tide_m = case_when(

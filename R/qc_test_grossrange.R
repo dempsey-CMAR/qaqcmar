@@ -4,6 +4,12 @@
 #' sensor_max is assigned a flag of 4; value == sensor_max is assigned a flag of
 #' 3).
 #'
+#' Behind the scenes: Assigns sensor_type as "hobo do" if sensor_type = hobo and
+#' do_concentration is not NA.This is because grossrange for hobo temperature is
+#' xx to yy, while grossrange for hobo do temperature is zz to aa. If for some
+#' reason there is an NA for DO, but a value for temp, the temp value will be
+#' evaluated against the hobo grossrange.
+#'
 #' @param dat Data frame of sensor string data in wide format.
 #'
 #' @param grossrange_table Data frame with 8 columns: \code{variable}: must
@@ -129,6 +135,19 @@ qc_test_grossrange <- function(
     )
   }
 
+  # if a hobo do sensor was used, change sensor_type from hobo to hobo do
+  # because the temperature grossrange is different
+  if("dissolved_oxygen_uncorrected_mg_per_l" %in% dat_vars) {
+    dat <- dat %>%
+      mutate(
+        sensor_type = case_when(
+          sensor_type == "hobo" &
+            !is.na(dissolved_oxygen_uncorrected_mg_per_l) ~ "hobo do",
+          TRUE ~ sensor_type)
+      )
+  }
+
+
 # add thresholds to dat and assign flags ---------------------------------------------------
   dat %>%
     ss_pivot_longer() %>%
@@ -143,7 +162,9 @@ qc_test_grossrange <- function(
         value <= user_max | value >= user_min ~ 1,
         TRUE ~ 2
       ),
-      grossrange_flag = ordered(grossrange_flag, levels = 1:4)
+      grossrange_flag = ordered(grossrange_flag, levels = 1:4),
+
+      sensor_type = if_else(sensor_type == "hobo do", "hobo", sensor_type)
     ) %>%
     #remove extra columns
     select(-c(sensor_max, sensor_min, user_max, user_min)) %>%

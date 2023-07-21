@@ -25,6 +25,11 @@ utils::globalVariables(
     "months_seasons",
     "threshold",
 
+    # qc_test_flat_line
+    "flat_line_flag",
+    "suspect",
+    "fail",
+
     # qc_test_grossrange
     "sensor",
     "sensor_type",
@@ -46,14 +51,14 @@ utils::globalVariables(
     "spike_high",
     "spike_low",
 
-    # qc_test_rate_of_change
+    # qc_test_rolling_sd
     "county",
     "station",
     "deployment_range",
     "int_sample",
     "n_sample",
     "stdev_max",
-    "rate_of_change_flag",
+    "rolling_sd_flag",
     "sd_roll",
 
     # qc_assign_max_flag

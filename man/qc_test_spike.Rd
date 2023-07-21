@@ -24,7 +24,8 @@ Might want to make this dependent on sample rate (sensor type)
 \seealso{
 Other tests: 
 \code{\link{qc_test_climatology}()},
+\code{\link{qc_test_flat_line}()},
 \code{\link{qc_test_grossrange}()},
-\code{\link{qc_test_rate_of_change}()}
+\code{\link{qc_test_rolling_sd}()}
 }
 \concept{tests}
