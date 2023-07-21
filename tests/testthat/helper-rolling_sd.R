@@ -29,23 +29,23 @@
 
 path <- system.file("testdata", package = "qaqcmar")
 
-dat <- readRDS(paste0(path, "/test_data_rate_of_change.RDS"))
+dat <- readRDS(paste0(path, "/test_data_rolling_sd.RDS"))
 
 # ss_ggplot_variables(dat) +
 #   geom_point(size = 2) +
 #   geom_line(aes(group = sensor_type))
 
 qc_roc <- dat %>%
-  qc_test_rate_of_change() %>%
-  qc_pivot_longer(qc_tests = "rate_of_change")
+  qc_test_rolling_sd() %>%
+  qc_pivot_longer(qc_tests = "rolling_sd")
 
-# p <- qc_plot_flags(
-#   qc_roc,
-#   qc_tests = "rate_of_change",
-#   vars = "dissolved_oxygen_percent_saturation"
-# )
-#
-# ggplotly(p$dissolved_oxygen_percent_saturation$rate_of_change)
+p <- qc_plot_flags(
+  qc_roc,
+  qc_tests = "rolling_sd",
+  vars = "dissolved_oxygen_percent_saturation"
+)
+
+# ggplotly(p$dissolved_oxygen_percent_saturation$rolling_sd)
 
 qc_roc_1 <- qc_roc %>%
   filter(

@@ -6,9 +6,12 @@
 \usage{
 qc_test_all(
   dat,
-  qc_tests = c("climatology", "grossrange", "spike"),
+  qc_tests = NULL,
   climatology_table = NULL,
+  flat_line_table = NULL,
   grossrange_table = NULL,
+  rolling_sd_table = NULL,
+  spike_table = NULL,
   county,
   message = TRUE
 )
@@ -31,6 +34,8 @@ Default values are used if \code{climatology_table = NULL}. To see the
 default \code{climatology_table}, type \code{subset(threshold_tables,
   qc_test == "climatology")} in the console.}
 
+\item{flat_line_table}{text}
+
 \item{grossrange_table}{Data frame with 8 columns: \code{variable}: must
 match the names of the variables being tested in \code{dat}.
 \code{sensor_type}: type of sensor that recorded the observation;
@@ -41,6 +46,17 @@ value; \code{user_max}: maximum reasonable value.
 Default values are used if \code{grossrange_table = NULL}. To see the
 default \code{grossrange_table}, type \code{subset(threshold_tables,
   qc_test == "grossrange")} in the console.}
+
+\item{rolling_sd_table}{Data frame with two columns: \code{variable}: must
+match the names of the variables being tested in \code{dat}.
+\code{stdev_max}: minimum accepted value for the rolling standard
+deviation. Default values are used if \code{rolling_sd_table = NULL}.}
+
+\item{spike_table}{Data frame with 3 columns: \code{variable}: should match
+the names of the variables being tested in \code{dat}.
+
+Default is \code{spike_table = NULL}, which uses default values. To see the
+default \code{spike_table}, type \code{threshold_tables$spike_table}.}
 
 \item{county}{Character string indicating the county from which \code{dat}
 was collected. Required if the default \code{climatology_table} is used.}

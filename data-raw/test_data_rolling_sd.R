@@ -63,7 +63,7 @@ ts3 <-   data.frame(
   )
 
 
-ts4 <-   data.frame(
+ts4 <- data.frame(
   timestamp_utc = seq(
     as_datetime("2023-01-31 12:30:00"), as_datetime("2023-02-15 12:00:00"),
     by = paste0(sample_interval, " mins")
@@ -107,7 +107,7 @@ dat <- bind_rows(ts1, ts3, ts4) %>%
 
 
 # Export rds file
-saveRDS(dat, file = here("inst/testdata/test_data_rate_of_change.RDS"))
+saveRDS(dat, file = here("inst/testdata/test_data_rolling_sd.RDS"))
 
 
 

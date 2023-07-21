@@ -29,12 +29,26 @@
 
 qc_pivot_longer <- function(
   dat_wide,
-  qc_tests = c("climatology", "grossrange", "rate_of_change", "spike")
+  qc_tests = NULL
 ) {
+
+
+  if (is.null(qc_tests)) {
+    qc_test <- c("climatology",
+                 "flat_line",
+                 "grossrange",
+                 "rolling_sd",
+                 "spike")
+  }
 
   qc_tests <- tolower(qc_tests)
 
-  tests_foo <- c("climatology", "grossrange", "rate_of_change", "spike", "qc")
+  tests_foo <- c("climatology",
+                 "flat_line",
+                 "grossrange",
+                 "rolling_sd",
+                 "spike",
+                 "qc")
 
   if(!(all(qc_tests %in% tests_foo))) {
 
@@ -64,12 +78,16 @@ qc_pivot_longer <- function(
     dat <- pivot_flags_longer(dat, qc_test = "climatology")
   }
 
+  if("flat_line" %in% qc_tests) {
+    dat <- pivot_flags_longer(dat, qc_test = "flat_line")
+  }
+
   if("grossrange" %in% qc_tests) {
     dat <- pivot_flags_longer(dat, qc_test = "grossrange")
   }
 
-  if("rate_of_change" %in% qc_tests) {
-    dat <- pivot_flags_longer(dat, qc_test = "rate_of_change")
+  if("rolling_sd" %in% qc_tests) {
+    dat <- pivot_flags_longer(dat, qc_test = "rolling_sd")
   }
 
   if("spike" %in% qc_tests) {

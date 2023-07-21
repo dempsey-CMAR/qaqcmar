@@ -7,7 +7,10 @@
 #'   c("climatology", "grossrange", "spike")}
 #'
 #' @inheritParams qc_test_climatology
+#' @inheritParams qc_test_flat_line
 #' @inheritParams qc_test_grossrange
+#' @inheritParams qc_test_rolling_sd
+#' @inheritParams qc_test_spike
 
 #'
 #' @return Returns \code{dat} with additional quality control flag columns.
@@ -27,13 +30,19 @@
 
 qc_test_all <- function(
   dat,
-  qc_tests = c("climatology", "grossrange", "spike"),
+  qc_tests = NULL,
   climatology_table = NULL,
+  flat_line_table = NULL,
   grossrange_table = NULL,
-  #spike_table = NULL,
+  rolling_sd_table = NULL,
+  spike_table = NULL,
   county,
   message = TRUE
 ) {
+
+  if (is.null(qc_tests)) {
+    qc_test <- c("climatology", "flat_line", "grossrange", "rolling_sd", "spike")
+  }
 
   qc_tests <- tolower(qc_tests)
 
@@ -53,6 +62,13 @@ qc_test_all <- function(
       grossrange_table = grossrange_table,
       county = county,
       message = message
+    )
+  }
+
+  if("rolling_sd" %in% qc_tests) {
+    dat_out[[3]] <- qc_test_rolling_sd(
+      dat,
+      rolling_sd_table = rolling_sd_table
     )
   }
 
