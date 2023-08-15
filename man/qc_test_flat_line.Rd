@@ -2,7 +2,7 @@
 % Please edit documentation in R/qc_test_flat_line.R
 \name{qc_test_flat_line}
 \alias{qc_test_flat_line}
-\title{Add flag columns for the flat line test}
+\title{Apply the flat line test}
 \usage{
 qc_test_flat_line(dat, flat_line_table = NULL, keep_lag_cols = FALSE)
 }

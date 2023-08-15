@@ -32,16 +32,14 @@ Returns \code{dat} in a wide format, with grossrange flag columns for
 each variable in the form "grossrange_flag_variable".
 }
 \description{
-The value must be greater than the threshold to trigger flag (e.g., value >
-sensor_max is assigned a flag of 4; value == sensor_max is assigned a flag of
-3).
+The variable value must be greater than the threshold to trigger flag (e.g.,
+value > sensor_max is assigned a flag of 4; value == sensor_max is assigned a
+flag of 3).
 }
 \details{
-Behind the scenes: Assigns sensor_type as "hobo do" if sensor_type = hobo and
-do_concentration is not NA.This is because grossrange for hobo temperature is
-xx to yy, while grossrange for hobo do temperature is zz to aa. If for some
-reason there is an NA for DO, but a value for temp, the temp value will be
-evaluated against the hobo grossrange.
+The sensor_type is reassigned as "hobo do" if sensor_type = hobo and
+do_concentration is not NA so that the data can be joined with the
+\code{grossrange_table} by \code{sensor_type} and \code{variable}.
 }
 \seealso{
 Other tests: 

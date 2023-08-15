@@ -9,7 +9,7 @@
 
 [![License: GPL
 v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-[![](https://img.shields.io/badge/devel%20version-0.0.3-blue.svg)](https://github.com/dempsey-cmar/qaqcmar)
+[![](https://img.shields.io/badge/devel%20version-0.0.6-blue.svg)](https://github.com/dempsey-cmar/qaqcmar)
 [![CodeFactor](https://www.codefactor.io/repository/github/dempsey-cmar/qaqcmar/badge)](https://www.codefactor.io/repository/github/dempsey-cmar/qaqcmar)
 [![R-CMD-check](https://github.com/dempsey-CMAR/qaqcmar/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/dempsey-CMAR/qaqcmar/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
@@ -91,7 +91,7 @@ processes and does not reflect expected profiles.)
 # read in example data
 path <- system.file("testdata", package = "qaqcmar")
 
-dat <- readRDS(paste0(path, "/test_data_grossrange.RDS")) %>% 
+dat <- readRDS(paste0(path, "/test_data_grossrange.RDS")) %>%
   mutate(sensor_serial_number = "123")
 
 kable(dat[1:5, ])
@@ -432,8 +432,8 @@ qc_plot_flags(dat_gr, qc_tests = "grossrange", ncol = 2)
 `qc_test_all()` will apply all specified QC tests to `dat`.
 
 ``` r
-dat_qc <- dat %>% 
-  qc_test_all(qc_tests = c("climatology", "grossrange"), county = "Lunenburg") 
+dat_qc <- dat %>%
+  qc_test_all(qc_tests = c("climatology", "grossrange"), county = "Lunenburg")
 
 kable(dat_qc[1:5, ])
 ```
@@ -643,8 +643,8 @@ There are now 10 columns in `dat_qc`!
 keeping the *worst* flag for each variable.
 
 ``` r
-dat_qc <- dat_qc %>% 
- qc_assign_max_flag(qc_tests = c("climatology", "grossrange"))
+dat_qc <- dat_qc %>%
+  qc_assign_max_flag(qc_tests = c("climatology", "grossrange"))
 
 kable(dat_qc[1:5, ])
 ```

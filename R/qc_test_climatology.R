@@ -29,22 +29,13 @@
 #'
 #' @export
 
-# path <- system.file("testdata", package = "qaqcmar")
-# dat <- read.csv(paste0(path, "/example_data.csv"))
-#
-# dat2 <-  qc_test_climatology(dat)
-
-
 qc_test_climatology <- function(
-  dat,
-  climatology_table = NULL,
-  county = NULL
-) {
-
+    dat,
+    climatology_table = NULL,
+    county = NULL) {
   # import default thresholds from internal data file & format
-  if(is.null(climatology_table)) {
-
-    if(is.null(county)) {
+  if (is.null(climatology_table)) {
+    if (is.null(county)) {
       stop("Must specify << county >> in qc_test_climatology()")
     }
 
@@ -76,7 +67,6 @@ qc_test_climatology <- function(
     colnames()
 
   if (!all(dat_vars %in% unique(climatology_table$variable))) {
-
     missing_var <- unique(dat_vars[which(!(dat_vars %in% climatology_table$variable))])
 
     message(
@@ -100,7 +90,7 @@ qc_test_climatology <- function(
       ),
       climatology_flag = ordered(climatology_flag, levels = 1:4)
     ) %>%
-    #remove extra columns
+    # remove extra columns
     select(-c(season_min, season_max, month)) %>%
     pivot_wider(
       names_from = variable,
@@ -111,5 +101,4 @@ qc_test_climatology <- function(
   colnames(dat)[which(colnames(dat) == "tstamp")] <- colname_ts
 
   dat
-
 }

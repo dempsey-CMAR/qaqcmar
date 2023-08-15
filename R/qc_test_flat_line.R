@@ -1,4 +1,4 @@
-#' Add flag columns for the flat line test
+#' Apply the flat line test
 #'
 #' Only checks if values are *equal* (no tolerance).
 #'
@@ -27,10 +27,8 @@ qc_test_flat_line <- function(
     dat,
     flat_line_table = NULL,
     keep_lag_cols = FALSE) {
-
   # import default thresholds from internal data file
   if (is.null(flat_line_table)) {
-
     flat_line_table <- data.frame(
       count_suspect = 3,
       count_fail = 5
@@ -43,12 +41,12 @@ qc_test_flat_line <- function(
   cols_suspect <- c(
     "value",
     # Subtract 1 because "value" column counts as lag0
-    paste("value_lag", 1:(flat_line_table$count_suspect-1), sep = "")
+    paste("value_lag", 1:(flat_line_table$count_suspect - 1), sep = "")
   )
 
   cols_fail <- c(
     "value",
-    paste("value_lag", 1:(flat_line_table$count_fail-1), sep = "")
+    paste("value_lag", 1:(flat_line_table$count_fail - 1), sep = "")
   )
 
   dat <- dat %>%
@@ -85,7 +83,7 @@ qc_test_flat_line <- function(
     ) %>%
     ungroup()
 
-  if(isFALSE(keep_lag_cols)) {
+  if (isFALSE(keep_lag_cols)) {
     dat <- dat %>%
       select(-contains("_lag"), -suspect, -fail) %>%
       pivot_wider(
@@ -97,8 +95,5 @@ qc_test_flat_line <- function(
 
   dat
 
-  #qc_plot_flags(dat4, qc_tests = "flat_line")
+  # qc_plot_flags(dat4, qc_tests = "flat_line")
 }
-
-
-

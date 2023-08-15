@@ -1,14 +1,12 @@
 #' Apply the gross range test
 #'
-#' The value must be greater than the threshold to trigger flag (e.g., value >
-#' sensor_max is assigned a flag of 4; value == sensor_max is assigned a flag of
-#' 3).
+#' The variable value must be greater than the threshold to trigger flag (e.g.,
+#' value > sensor_max is assigned a flag of 4; value == sensor_max is assigned a
+#' flag of 3).
 #'
-#' Behind the scenes: Assigns sensor_type as "hobo do" if sensor_type = hobo and
-#' do_concentration is not NA.This is because grossrange for hobo temperature is
-#' xx to yy, while grossrange for hobo do temperature is zz to aa. If for some
-#' reason there is an NA for DO, but a value for temp, the temp value will be
-#' evaluated against the hobo grossrange.
+#' The sensor_type is reassigned as "hobo do" if sensor_type = hobo and
+#' do_concentration is not NA so that the data can be joined with the
+#' \code{grossrange_table} by \code{sensor_type} and \code{variable}.
 #'
 #' @param dat Data frame of sensor string data in wide format.
 #'
@@ -48,13 +46,10 @@ qc_test_grossrange <- function(
     dat,
     grossrange_table = NULL,
     county = NULL,
-    message = TRUE
-) {
-
+    message = TRUE) {
   # import default thresholds from internal data file -----------------------
   if (is.null(grossrange_table)) {
-
-    if(is.null(county)) {
+    if (is.null(county)) {
       stop("Must specify << county >> in qc_test_grossrange()")
     }
 
@@ -69,11 +64,10 @@ qc_test_grossrange <- function(
           user_min = 80, user_max = 120
         )
       )
-
   }
 
 
-# re-format the threshold table -------------------------------------------
+  # re-format the threshold table -------------------------------------------
   user_thresh <- grossrange_table %>%
     select(variable, contains("user")) %>%
     filter(!is.na(user_min) & !is.na(user_max))
@@ -98,8 +92,8 @@ qc_test_grossrange <- function(
     distinct(sensor_type, variable) %>%
     as.data.frame()
 
-  if(isTRUE(message)) {
-    if(nrow(check_max) > 0) {
+  if (isTRUE(message)) {
+    if (nrow(check_max) > 0) {
       message("<< user_max >> is greater than << sensor_max >> for: ")
       message(paste(utils::capture.output(check_max), collapse = "\n"))
     }
@@ -109,7 +103,7 @@ qc_test_grossrange <- function(
       distinct(sensor_type, variable) %>%
       as.data.frame()
 
-    if(nrow(check_min) > 0) {
+    if (nrow(check_min) > 0) {
       message("<< user_min >> is less than << sensor_min >> for: ")
       message(paste(utils::capture.output(check_min), collapse = "\n"))
     }
@@ -126,7 +120,6 @@ qc_test_grossrange <- function(
     colnames()
 
   if (!all(dat_vars %in% unique(grossrange_table$variable))) {
-
     missing_var <- unique(dat_vars[which(!(dat_vars %in% grossrange_table$variable))])
 
     warning(
@@ -137,18 +130,19 @@ qc_test_grossrange <- function(
 
   # if a hobo do sensor was used, change sensor_type from hobo to hobo do
   # because the temperature grossrange is different
-  if("dissolved_oxygen_uncorrected_mg_per_l" %in% dat_vars) {
+  if ("dissolved_oxygen_uncorrected_mg_per_l" %in% dat_vars) {
     dat <- dat %>%
       mutate(
         sensor_type = case_when(
           sensor_type == "hobo" &
             !is.na(dissolved_oxygen_uncorrected_mg_per_l) ~ "hobo do",
-          TRUE ~ sensor_type)
+          TRUE ~ sensor_type
+        )
       )
   }
 
 
-# add thresholds to dat and assign flags ---------------------------------------------------
+  # add thresholds to dat and assign flags ---------------------------------------------------
   dat %>%
     ss_pivot_longer() %>%
     left_join(grossrange_table, by = c("sensor_type", "variable")) %>%
@@ -156,17 +150,16 @@ qc_test_grossrange <- function(
     # about if user_min < sensor_min (it will get assigned a flag of 4)
     mutate(
       grossrange_flag = case_when(
-        value > sensor_max | value < sensor_min  ~ 4,
+        value > sensor_max | value < sensor_min ~ 4,
         (value <= sensor_max & value > user_max) |
-          (value >= sensor_min &  value < user_min) ~ 3,
+          (value >= sensor_min & value < user_min) ~ 3,
         value <= user_max | value >= user_min ~ 1,
         TRUE ~ 2
       ),
       grossrange_flag = ordered(grossrange_flag, levels = 1:4),
-
       sensor_type = if_else(sensor_type == "hobo do", "hobo", sensor_type)
     ) %>%
-    #remove extra columns
+    # remove extra columns
     select(-c(sensor_max, sensor_min, user_max, user_min)) %>%
     pivot_wider(
       names_from = variable,

@@ -21,7 +21,7 @@ qc_test_all(
 
 \item{qc_tests}{Character vector of quality control tests to apply to
 \code{dat}. Defaults to all available tests: \code{qc_tests =
-  c("climatology", "grossrange", "spike")}}
+  c("climatology", "grossrange", "rolling_sd", "spike")}}
 
 \item{climatology_table}{Data frame with 4 columns: \code{variable}: must
 match the names of the variables being tested in \code{dat}; \code{month}:
@@ -49,7 +49,7 @@ default \code{grossrange_table}, type \code{subset(threshold_tables,
 
 \item{rolling_sd_table}{Data frame with two columns: \code{variable}: must
 match the names of the variables being tested in \code{dat}.
-\code{stdev_max}: minimum accepted value for the rolling standard
+\code{stdev_max}: maximum accepted value for the rolling standard
 deviation. Default values are used if \code{rolling_sd_table = NULL}.}
 
 \item{spike_table}{Data frame with 3 columns: \code{variable}: should match

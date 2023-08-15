@@ -12,9 +12,5 @@ test_that("qc_assign_max_flag() chooses the correct flag", {
 
 
 test_that("qc_assign_max_flag() works on wide and long data", {
-
   expect_equal(dat_wide_max, dat_long_max)
-
 })
-
-

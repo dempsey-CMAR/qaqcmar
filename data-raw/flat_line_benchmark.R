@@ -1,4 +1,3 @@
-
 library(lubridate)
 library(microbenchmark)
 library(sensorstrings)
@@ -12,9 +11,11 @@ ss_ggplot_variables(dat)
 
 
 dat_cols <- dat %>%
-  select(sensor_type, sensor_serial_number, timestamp_utc,
-         dissolved_oxygen_percent_saturation, sensor_depth_measured_m,
-         temperature_degree_c)
+  select(
+    sensor_type, sensor_serial_number, timestamp_utc,
+    dissolved_oxygen_percent_saturation, sensor_depth_measured_m,
+    temperature_degree_c
+  )
 
 
 microbenchmark(

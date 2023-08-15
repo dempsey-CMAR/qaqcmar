@@ -18,8 +18,8 @@
 #' @importFrom dplyr across lag mutate
 #' @importFrom purrr map partial
 
-add_n_lag_columns <- function(dat, var, n_lags){
-  map_lag <- n_lags %>% map(~partial(lag, n = .x))
+add_n_lag_columns <- function(dat, var, n_lags) {
+  map_lag <- n_lags %>% map(~ partial(lag, n = .x))
 
   dat %>%
     mutate(
@@ -41,4 +41,3 @@ add_n_lag_columns <- function(dat, var, n_lags){
 #       across(.cols = {{ var }}, .fns = map_lead, .names = "{.col}_lead{n}"),
 #     )
 # }
-

@@ -25,7 +25,7 @@
 # vectors used to create data frame
 months <- seq(1, 2)
 days <- rep(c(1:28), 2)
-variables = c("temperature_degree_c", "dissolved_oxygen_percent_saturation")
+variables <- c("temperature_degree_c", "dissolved_oxygen_percent_saturation")
 sensors <- c("aquameasure", "hobo", "tidbit", "vr2ar")
 
 dat <- expand.grid(
@@ -35,8 +35,8 @@ dat <- expand.grid(
   # filter out impossible sensor-variable combinations
   filter(
     !((variable == "dissolved_oxygen_percent_saturation" |
-         variable == "dissolved_oxygen_mg_per_l") &
-        (sensor_type == "tidbit" | sensor_type == "hobo" | sensor_type == "vr2ar")),
+      variable == "dissolved_oxygen_mg_per_l") &
+      (sensor_type == "tidbit" | sensor_type == "hobo" | sensor_type == "vr2ar")),
     !(variable == "dissolved_oxygen_percent_saturation" & sensor_type == "hobo do")
   ) %>%
   # consider changing to only keep possible sensor-variable combinations
@@ -61,18 +61,16 @@ dat <- expand.grid(
       sensor_type == "hobo do" ~ 10,
       sensor_type == "tidbit" ~ 15,
       sensor_type == "vr2ar" ~ 25,
-       TRUE ~ NA_real_
+      TRUE ~ NA_real_
     ),
     timestamp_utc = as_datetime(paste("2023", month, day, sep = "-")),
     # add :"good values"
     value = case_when(
-
       variable == "temperature_degree_c" & sensor_type == "hobo" ~ 22,
       variable == "temperature_degree_c" & sensor_type == "aquameasure" ~ 16,
       variable == "temperature_degree_c" & sensor_type == "hobo do" ~ 11,
       variable == "temperature_degree_c" & sensor_type == "tidbit" ~ 4,
       variable == "temperature_degree_c" & sensor_type == "vr2ar" ~ 1,
-
       variable == "dissolved_oxygen_percent_saturation" ~ 100
     ),
     # add values with known flags
@@ -113,5 +111,3 @@ dat %>%
 #   qc_tests = "grossrange",
 #   vars = "dissolved_oxygen_percent_saturation"
 # )
-
-

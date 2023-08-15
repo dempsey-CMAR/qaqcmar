@@ -67,4 +67,3 @@ qc_sp_4 <- qc_sp %>%
 # flag 1
 qc_sp_1 <- qc_sp %>%
   filter(!(day %in% c(1, 2, 3, 4, 10, 16, 17, 18, 23, 28)))
-

@@ -45,8 +45,8 @@ grossrange_table <- threshold_tables %>%
 # vectors used to create data frame
 months <- seq(1, 12)
 days <- rep(c(1, 5, 10, 15, 28), 12)
-variables = c("temperature_degree_c", "dissolved_oxygen_percent_saturation")
-#sensors = na.omit(unique(grossrange_table$sensor_type))
+variables <- c("temperature_degree_c", "dissolved_oxygen_percent_saturation")
+# sensors = na.omit(unique(grossrange_table$sensor_type))
 sensors <- c("aquameasure", "hobo", "tidbit", "vr2ar")
 
 dat <- expand.grid(
@@ -56,8 +56,8 @@ dat <- expand.grid(
   # filter out impossible sensor-variable combinations
   filter(
     !((variable == "dissolved_oxygen_percent_saturation" |
-         variable == "dissolved_oxygen_mg_per_l") &
-        (sensor_type == "tidbit" | sensor_type == "hobo" | sensor_type == "vr2ar")),
+      variable == "dissolved_oxygen_mg_per_l") &
+      (sensor_type == "tidbit" | sensor_type == "hobo" | sensor_type == "vr2ar")),
     !(variable == "dissolved_oxygen_percent_saturation" & sensor_type == "hobo do")
   ) %>%
   # join with the sensor and user thresholds
@@ -72,7 +72,7 @@ dat <- expand.grid(
       select(variable, contains("user")) %>%
       filter(!is.na(user_min) & !is.na(user_max)),
     by = "variable"
-  )  %>%
+  ) %>%
   mutate(
     # add depths (so easier to view simulated data when plotted)
     sensor_depth_at_low_tide_m = case_when(
@@ -81,20 +81,19 @@ dat <- expand.grid(
       sensor_type == "hobo do" ~ 10,
       sensor_type == "tidbit" ~ 15,
       sensor_type == "vr2ar" ~ 25,
-       TRUE ~ NA_real_
+      TRUE ~ NA_real_
     ),
     timestamp_utc = as_datetime(paste("2023", month, day, sep = "-")),
     # add values with known flags
     value = case_when(
       day == 1 ~ sensor_min - 5, # flag 4
       day == 5 ~ sensor_min + 1, # flag 3
-      day == 10 ~ case_when(     # flag 1
+      day == 10 ~ case_when( # flag 1
         variable == "temperature_degree_c" & sensor_type == "hobo" ~ 2,
         variable == "temperature_degree_c" & sensor_type == "aquameasure" ~ 5,
         variable == "temperature_degree_c" & sensor_type == "hobo do" ~ 10,
         variable == "temperature_degree_c" & sensor_type == "tidbit" ~ 15,
         variable == "temperature_degree_c" & sensor_type == "vr2ar" ~ 19,
-
         variable == "dissolved_oxygen_percent_saturation" ~ 100,
         TRUE ~ NA_real_
       ),
@@ -107,13 +106,15 @@ dat <- expand.grid(
   ss_pivot_wider()
 
 
-dat[which((dat$sensor_type == "aquameasure" |
-            dat$sensor_type == "vr2ar") & dat$day == 5),
-    "temperature_degree_c"
-  ] <- NA
+dat[
+  which((dat$sensor_type == "aquameasure" |
+    dat$sensor_type == "vr2ar") & dat$day == 5),
+  "temperature_degree_c"
+] <- NA
 
-dat[which(dat$sensor_type == "v2rar" & dat$day == 5),
-    "temperature_degree_c"
+dat[
+  which(dat$sensor_type == "v2rar" & dat$day == 5),
+  "temperature_degree_c"
 ] <- NA
 
 dat <- dat %>% select(-day)
@@ -146,5 +147,3 @@ saveRDS(dat, file = here("inst/testdata/test_data_grossrange.RDS"))
 #   qc_tests = "grossrange",
 #   vars = "dissolved_oxygen_percent_saturation"
 # )
-
-

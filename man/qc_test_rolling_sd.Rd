@@ -8,7 +8,7 @@ qc_test_rolling_sd(
   dat,
   rolling_sd_table = NULL,
   period_hours = 24,
-  min_interval_hours = 2,
+  max_interval_hours = 2,
   align_window = "center",
   keep_sd_cols = FALSE
 )
@@ -18,13 +18,13 @@ qc_test_rolling_sd(
 
 \item{rolling_sd_table}{Data frame with two columns: \code{variable}: must
 match the names of the variables being tested in \code{dat}.
-\code{stdev_max}: minimum accepted value for the rolling standard
+\code{stdev_max}: maximum accepted value for the rolling standard
 deviation. Default values are used if \code{rolling_sd_table = NULL}.}
 
 \item{period_hours}{Length of a full cycle in hours. Default assumes a daily
 cycle of \code{period_hours = 24}.}
 
-\item{min_interval_hours}{Minimum accepted interval between two observations.
+\item{max_interval_hours}{Maximum accepted interval between two observations.
 If the interval between two observations is greater than this value, the
 rolling standard deviation will be set to \code{NA}. This is important
 because for large intervals, the number of observations in
@@ -33,29 +33,35 @@ every 6 hours, only 4 observations would be used to calculate
 \code{roll_sd}.}
 
 \item{align_window}{Alignment for the window used to calculate the rolling
-standard deviation. Passed to \code{zoo:rollapply()}. Default is
+standard deviation. Passed to \code{zoo::rollapply()}. Default is
 \code{align_window = "center"}. Other options are \code{"right"} (backward
 window) and \code{"left"} (forward window).}
 
 \item{keep_sd_cols}{Logical value. If \code{TRUE}, the columns used to
-produce the rolling standard deviation (int_sample, n_sample, and sd_roll)
-are returned in \code{dat}. Default is \code{FALSE}.}
+produce the rolling standard deviation (\code{int_sample}, \code{n_sample},
+and \code{sd_roll}) are returned in \code{dat}. Default is \code{FALSE}.}
 }
 \value{
 Returns \code{dat} in a wide format, with rolling standard deviation
 flag columns for each variable in the form "rolling_sd_flag_variable".
 }
 \description{
-For large data gaps n_int will be really large so n_sample will -> 0 and
-sd_roll will be NA.
+The rolling standard deviation is calculated using the following algorithm:
 }
 \details{
-When n_interval = period_hours, sd_roll = NA
-
-Going to explicitly set n_sample to 0 when sample_int > n_period (when there
-is potentially 1 or less samples in the time frame of interest).
-
+\enumerate{
+\item Calculate the interval between the current and previous observation
+(\code{int_sample}; in minutes).
+\item Determine the number of samples in the specified time frame
+(\code{n_sample = round((60 / int_sample) * period_hours)})
+\item If \code{int_sample} is really large (> \code{max_interval_hours}), then
+set the effective sample number (\code{n_sample_effective}) to 0.
+\item Calculate the rolling standard deviation, with the width =
+\code{n_sample_effective} and alignment specified by \code{align_window}.
 \code{sd_roll} is rounded to 2 decimal places.
+}
+
+When int_sample = period_hours, n_sample = 1, so sd_roll = NA
 }
 \seealso{
 Other tests: 

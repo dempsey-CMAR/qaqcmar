@@ -4,7 +4,10 @@
 \alias{qc_assign_max_flag}
 \title{Assign each observation the maximum flag from applied QC tests.}
 \usage{
-qc_assign_max_flag(dat, qc_tests = c("climatology", "grossrange", "spike"))
+qc_assign_max_flag(
+  dat,
+  qc_tests = c("climatology", "grossrange", "rolling_sd", "spike")
+)
 }
 \arguments{
 \item{dat}{Data frame in long or wide format with flag columns from multiple

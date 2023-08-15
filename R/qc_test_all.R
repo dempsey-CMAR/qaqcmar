@@ -4,14 +4,13 @@
 #'
 #' @param qc_tests Character vector of quality control tests to apply to
 #'   \code{dat}. Defaults to all available tests: \code{qc_tests =
-#'   c("climatology", "grossrange", "spike")}
+#'   c("climatology", "grossrange", "rolling_sd", "spike")}
 #'
 #' @inheritParams qc_test_climatology
 #' @inheritParams qc_test_flat_line
 #' @inheritParams qc_test_grossrange
 #' @inheritParams qc_test_rolling_sd
 #' @inheritParams qc_test_spike
-
 #'
 #' @return Returns \code{dat} with additional quality control flag columns.
 #'
@@ -20,35 +19,25 @@
 #'
 #' @export
 
-#@inheritParams qc_test_spike
-
-# path <- system.file("testdata", package = "qaqcmar")
-# dat <- read.csv(paste0(path, "/example_data.csv"))
-#
-#
-# dat_qc <- qc_test_all(dat)
-
 qc_test_all <- function(
-  dat,
-  qc_tests = NULL,
-  climatology_table = NULL,
-  flat_line_table = NULL,
-  grossrange_table = NULL,
-  rolling_sd_table = NULL,
-  spike_table = NULL,
-  county,
-  message = TRUE
-) {
-
+    dat,
+    qc_tests = NULL,
+    climatology_table = NULL,
+    flat_line_table = NULL,
+    grossrange_table = NULL,
+    rolling_sd_table = NULL,
+    spike_table = NULL,
+    county,
+    message = TRUE) {
   if (is.null(qc_tests)) {
-    qc_test <- c("climatology", "flat_line", "grossrange", "rolling_sd", "spike")
+    qc_test <- c("climatology", "grossrange", "rolling_sd", "spike")
   }
 
   qc_tests <- tolower(qc_tests)
 
   dat_out <- list(NULL)
 
-  if("climatology" %in% qc_tests) {
+  if ("climatology" %in% qc_tests) {
     dat_out[[1]] <- qc_test_climatology(
       dat,
       climatology_table = climatology_table,
@@ -56,7 +45,7 @@ qc_test_all <- function(
     )
   }
 
-  if("grossrange" %in% qc_tests) {
+  if ("grossrange" %in% qc_tests) {
     dat_out[[2]] <- qc_test_grossrange(
       dat,
       grossrange_table = grossrange_table,
@@ -65,7 +54,7 @@ qc_test_all <- function(
     )
   }
 
-  if("rolling_sd" %in% qc_tests) {
+  if ("rolling_sd" %in% qc_tests) {
     dat_out[[3]] <- qc_test_rolling_sd(
       dat,
       rolling_sd_table = rolling_sd_table
@@ -85,7 +74,7 @@ qc_test_all <- function(
   # join by all common columns
   dat_out %>%
     purrr::reduce(dplyr::left_join)
- }
+}
 
 
 #' Assign each observation the maximum flag from applied QC tests.
@@ -105,34 +94,23 @@ qc_test_all <- function(
 #'
 #' @export
 
- qc_assign_max_flag <- function(
-   dat,
-   qc_tests =  c("climatology", "grossrange", "spike")
- ) {
+qc_assign_max_flag <- function(
+    dat,
+    qc_tests = c("climatology", "grossrange", "rolling_sd", "spike")) {
+  if (!("variable" %in% colnames(dat))) {
+    dat <- qc_pivot_longer(dat, qc_tests = qc_tests)
+  }
 
-   if(!("variable" %in% colnames(dat))) {
-     dat <- qc_pivot_longer(dat, qc_tests = qc_tests)
-   }
-
-   dat %>%
-     rowwise() %>%
-     #mutate(qc_col = max(c_across(contains("flag"))), na.rm = TRUE) %>%
-     mutate(qc_col = max(c_across(contains("flag")))) %>%
-     ungroup() %>%
-     select(-contains("flag")) %>%
-     rename(qc_flag = qc_col) %>%
-     pivot_wider(
-       names_from = variable,
-       values_from = c(value, qc_flag),
-       names_sort = TRUE
-     )
- }
-
-
-
-
-
-
-
-
-
+  dat %>%
+    rowwise() %>%
+    # mutate(qc_col = max(c_across(contains("flag"))), na.rm = TRUE) %>%
+    mutate(qc_col = max(c_across(contains("flag")))) %>%
+    ungroup() %>%
+    select(-contains("flag")) %>%
+    rename(qc_flag = qc_col) %>%
+    pivot_wider(
+      names_from = variable,
+      values_from = c(value, qc_flag),
+      names_sort = TRUE
+    )
+}

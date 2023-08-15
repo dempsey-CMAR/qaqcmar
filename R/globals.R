@@ -8,7 +8,6 @@
 
 utils::globalVariables(
   c(
-
     "sensor_serial_number",
     "threshold_value",
 
@@ -61,6 +60,7 @@ utils::globalVariables(
     "stdev_max",
     "rolling_sd_flag",
     "sd_roll",
+    "n_sample_effective",
 
     # qc_assign_max_flag
     "qc_col",
@@ -68,8 +68,11 @@ utils::globalVariables(
 
     # ggplot_all_tests
     "depth",
-    "sensor_depth_at_low_tide_m"
+    "sensor_depth_at_low_tide_m",
 
-
+    # qc_calculate_thresholds
+    "rolling_sd_max",
+    "mean_var",
+    "sd_var"
   )
 )

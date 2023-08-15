@@ -83,11 +83,10 @@ Consider simulated Water Quality data from January 1 to December 2023.(Note: thi
 # read in example data
 path <- system.file("testdata", package = "qaqcmar")
 
-dat <- readRDS(paste0(path, "/test_data_grossrange.RDS")) %>% 
+dat <- readRDS(paste0(path, "/test_data_grossrange.RDS")) %>%
   mutate(sensor_serial_number = "123")
 
 kable(dat[1:5, ])
-
 ```
 
 ```{r fig1, fig.height=6}
@@ -120,8 +119,8 @@ qc_plot_flags(dat_gr, qc_tests = "grossrange", ncol = 2)
 `qc_test_all()` will apply all specified QC tests to `dat`.
 
 ```{r, message=FALSE}
-dat_qc <- dat %>% 
-  qc_test_all(qc_tests = c("climatology", "grossrange"), county = "Lunenburg") 
+dat_qc <- dat %>%
+  qc_test_all(qc_tests = c("climatology", "grossrange"), county = "Lunenburg")
 
 kable(dat_qc[1:5, ])
 ```
@@ -131,8 +130,8 @@ There are now `r ncol(dat_qc)` columns in `dat_qc`!
 `qc_assign_max_flag()` reduces the number of columns in `dat_qc` by keeping the *worst* flag for each variable. 
 
 ```{r}
-dat_qc <- dat_qc %>% 
- qc_assign_max_flag(qc_tests = c("climatology", "grossrange"))
+dat_qc <- dat_qc %>%
+  qc_assign_max_flag(qc_tests = c("climatology", "grossrange"))
 
 kable(dat_qc[1:5, ])
 ```

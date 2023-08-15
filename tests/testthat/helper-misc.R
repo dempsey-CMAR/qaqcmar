@@ -34,11 +34,10 @@ dat_long_max <- dat_long %>%
 
 df <- data.frame(
   variable = c("var1", "var2", "var3"),
-  value = c(1, 2 ,3),
+  value = c(1, 2, 3),
   flag1 = c(100, 1, 1),
   flag2 = c(1, 200, 1),
   flag3 = c(1, 1, 300)
 )
 
 df_max_flag <- qc_assign_max_flag(df)
-

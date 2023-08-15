@@ -1,6 +1,4 @@
-
-test_that("qc_flag_labels() assigns correct flags",{
-
+test_that("qc_flag_labels() assigns correct flags", {
   expect_equal(
     as.character(flag_labels$flag),
     c("Pass", "Not Evaluated", "Suspect/Of Interest", "Fail", "Missing Data")
@@ -11,5 +9,4 @@ test_that("qc_flag_labels() assigns correct flags",{
     levels(flag_labels$flag),
     c("Pass", "Not Evaluated", "Suspect/Of Interest", "Fail", "Missing Data")
   )
-
 })

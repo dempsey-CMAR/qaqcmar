@@ -3,7 +3,7 @@ library(dplyr)
 library(lubridate)
 library(here)
 library(sensorstrings) # V. 0.1.0
-library(qaqcmar)       # V. 0.0.1
+library(qaqcmar) # V. 0.0.1
 library(tidyr)
 
 # Raw data ----------------------------------------------------------------
@@ -11,7 +11,7 @@ library(tidyr)
 climatology_table <- threshold_tables %>%
   filter(qc_test == "climatology", county == "Lunenburg") %>%
   select(-c(qc_test, county, sensor_type)) %>%
-  pivot_wider(names_from = "threshold", values_from = "threshold_value")  %>%
+  pivot_wider(names_from = "threshold", values_from = "threshold_value") %>%
   bind_rows(
     data.frame(
       variable = rep("dissolved_oxygen_percent_saturation", 12),
@@ -23,7 +23,7 @@ climatology_table <- threshold_tables %>%
 
 months <- seq(1, 12)
 days <- rep(c(1, 10, 28), 12)
-variables = c("temperature_degree_c", "dissolved_oxygen_percent_saturation")
+variables <- c("temperature_degree_c", "dissolved_oxygen_percent_saturation")
 
 dat <- expand.grid(month = months, day = days, variable = variables) %>%
   distinct(month, day, variable) %>%
@@ -50,4 +50,3 @@ ss_ggplot_variables(dat) +
 
 # Export rds file
 saveRDS(dat, file = here("inst/testdata/test_data_climatology.RDS"))
-

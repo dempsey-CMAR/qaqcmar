@@ -22,22 +22,23 @@
 
 # Raw data ----------------------------------------------------------------
 
-int <- 30                 # generate simulated data every 30 minutes
+int <- 30 # generate simulated data every 30 minutes
 n_int <- (60 / int) * 24 # number of intervals in 24 hours
 
-amp1 <- 5    # no biofouling
-amp2 <- 10   # moderate biofouling
-amp3 <- 20   # substantial biofouling
+amp1 <- 5 # no biofouling
+amp2 <- 10 # moderate biofouling
+amp3 <- 20 # substantial biofouling
 trans <- 100 # oscillate around 100 %
 
 # simulate data
 dat <- data.frame(
   timestamp_utc = seq(
     as_datetime("2023-01-01 12:00:00"), as_datetime("2023-01-22 12:00:00"),
-    by = paste0(int, " mins"))
+    by = paste0(int, " mins")
+  )
 ) %>%
   mutate(
-    index = 0:(n()-1),
+    index = 0:(n() - 1),
     # amplitude for different sections of the timeseries
     amp = case_when(
       timestamp_utc <= as_datetime("2023-01-07 12:00:00") ~ amp1,
@@ -153,13 +154,3 @@ saveRDS(dat, file = here("inst/testdata/test_data_rolling_sd.RDS"))
 #
 # # Export rds file
 # #saveRDS(dat, file = here("inst/testdata/test_data_rolling_sd.RDS"))
-
-
-
-
-
-
-
-
-
-

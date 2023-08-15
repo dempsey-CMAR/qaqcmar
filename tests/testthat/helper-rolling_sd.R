@@ -1,23 +1,7 @@
-# February 10, 2023
+# August 3, 2023
 
 # testdata was generated such that we KNOW what flag should be assigned to each
 # observation (data-raw/test_data.R)
-
-# Simulated data for the gross range test
-# was constructed so there are 4 observations per month
-# Day 1: Gross Range Flag 4 (low)
-# Day 5: Gross Range Flag 3 (low)*
-# Day 10: Gross Range Flag 1
-# Day 15: Gross Range Flag 4 (high)
-# Day 28: Gross Range Flag 3 (high)
-
-# * for the aquameasure and vr2ar sensors, the user_min is less than the sensor_min,
-# which means a flag of 3 (low) will not be assigned
-
-# Here, qc_test_grossrange() is applied to the test data. The qc'd data is then
-# separated by day.
-# The tests check that each day include the expected flag value, and
-# only the expected flag value.
 
 
 # dummy_thresholds --------------------------------------------------------
@@ -37,7 +21,7 @@ dat <- readRDS(paste0(path, "/test_data_rolling_sd.RDS"))
 
 # make sure the interval argument works as expected
 qc_roll_int <- dat %>%
-  qc_test_rolling_sd(keep_sd_cols = TRUE, min_interval_hours = 0.25) %>%
+  qc_test_rolling_sd(keep_sd_cols = TRUE, max_interval_hours = 0.25) %>%
   qc_pivot_longer(qc_tests = "rolling_sd")
 
 # general test
@@ -62,9 +46,9 @@ qc_roll_sd_1 <- qc_roll_sd %>%
 qc_roll_sd_2 <- qc_roll_sd %>%
   filter(
     (timestamp_utc >= as_datetime("2023-01-01 12:00:00") &
-       timestamp_utc <= as_datetime("2023-01-01 23:00:00")) |
+      timestamp_utc <= as_datetime("2023-01-01 23:00:00")) |
       (timestamp_utc >= as_datetime("2023-01-22 00:30:00") &
-         timestamp_utc <= as_datetime("2023-02-15 12:00:00"))
+        timestamp_utc <= as_datetime("2023-02-15 12:00:00"))
   )
 
 
@@ -127,4 +111,3 @@ qc_roll_sd_3 <- qc_roll_sd %>%
 # #
 # ggplot(dat_qc, aes(timestamp_utc, value, col = factor(flag_sd))) +
 #   geom_point()
-

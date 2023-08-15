@@ -55,8 +55,3 @@ qc_gr_3 <- qc_gr %>%
 
 qc_gr_4 <- qc_gr %>%
   filter(day == 1 | day == 15)
-
-
-
-
-

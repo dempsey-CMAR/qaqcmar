@@ -27,35 +27,32 @@
 #   qc_pivot_longer(qc_tests = "qc")
 
 
-qc_pivot_longer <- function(
-  dat_wide,
-  qc_tests = NULL
-) {
-
-
+qc_pivot_longer <- function(dat_wide, qc_tests = NULL) {
   if (is.null(qc_tests)) {
-    qc_test <- c("climatology",
-                 "flat_line",
-                 "grossrange",
-                 "rolling_sd",
-                 "spike")
+    qc_test <- c(
+      "climatology",
+      "grossrange",
+      "rolling_sd",
+      "spike"
+    )
   }
 
   qc_tests <- tolower(qc_tests)
 
-  tests_foo <- c("climatology",
-                 "flat_line",
-                 "grossrange",
-                 "rolling_sd",
-                 "spike",
-                 "qc")
+  tests_foo <- c(
+    "climatology",
+    "flat_line",
+    "grossrange",
+    "rolling_sd",
+    "spike",
+    "qc"
+  )
 
-  if(!(all(qc_tests %in% tests_foo))) {
-
+  if (!(all(qc_tests %in% tests_foo))) {
     err <- qc_tests[which(!(qc_tests %in% tests_foo))]
 
     stop(
-      paste("<< ", err, " >> is not an accepted value for qc_tests.\nHINT: check spelling\n" ),
+      paste("<< ", err, " >> is not an accepted value for qc_tests.\nHINT: check spelling\n"),
       collapse = "\n"
     )
   }
@@ -70,32 +67,31 @@ qc_pivot_longer <- function(
     )
 
   # pivot the flags indicated
-  if("qc" %in% qc_tests) {
+  if ("qc" %in% qc_tests) {
     dat <- pivot_flags_longer(dat, qc_test = "qc")
   }
 
-  if("climatology" %in% qc_tests) {
+  if ("climatology" %in% qc_tests) {
     dat <- pivot_flags_longer(dat, qc_test = "climatology")
   }
 
-  if("flat_line" %in% qc_tests) {
+  if ("flat_line" %in% qc_tests) {
     dat <- pivot_flags_longer(dat, qc_test = "flat_line")
   }
 
-  if("grossrange" %in% qc_tests) {
+  if ("grossrange" %in% qc_tests) {
     dat <- pivot_flags_longer(dat, qc_test = "grossrange")
   }
 
-  if("rolling_sd" %in% qc_tests) {
+  if ("rolling_sd" %in% qc_tests) {
     dat <- pivot_flags_longer(dat, qc_test = "rolling_sd")
   }
 
-  if("spike" %in% qc_tests) {
+  if ("spike" %in% qc_tests) {
     dat <- pivot_flags_longer(dat, qc_test = "spike")
   }
 
   dat
-
 }
 
 
@@ -115,7 +111,6 @@ qc_pivot_longer <- function(
 
 
 pivot_flags_longer <- function(dat_wide, qc_test) {
-
   col_name <- paste0(qc_test, "_flag_variable")
 
   dat_wide %>%

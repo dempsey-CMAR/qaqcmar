@@ -24,13 +24,12 @@
 #' @export
 
 qc_test_spike <- function(dat, spike_table = NULL) {
-
   # import default thresholds from internal data file
   if (is.null(spike_table)) {
     spike_table <- threshold_tables %>%
       filter(qc_test == "spike") %>%
-      select(-c(qc_test, month, sensor_type)) #%>%
-     # pivot_wider(names_from = "threshold", values_from = "threshold_value")
+      select(-c(qc_test, month, sensor_type)) # %>%
+    # pivot_wider(names_from = "threshold", values_from = "threshold_value")
   }
 
   spike_table <- spike_table %>%
@@ -57,18 +56,16 @@ qc_test_spike <- function(dat, spike_table = NULL) {
       spike_flag = ordered(spike_flag, levels = 1:4)
     ) %>%
     ungroup() %>%
-    #remove extra columns
+    # remove extra columns
     select(
-      -c(lag_value, lead_value, spike_ref, spike_value, sensor,
-         spike_high, spike_low)
+      -c(
+        lag_value, lead_value, spike_ref, spike_value, sensor,
+        spike_high, spike_low
+      )
     ) %>%
     pivot_wider(
       names_from = variable,
       values_from = c(value, spike_flag),
       names_sort = TRUE
     )
-
 }
-
-
-

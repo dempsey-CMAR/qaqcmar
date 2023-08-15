@@ -6,7 +6,8 @@
 # path <- system.file("data-raw", package = "qaqcmar")
 
 threshold_tables <- read_csv(
-  here("data-raw/threshold_tables.csv"), show_col_types = FALSE
+  here("data-raw/threshold_tables.csv"),
+  show_col_types = FALSE
 )
 
 usethis::use_data(threshold_tables, overwrite = TRUE)

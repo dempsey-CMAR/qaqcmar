@@ -24,12 +24,11 @@
 #  qc_assign_flag_labels()
 
 qc_assign_flag_labels <- function(dat) {
-
   dat %>%
     mutate(
       across(
         contains("flag"),
-        ~case_when(
+        ~ case_when(
           .x == 1 ~ "Pass",
           .x == 2 ~ "Not Evaluated",
           .x == 3 ~ "Suspect/Of Interest",
@@ -39,11 +38,10 @@ qc_assign_flag_labels <- function(dat) {
       ),
       across(
         contains("flag"),
-        ~ordered(
+        ~ ordered(
           .x,
           levels = c("Pass", "Not Evaluated", "Suspect/Of Interest", "Fail", "Missing Data")
         )
       )
     )
 }
-
