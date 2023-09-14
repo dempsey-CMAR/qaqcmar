@@ -4,14 +4,34 @@
 \alias{qc_calculate_rolling_sd_thresholds}
 \title{Calculate rolling standard deviation thresholds}
 \usage{
-qc_calculate_rolling_sd_thresholds(dat, var, prob = 0.95)
+qc_calculate_rolling_sd_thresholds(
+  dat,
+  var,
+  stat = NULL,
+  prob = 0.95,
+  n_sd = 3
+)
 }
 \arguments{
-\item{dat}{data.frame. Must include column sd_roll.}
+\item{dat}{dataframe. Must include column sd_roll.}
 
 \item{var}{variable to calculate thresholds for.}
 
-\item{prob}{sent to quantile function}
+\item{stat}{Statistic to calculate for the threshold. Options are: 1.
+"quartile", which uses the quantile function to calculate the value of the
+\code{prob} quartile. Used for variables with a right-tailed distribution
+for rolling standard deviation.
+\enumerate{
+\item "mean_sd", which calculates the threshold as the mean + \code{n_sd}
+standard deviations. Used for variables with normal distributions for
+rolling standard deviation.
+}}
+
+\item{prob}{sent to quantile function. Only required when \code{stat =
+"quartile"}.}
+
+\item{n_sd}{Number of standard deviations to use. Default is \code{n_sd = 3}.
+Only required when \code{stat = "mean_sd"}.}
 }
 \value{
 tibble with

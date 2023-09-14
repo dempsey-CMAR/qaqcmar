@@ -24,6 +24,13 @@
 #'   match the names of the variables being tested in \code{dat}.
 #'   \code{stdev_max}: maximum accepted value for the rolling standard
 #'   deviation. Default values are used if \code{rolling_sd_table = NULL}.
+#'   Optional additional column that is used to join with \code{dat}. This
+#'   column must have the same name as the string \code{join_column}.
+#'
+#' @param join_column Optional character string of a column name that is in both
+#'   \code{dat} and \code{rolling_sd_table}. The specified column will be used
+#'   to join the two tables. Default is \code{join_column = NULL}, and the
+#'   tables are joined only on the \code{variable} column.
 #'
 #' @param period_hours Length of a full cycle in hours. Default assumes a daily
 #'   cycle of \code{period_hours = 24}.
@@ -50,8 +57,8 @@
 #'
 #' @family tests
 #'
-#' @importFrom dplyr %>% case_when group_by if_else left_join mutate select
-#'   ungroup
+#' @importFrom dplyr %>% all_of case_when group_by if_else left_join mutate
+#'   select ungroup
 #' @importFrom sensorstrings ss_pivot_longer
 #' @importFrom stats sd
 #' @importFrom tidyr pivot_wider
@@ -62,6 +69,7 @@
 qc_test_rolling_sd <- function(
     dat,
     rolling_sd_table = NULL,
+    join_column = NULL,
     period_hours = 24,
     max_interval_hours = 2,
     align_window = "center",
@@ -83,9 +91,16 @@ qc_test_rolling_sd <- function(
   }
 
   # add thresholds to dat and assign flags ---------------------------------------------------
+  dat <- ss_pivot_longer(dat)
+
+
+  if(is.null(join_column)) {
+    dat <- left_join(dat, rolling_sd_table, by = "variable")
+  } else {
+    dat <- left_join(dat, rolling_sd_table, by = c("variable", join_column))
+  }
+
   dat <- dat %>%
-    ss_pivot_longer() %>%
-    left_join(rolling_sd_table, by = "variable") %>%
     group_by(county, station, deployment_range, variable, sensor_serial_number) %>%
     dplyr::arrange(timestamp_utc, .by_group = TRUE) %>%
     mutate(
@@ -132,9 +147,13 @@ qc_test_rolling_sd <- function(
       names_sort = TRUE
     )
 
+
+# clean up columns --------------------------------------------------------
   if (isFALSE(keep_sd_cols)) {
     dat <- dat %>% select(-c(int_sample, n_sample, n_sample_effective, sd_roll))
   }
+
+  #if(!is.null(join_column)) dat <- select(dat, -all_of(join_column))
 
   dat
 }
