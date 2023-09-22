@@ -11,6 +11,7 @@ qc_test_all(
   flat_line_table = NULL,
   grossrange_table = NULL,
   rolling_sd_table = NULL,
+  join_column = NULL,
   spike_table = NULL,
   county,
   message = TRUE
@@ -50,7 +51,14 @@ default \code{grossrange_table}, type \code{subset(threshold_tables,
 \item{rolling_sd_table}{Data frame with two columns: \code{variable}: must
 match the names of the variables being tested in \code{dat}.
 \code{stdev_max}: maximum accepted value for the rolling standard
-deviation. Default values are used if \code{rolling_sd_table = NULL}.}
+deviation. Default values are used if \code{rolling_sd_table = NULL}.
+Optional additional column that is used to join with \code{dat}. This
+column must have the same name as the string \code{join_column}.}
+
+\item{join_column}{Optional character string of a column name that is in both
+\code{dat} and \code{rolling_sd_table}. The specified column will be used
+to join the two tables. Default is \code{join_column = NULL}, and the
+tables are joined only on the \code{variable} column.}
 
 \item{spike_table}{Data frame with 3 columns: \code{variable}: should match
 the names of the variables being tested in \code{dat}.

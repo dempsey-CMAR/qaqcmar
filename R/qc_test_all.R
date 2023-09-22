@@ -26,6 +26,7 @@ qc_test_all <- function(
     flat_line_table = NULL,
     grossrange_table = NULL,
     rolling_sd_table = NULL,
+    join_column = NULL,
     spike_table = NULL,
     county,
     message = TRUE) {
@@ -57,7 +58,7 @@ qc_test_all <- function(
   if ("rolling_sd" %in% qc_tests) {
     dat_out[[3]] <- qc_test_rolling_sd(
       dat,
-      rolling_sd_table = rolling_sd_table
+      rolling_sd_table = rolling_sd_table, join_column = join_column
     )
   }
 

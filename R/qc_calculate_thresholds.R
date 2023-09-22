@@ -58,7 +58,8 @@ qc_calculate_user_thresholds <- function(
     pivot_longer(
       cols = c(contains("user"), contains("_var")),
       values_to = "threshold_value", names_to = "threshold"
-    )
+    ) %>%
+    mutate(threshold_value = round(threshold_value, digits = 3))
 }
 
 
@@ -127,9 +128,20 @@ qc_calculate_climatology_thresholds <- function(
 #' \code{dplyr::group_by(group_variable)}, and send the results to
 #' \code{qc_calculate_rolling_sd_thresholds()}.
 #'
-#' @param dat data.frame. Must include column sd_roll.
+#' @param dat dataframe. Must include column sd_roll.
 #' @param var variable to calculate thresholds for.
-#' @param prob sent to quantile function
+#' @param stat Statistic to calculate for the threshold. Options are: 1.
+#'   "quartile", which uses the quantile function to calculate the value of the
+#'   \code{prob} quartile. Used for variables with a right-tailed distribution
+#'   for rolling standard deviation.
+#'
+#'   2. "mean_sd", which calculates the threshold as the mean + \code{n_sd}
+#'   standard deviations. Used for variables with normal distributions for
+#'   rolling standard deviation.
+#' @param prob sent to quantile function. Only required when \code{stat =
+#'   "quartile"}.
+#' @param n_sd Number of standard deviations to use. Default is \code{n_sd = 3}.
+#'   Only required when \code{stat = "mean_sd"}.
 #'
 #' @return tibble with
 #'
@@ -137,19 +149,37 @@ qc_calculate_climatology_thresholds <- function(
 #'
 #' @export
 
-qc_calculate_rolling_sd_thresholds <- function(dat, var, prob = 0.95) {
+qc_calculate_rolling_sd_thresholds <- function(
+    dat, var, stat = NULL, prob = 0.95, n_sd = 3) {
   # turn this into proper error message
   # assert_that(length(prob) == 2)
 
-  dat %>%
-    summarise(
-      q = quantile(sd_roll, probs = prob, na.rm = TRUE)
-    ) %>%
-    rename(rolling_sd_max = q) %>%
+  if(is.null(stat)) {
+    stop("Argument stat must be 'quartile' or 'mean_sd', not  NULL")
+  } else if(stat == "quartile") {
+    dat <- dat %>%
+      summarise(
+        q = quantile(sd_roll, probs = prob, na.rm = TRUE)
+      ) %>%
+      rename(rolling_sd_max = q)
+  } else if(stat == "mean_sd") {
+    dat <- dat %>%
+      summarise(
+       mean_sd_roll = mean(sd_roll, na.rm = TRUE),
+       sd_sd_roll = sd(sd_roll, na.rm = TRUE)
+      ) %>%
+      mutate(rolling_sd_max = mean_sd_roll + n_sd * sd_sd_roll) %>%
+      select(-c(mean_sd_roll, sd_sd_roll))
+  } else {
+    stop(paste("Argument stat must be 'quartile' or 'mean_sd', not", stat))
+  }
+
+   dat %>%
     mutate(
       qc_test = "rolling_sd",
       variable = as.character(ensym(var)),
-      variable = str_remove(variable, "value_")
+      variable = str_remove(variable, "value_"),
+      rolling_sd_max = round(rolling_sd_max, digits = 2)
     ) %>%
     select(qc_test, variable, everything()) %>%
     pivot_longer(

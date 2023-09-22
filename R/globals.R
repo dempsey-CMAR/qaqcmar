@@ -73,6 +73,10 @@ utils::globalVariables(
     # qc_calculate_thresholds
     "rolling_sd_max",
     "mean_var",
-    "sd_var"
+    "sd_var",
+    "threshold_value",
+    "mean_sd_roll",
+    "sd_sd_roll"
+
   )
 )
