@@ -4,7 +4,12 @@
 \alias{qc_test_climatology}
 \title{Apply the climatology test}
 \usage{
-qc_test_climatology(dat, climatology_table = NULL, county = NULL)
+qc_test_climatology(
+  dat,
+  climatology_table = NULL,
+  join_column = NULL,
+  county = NULL
+)
 }
 \arguments{
 \item{dat}{Data frame of sensor string data in wide format.}
@@ -20,8 +25,16 @@ Default values are used if \code{climatology_table = NULL}. To see the
 default \code{climatology_table}, type \code{subset(threshold_tables,
   qc_test == "climatology")} in the console.}
 
+\item{join_column}{Optional character string of a column name that is in both
+\code{dat} and \code{climatology_table}. The specified column will be used
+to join the two tables. Default is \code{join_column = NULL}, and the
+tables are joined only on the \code{month} and \code{variable}
+columns.}
+
 \item{county}{Character string indicating the county from which \code{dat}
-was collected. Required if the default \code{climatology_table} is used.}
+was collected. Used to filter the default \code{climatology_table}. Not
+required if there is a \code{county} column in \code{dat} or if
+\code{climatology_table} is provided.}
 }
 \value{
 Returns \code{dat} in a wide format, with climatology flag columns

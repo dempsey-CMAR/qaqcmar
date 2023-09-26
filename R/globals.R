@@ -20,7 +20,7 @@ utils::globalVariables(
     "climatology_flag",
     "numeric_month",
     "qc_test",
-    "threshold_tables",
+    "thresholds",
     "months_seasons",
     "threshold",
 

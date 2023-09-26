@@ -13,7 +13,7 @@ qc_calculate_rolling_sd_thresholds(
 )
 }
 \arguments{
-\item{dat}{dataframe. Must include column sd_roll.}
+\item{dat}{data frame. Must include column sd_roll.}
 
 \item{var}{variable to calculate thresholds for.}
 

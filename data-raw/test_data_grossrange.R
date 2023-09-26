@@ -26,17 +26,10 @@
 # Raw data ----------------------------------------------------------------
 
 # import the gross range table
-grossrange_table <- threshold_tables %>%
+grossrange_table <- thresholds %>%
   filter(qc_test == "grossrange", county == "Lunenburg" | is.na(county)) %>%
   select(-c(qc_test, county, month)) %>%
   pivot_wider(names_from = "threshold", values_from = "threshold_value") %>%
-  # placeholder
-  bind_rows(
-    data.frame(
-      variable = rep("dissolved_oxygen_percent_saturation"),
-      user_min = 80, user_max = 120
-    )
-  ) %>%
   filter(
     variable == "temperature_degree_c" |
       variable == "dissolved_oxygen_percent_saturation"

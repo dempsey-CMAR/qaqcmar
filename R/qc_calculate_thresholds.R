@@ -112,11 +112,10 @@ qc_calculate_climatology_thresholds <- function(
       threshold = case_when(
         threshold == "user_min" ~ "season_min",
         threshold == "user_max" ~ "season_max",
-        TRUE ~ NA_character_
+        TRUE ~ threshold
       )
     )
 }
-
 
 #' Calculate rolling standard deviation thresholds
 #'
@@ -128,7 +127,7 @@ qc_calculate_climatology_thresholds <- function(
 #' \code{dplyr::group_by(group_variable)}, and send the results to
 #' \code{qc_calculate_rolling_sd_thresholds()}.
 #'
-#' @param dat dataframe. Must include column sd_roll.
+#' @param dat data frame. Must include column sd_roll.
 #' @param var variable to calculate thresholds for.
 #' @param stat Statistic to calculate for the threshold. Options are: 1.
 #'   "quartile", which uses the quantile function to calculate the value of the

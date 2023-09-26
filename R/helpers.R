@@ -27,8 +27,6 @@ add_n_lag_columns <- function(dat, var, n_lags) {
     )
 }
 
-
-
 # add lead and lag columns to dat -----------------------------------------
 
 # add_lead_and_lag_columns <- function(dat, var, n){
@@ -41,3 +39,61 @@ add_n_lag_columns <- function(dat, var, n_lags) {
 #       across(.cols = {{ var }}, .fns = map_lead, .names = "{.col}_lead{n}"),
 #     )
 # }
+
+
+#' Ensure there is one and only one county specified for the qc_test_* functions
+#'
+#' @param dat Data frame sent to the qc_test_* function.
+#'
+#' @param county_arg Character string (or \code{NULL} value) in the county
+#'   argument of the qc_test_*() function.
+#'
+#' @param foo Character string indicating which qc_test_* function is being
+#'   checked.
+#'
+#' @return Returns a character string indicating the county for which to
+
+assert_county <- function(dat, county_arg, foo) {
+
+  if(!is.null(county_arg) & !("county" %in% colnames(dat))) {
+    county <- county_arg
+  }
+
+  if(!is.null(county_arg) & ("county" %in% colnames(dat))) {
+    county_dat <- unique(dat$county)
+
+    if(length(county_dat) > 1) {
+      stop(
+        paste("More than one county found in << dat >>: ",
+              paste(county_dat, collapse = " and ")))
+    }
+
+    if(county_dat != county_arg) {
+      stop(
+        "Two different values for << county >> were found in << ", foo, " >>:\n",
+        county_arg, " was provided in the function argument, \n and ",
+        county_dat, " was found in << dat >>"
+      )
+    }
+
+    county <- county_arg
+  }
+
+  if(is.null(county_arg) & ("county" %in% colnames(dat))) {
+    county_dat <- unique(dat$county)
+
+    if(length(county_dat) > 1) {
+      stop(
+        paste("More than one county found in << dat >>: ",
+              paste(county_dat, collapse = " and ")))
+    }
+
+    county <- county_dat
+  }
+
+  if (is.null(county)) {
+    stop("Must specify << county >> test function")
+  }
+
+  county
+}

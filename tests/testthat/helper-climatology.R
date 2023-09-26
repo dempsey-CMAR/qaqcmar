@@ -34,6 +34,11 @@ qc_cl <- dat %>%
 #   qc_tests = "climatology",
 #   vars = "temperature_degree_c"
 # )
+# qc_plot_flags(
+#   qc_cl,
+#   qc_tests = "climatology",
+#   vars = "dissolved_oxygen_percent_saturation"
+# )
 
 # # timestamps for flagged observations ------------------------------------------------
 

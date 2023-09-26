@@ -4,12 +4,18 @@
 \alias{qc_test_grossrange}
 \title{Apply the gross range test}
 \usage{
-qc_test_grossrange(dat, grossrange_table = NULL, county = NULL, message = TRUE)
+qc_test_grossrange(
+  dat,
+  grossrange_table = NULL,
+  county = NULL,
+  join_column = NULL,
+  message = TRUE
+)
 }
 \arguments{
 \item{dat}{Data frame of sensor string data in wide format.}
 
-\item{grossrange_table}{Data frame with 8 columns: \code{variable}: must
+\item{grossrange_table}{Data frame with 7 columns: \code{variable}: must
 match the names of the variables being tested in \code{dat}.
 \code{sensor_type}: type of sensor that recorded the observation;
 \code{sensor_min}: minimum value the sensor can record; \code{sensor_max}:
@@ -17,11 +23,19 @@ maximum value the sensor can record. \code{user_min}: minimum reasonable
 value; \code{user_max}: maximum reasonable value.
 
 Default values are used if \code{grossrange_table = NULL}. To see the
-default \code{grossrange_table}, type \code{subset(threshold_tables,
+default \code{grossrange_table}, type \code{subset(thresholds,
   qc_test == "grossrange")} in the console.}
 
 \item{county}{Character string indicating the county from which \code{dat}
-was collected. Required if the default \code{grossrange_table} is used.}
+was collected. Used to filter the default \code{grossrange_table}. Not
+required if there is a \code{county} column in \code{dat} or if
+\code{grossrange_table} is provided.}
+
+\item{join_column}{Optional character string of a column name that is in both
+\code{dat} and \code{grossrange_table}. The specified column will be used
+to join the two tables. Default is \code{join_column = NULL}, and the
+tables are joined only on the \code{sensor_type} and \code{variable}
+columns.}
 
 \item{message}{Logical argument indicating whether to display a message if
 any \code{user_min} < \code{sensor_min} and/or \code{user_max} >
@@ -38,7 +52,7 @@ flag of 3).
 }
 \details{
 The sensor_type is reassigned as "hobo do" if sensor_type = hobo and
-do_concentration is not NA so that the data can be joined with the
+do_concentration is not \code{NA} so that the data can be joined with the
 \code{grossrange_table} by \code{sensor_type} and \code{variable}.
 }
 \seealso{

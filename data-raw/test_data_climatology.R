@@ -8,18 +8,18 @@ library(tidyr)
 
 # Raw data ----------------------------------------------------------------
 
-climatology_table <- threshold_tables %>%
-  filter(qc_test == "climatology", county == "Lunenburg") %>%
+climatology_table <- thresholds %>%
+  filter(qc_test == "climatology", county == "Lunenburg" | is.na(county)) %>%
   select(-c(qc_test, county, sensor_type)) %>%
-  pivot_wider(names_from = "threshold", values_from = "threshold_value") %>%
-  bind_rows(
-    data.frame(
-      variable = rep("dissolved_oxygen_percent_saturation", 12),
-      month = seq(1, 12),
-      season_min = rep(95, 12),
-      season_max = rep(105, 12)
-    )
-  )
+  pivot_wider(names_from = "threshold", values_from = "threshold_value") #%>%
+  # bind_rows(
+  #   data.frame(
+  #     variable = rep("dissolved_oxygen_percent_saturation", 12),
+  #     month = seq(1, 12),
+  #     season_min = rep(95, 12),
+  #     season_max = rep(105, 12)
+  #   )
+  # )
 
 months <- seq(1, 12)
 days <- rep(c(1, 10, 28), 12)
@@ -44,9 +44,8 @@ dat <- expand.grid(month = months, day = days, variable = variables) %>%
   arrange(timestamp_utc)
 
 
-
-ss_ggplot_variables(dat) +
-  geom_point(size = 3)
+# ss_ggplot_variables(dat) +
+#   geom_point(size = 3)
 
 # Export rds file
 saveRDS(dat, file = here("inst/testdata/test_data_climatology.RDS"))

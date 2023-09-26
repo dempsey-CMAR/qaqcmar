@@ -5,12 +5,12 @@
 #' flag of 3).
 #'
 #' The sensor_type is reassigned as "hobo do" if sensor_type = hobo and
-#' do_concentration is not NA so that the data can be joined with the
+#' do_concentration is not \code{NA} so that the data can be joined with the
 #' \code{grossrange_table} by \code{sensor_type} and \code{variable}.
 #'
 #' @param dat Data frame of sensor string data in wide format.
 #'
-#' @param grossrange_table Data frame with 8 columns: \code{variable}: must
+#' @param grossrange_table Data frame with 7 columns: \code{variable}: must
 #'   match the names of the variables being tested in \code{dat}.
 #'   \code{sensor_type}: type of sensor that recorded the observation;
 #'   \code{sensor_min}: minimum value the sensor can record; \code{sensor_max}:
@@ -18,11 +18,19 @@
 #'   value; \code{user_max}: maximum reasonable value.
 #'
 #'   Default values are used if \code{grossrange_table = NULL}. To see the
-#'   default \code{grossrange_table}, type \code{subset(threshold_tables,
+#'   default \code{grossrange_table}, type \code{subset(thresholds,
 #'   qc_test == "grossrange")} in the console.
 #'
 #' @param county Character string indicating the county from which \code{dat}
-#'   was collected. Required if the default \code{grossrange_table} is used.
+#'   was collected. Used to filter the default \code{grossrange_table}. Not
+#'   required if there is a \code{county} column in \code{dat} or if
+#'   \code{grossrange_table} is provided.
+#'
+#' @param join_column Optional character string of a column name that is in both
+#'   \code{dat} and \code{grossrange_table}. The specified column will be used
+#'   to join the two tables. Default is \code{join_column = NULL}, and the
+#'   tables are joined only on the \code{sensor_type} and \code{variable}
+#'   columns.
 #'
 #' @param message Logical argument indicating whether to display a message if
 #'   any \code{user_min} < \code{sensor_min} and/or \code{user_max} >
@@ -46,68 +54,64 @@ qc_test_grossrange <- function(
     dat,
     grossrange_table = NULL,
     county = NULL,
+    join_column = NULL,
     message = TRUE) {
+
+
   # import default thresholds from internal data file -----------------------
   if (is.null(grossrange_table)) {
-    if (is.null(county)) {
-      stop("Must specify << county >> in qc_test_grossrange()")
-    }
 
-    grossrange_table <- threshold_tables %>%
+    # might want to move this out of the if statement
+    county <- assert_county(dat, county, "qc_test_grossrange()")
+
+    grossrange_table <- thresholds %>%
       filter(qc_test == "grossrange", county == !!county | is.na(county)) %>%
       select(-c(qc_test, county, month)) %>%
-      pivot_wider(names_from = "threshold", values_from = "threshold_value") %>%
-      # placeholder
-      bind_rows(
-        data.frame(
-          variable = rep("dissolved_oxygen_percent_saturation"),
-          user_min = 80, user_max = 120
-        )
-      )
+      pivot_wider(values_from = "threshold_value", names_from = threshold)
+
+    # reformat
+    user_thresh <- grossrange_table %>%
+      select(variable, contains("user")) %>%
+      filter(!is.na(user_min) & !is.na(user_max))
+
+    sensor_thresh <- grossrange_table %>%
+      select(sensor_type, variable, contains("sensor")) %>%
+      filter(!is.na(sensor_type))
+
+    grossrange_table <- sensor_thresh %>%
+      inner_join(user_thresh, by = "variable")
   }
 
 
-  # re-format the threshold table -------------------------------------------
-  user_thresh <- grossrange_table %>%
-    select(variable, contains("user")) %>%
-    filter(!is.na(user_min) & !is.na(user_max))
 
-  sensor_thresh <- grossrange_table %>%
-    select(sensor_type, variable, contains("sensor")) %>%
-    filter(!is.na(sensor_type))
-
-  grossrange_table <- sensor_thresh %>%
-    inner_join(user_thresh, by = "variable")
-
-
-  # message if user thresholds are larger than sensor thresholds --------------
-  grossrange_check <- grossrange_table %>%
-    mutate(
-      check_max = user_max > sensor_max,
-      check_min = user_min < sensor_min
-    )
-
-  check_max <- grossrange_check %>%
-    filter(check_max == 1) %>%
-    distinct(sensor_type, variable) %>%
-    as.data.frame()
-
-  if (isTRUE(message)) {
-    if (nrow(check_max) > 0) {
-      message("<< user_max >> is greater than << sensor_max >> for: ")
-      message(paste(utils::capture.output(check_max), collapse = "\n"))
-    }
-
-    check_min <- grossrange_check %>%
-      filter(check_min == 1) %>%
-      distinct(sensor_type, variable) %>%
-      as.data.frame()
-
-    if (nrow(check_min) > 0) {
-      message("<< user_min >> is less than << sensor_min >> for: ")
-      message(paste(utils::capture.output(check_min), collapse = "\n"))
-    }
-  }
+  # # message if user thresholds are larger than sensor thresholds --------------
+  # grossrange_check <- grossrange_table %>%
+  #   mutate(
+  #     check_max = user_max > sensor_max,
+  #     check_min = user_min < sensor_min
+  #   )
+  #
+  # check_max <- grossrange_check %>%
+  #   filter(check_max == 1) %>%
+  #   distinct(sensor_type, variable) %>%
+  #   as.data.frame()
+#
+#   if (isTRUE(message)) {
+#     if (nrow(check_max) > 0) {
+#       message("<< user_max >> is greater than << sensor_max >> for: ")
+#       message(paste(utils::capture.output(check_max), collapse = "\n"))
+#     }
+#
+#     check_min <- grossrange_check %>%
+#       filter(check_min == 1) %>%
+#       distinct(sensor_type, variable) %>%
+#       as.data.frame()
+#
+#     if (nrow(check_min) > 0) {
+#       message("<< user_min >> is less than << sensor_min >> for: ")
+#       message(paste(utils::capture.output(check_min), collapse = "\n"))
+#     }
+#   }
 
   #  warning if there are variables in dat that do not have threshold --------
   dat_vars <- dat %>%
@@ -143,9 +147,15 @@ qc_test_grossrange <- function(
 
 
   # add thresholds to dat and assign flags ---------------------------------------------------
+  dat <- ss_pivot_longer(dat)
+
+  if(is.null(join_column)) {
+    dat <- left_join(dat, grossrange_table, by = c("sensor_type", "variable"))
+  } else {
+    dat <- left_join(dat, grossrange_table, by = c("sensor_type", "variable", join_column))
+  }
+
   dat %>%
-    ss_pivot_longer() %>%
-    left_join(grossrange_table, by = c("sensor_type", "variable")) %>%
     # sensor_max and sensor_min get evaluated first, so don't need to worry
     # about if user_min < sensor_min (it will get assigned a flag of 4)
     mutate(

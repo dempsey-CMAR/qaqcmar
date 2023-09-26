@@ -1,6 +1,6 @@
 #' Apply the climatology test
 #'
-#' @param dat Data frame of sensor string data in wide format.
+#' @inheritParams qc_test_grossrange
 #'
 #' @param climatology_table Data frame with 4 columns: \code{variable}: must
 #'   match the names of the variables being tested in \code{dat}; \code{month}:
@@ -14,7 +14,15 @@
 #'   qc_test == "climatology")} in the console.
 #'
 #' @param county Character string indicating the county from which \code{dat}
-#'   was collected. Required if the default \code{climatology_table} is used.
+#'   was collected. Used to filter the default \code{climatology_table}. Not
+#'   required if there is a \code{county} column in \code{dat} or if
+#'   \code{climatology_table} is provided.
+#'
+#' @param join_column Optional character string of a column name that is in both
+#'   \code{dat} and \code{climatology_table}. The specified column will be used
+#'   to join the two tables. Default is \code{join_column = NULL}, and the
+#'   tables are joined only on the \code{month} and \code{variable}
+#'   columns.
 #'
 #' @return Returns \code{dat} in a wide format, with climatology flag columns
 #'   for each variable in the form "climatology_flag_variable".
@@ -32,56 +40,57 @@
 qc_test_climatology <- function(
     dat,
     climatology_table = NULL,
+    join_column = NULL,
     county = NULL) {
   # import default thresholds from internal data file & format
   if (is.null(climatology_table)) {
-    if (is.null(county)) {
-      stop("Must specify << county >> in qc_test_climatology()")
-    }
 
-    climatology_table <- threshold_tables %>%
-      filter(qc_test == "climatology", county == !!county) %>%
-      select(-c(qc_test, county, sensor_type)) %>%
+    county <- assert_county(dat, county, "qc_test_climatology()")
+
+    climatology_table <- thresholds %>%
+      filter(qc_test == "climatology", county == !!county | is.na(county)) %>%
+      select(-c(qc_test, sensor_type)) %>%
       tidyr::pivot_wider(
         names_from = "threshold", values_from = "threshold_value"
-      ) %>%
-      # placeholder
-      bind_rows(
-        data.frame(
-          variable = rep("dissolved_oxygen_percent_saturation", 12),
-          month = seq(1, 12),
-          season_min = rep(95, 12),
-          season_max = rep(105, 12)
-        )
       )
   }
 
   #  warning if there are variables in dat that do not have threshold --------
-  dat_vars <- dat %>%
-    select(
-      contains("depth_measured"),
-      contains("dissolved_oxygen"),
-      contains("salinity"),
-      contains("temperature")
-    ) %>%
-    colnames()
-
-  if (!all(dat_vars %in% unique(climatology_table$variable))) {
-    missing_var <- unique(dat_vars[which(!(dat_vars %in% climatology_table$variable))])
-
-    message(
-      "Variable(s)", paste("\n <<", missing_var, collapse = " >> \n"),
-      " >> \n found in dat, but not in climatology_table"
-    )
-  }
+  # dat_vars <- dat %>%
+  #   select(
+  #     contains("depth_measured"),
+  #     contains("dissolved_oxygen"),
+  #     contains("salinity"),
+  #     contains("temperature")
+  #   ) %>%
+  #   colnames()
+  #
+  # if (!all(dat_vars %in% unique(climatology_table$variable))) {
+  #   missing_var <- unique(dat_vars[which(!(dat_vars %in% climatology_table$variable))])
+  #
+  #   message(
+  #     "Variable(s)", paste("\n <<", missing_var, collapse = " >> \n"),
+  #     " >> \n found in dat, but not in climatology_table"
+  #   )
+  # }
 
   colname_ts <- colnames(dat)[which(str_detect(colnames(dat), "timestamp"))]
 
-  dat <- dat %>%
-    ss_pivot_longer() %>%
+  # add thresholds to dat and assign flags ---------------------------------------------------
+  dat <- ss_pivot_longer(dat) %>%
     rename(tstamp = contains("timestamp")) %>%
-    mutate(month = lubridate::month(tstamp)) %>%
-    left_join(climatology_table, by = c("month", "variable")) %>%
+    mutate(month = lubridate::month(tstamp))
+
+  if(is.null(join_column)) {
+    dat <- left_join(dat, climatology_table, by = c("month", "variable"))
+  } else {
+    dat <- left_join(dat, climatology_table, by = c("month", "variable", join_column))
+  }
+
+
+  dat <- dat %>%
+   # ss_pivot_longer() %>%
+    #left_join(climatology_table, by = c("month", "variable")) %>%
     mutate(
       climatology_flag = case_when(
         value > season_max | value < season_min ~ 3,
