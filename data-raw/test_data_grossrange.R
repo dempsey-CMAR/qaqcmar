@@ -115,28 +115,3 @@ dat <- dat %>% select(-day)
 # Export rds file
 saveRDS(dat, file = here("inst/testdata/test_data_grossrange.RDS"))
 
-
-
-# dat %>%
-#   mutate(sensor_serial_number = "") %>%
-# ss_ggplot_variables() +
-#   geom_point(size = 3)
-
-
-
-# qc_gr <- dat %>%
-#   qc_test_grossrange(county = "Lunenburg") %>%
-#   mutate(sensor_serial_number = "")
-#
-#
-# qc_plot_flags(
-#   qc_gr,
-#   qc_tests = "grossrange",
-#   vars = "temperature_degree_c"
-# )
-#
-# qc_plot_flags(
-#   qc_gr,
-#   qc_tests = "grossrange",
-#   vars = "dissolved_oxygen_percent_saturation"
-# )
