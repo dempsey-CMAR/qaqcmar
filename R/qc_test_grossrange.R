@@ -82,8 +82,6 @@ qc_test_grossrange <- function(
       inner_join(user_thresh, by = "variable")
   }
 
-
-
   # # message if user thresholds are larger than sensor thresholds --------------
   # grossrange_check <- grossrange_table %>%
   #   mutate(
