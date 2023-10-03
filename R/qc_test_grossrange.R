@@ -57,12 +57,12 @@ qc_test_grossrange <- function(
     join_column = NULL,
     message = TRUE) {
 
+  # check that not providing more than one county
+  county <- assert_county(dat, county, "qc_test_grossrange()")
+
 
   # import default thresholds from internal data file -----------------------
   if (is.null(grossrange_table)) {
-
-    # might want to move this out of the if statement
-    county <- assert_county(dat, county, "qc_test_grossrange()")
 
     grossrange_table <- thresholds %>%
       filter(qc_test == "grossrange", county == !!county | is.na(county)) %>%

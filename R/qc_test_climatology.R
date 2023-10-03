@@ -42,10 +42,12 @@ qc_test_climatology <- function(
     climatology_table = NULL,
     join_column = NULL,
     county = NULL) {
+
+  # check that not providing more than one county
+  county <- assert_county(dat, county, "qc_test_grossrange()")
+
   # import default thresholds from internal data file & format
   if (is.null(climatology_table)) {
-
-    county <- assert_county(dat, county, "qc_test_climatology()")
 
     climatology_table <- thresholds %>%
       filter(qc_test == "climatology", county == !!county | is.na(county)) %>%

@@ -22,10 +22,15 @@
 #'
 #' @param rolling_sd_table Data frame with two columns: \code{variable}: must
 #'   match the names of the variables being tested in \code{dat}.
-#'   \code{stdev_max}: maximum accepted value for the rolling standard
+#'   \code{rolling_sd_max}: maximum accepted value for the rolling standard
 #'   deviation. Default values are used if \code{rolling_sd_table = NULL}.
 #'   Optional additional column that is used to join with \code{dat}. This
 #'   column must have the same name as the string \code{join_column}.
+#'
+#' @param county Character string indicating the county from which \code{dat}
+#'   was collected. Used to filter the default \code{grossrange_table}. Not
+#'   required if there is a \code{county} column in \code{dat} or if
+#'   \code{grossrange_table} is provided.
 #'
 #' @param join_column Optional character string of a column name that is in both
 #'   \code{dat} and \code{rolling_sd_table}. The specified column will be used
@@ -69,30 +74,27 @@
 qc_test_rolling_sd <- function(
     dat,
     rolling_sd_table = NULL,
+    county = NULL,
     join_column = NULL,
     period_hours = 24,
     max_interval_hours = 2,
     align_window = "center",
     keep_sd_cols = FALSE) {
-  # import default thresholds from internal data file -----------------------
+
+  # check that not providing more than one county
+  county <- assert_county(dat, county, "qc_test_rolling_sd()")
+
+   # import default thresholds from internal data file -----------------------
   if (is.null(rolling_sd_table)) {
-    # rolling_sd_table <- threshold_tables %>%
-    #   filter(qc_test == "rolling_sd") %>%
-    #   select(-c(qc_test, county, month)) %>%
-    #   pivot_wider(names_from = "threshold", values_from = "threshold_value")
-    rolling_sd_table <- data.frame(
-      variable = c(
-        "dissolved_oxygen_percent_saturation",
-        "temperature_degree_c",
-        "salinity_psu"
-      ),
-      stdev_max = c(5, 5, 5)
-    )
+
+    rolling_sd_table <- thresholds %>%
+      filter(qc_test == "rolling_sd", county == !!county | is.na(county)) %>%
+      select(-c(qc_test, county, month, sensor_type)) %>%
+      pivot_wider(values_from = "threshold_value", names_from = threshold)
   }
 
   # add thresholds to dat and assign flags ---------------------------------------------------
   dat <- ss_pivot_longer(dat)
-
 
   if(is.null(join_column)) {
     dat <- left_join(dat, rolling_sd_table, by = "variable")
@@ -133,14 +135,14 @@ qc_test_rolling_sd <- function(
   dat <- dat %>%
     mutate(
       rolling_sd_flag = case_when(
-        sd_roll > stdev_max ~ 3,
-        sd_roll <= stdev_max ~ 1,
+        sd_roll > rolling_sd_max ~ 3,
+        sd_roll <= rolling_sd_max ~ 1,
         is.na(sd_roll) ~ 2
       )
     ) %>%
     ungroup() %>%
     # remove extra columns
-    select(-stdev_max) %>%
+    select(-rolling_sd_max) %>%
     pivot_wider(
       names_from = variable,
       values_from = c(value, rolling_sd_flag),

@@ -51,7 +51,8 @@ add_n_lag_columns <- function(dat, var, n_lags) {
 #' @param foo Character string indicating which qc_test_* function is being
 #'   checked.
 #'
-#' @return Returns a character string indicating the county for which to
+#' @return Returns a character string indicating the county for which to apply
+#'   thresholds.
 
 assert_county <- function(dat, county_arg, foo) {
 

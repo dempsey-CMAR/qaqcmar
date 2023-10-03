@@ -16,7 +16,8 @@ argument of the qc_test_*() function.}
 checked.}
 }
 \value{
-Returns a character string indicating the county for which to
+Returns a character string indicating the county for which to apply
+thresholds.
 }
 \description{
 Ensure there is one and only one county specified for the qc_test_* functions

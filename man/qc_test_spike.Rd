@@ -4,10 +4,20 @@
 \alias{qc_test_spike}
 \title{Add flag columns for the spike test}
 \usage{
-qc_test_spike(dat, spike_table = NULL)
+qc_test_spike(dat, county = NULL, join_column = NULL, spike_table = NULL)
 }
 \arguments{
 \item{dat}{Data frame of sensor string data in wide format.}
+
+\item{county}{Character string indicating the county from which \code{dat} was
+collected. Used to filter the default \code{grossrange_table}. Not required
+if there is a \code{county} column in \code{dat} or if
+\code{grossrange_table} is provided.}
+
+\item{join_column}{Optional character string of a column name that is in both
+\code{dat} and \code{grossrange_table}. The specified column will be used to
+join the two tables. Default is \code{join_column = NULL}, and the tables
+are joined only on the \code{sensor_type} and \code{variable} columns.}
 
 \item{spike_table}{Data frame with 3 columns: \code{variable}: should match
 the names of the variables being tested in \code{dat}.

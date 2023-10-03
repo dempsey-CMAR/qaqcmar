@@ -7,6 +7,7 @@
 qc_test_rolling_sd(
   dat,
   rolling_sd_table = NULL,
+  county = NULL,
   join_column = NULL,
   period_hours = 24,
   max_interval_hours = 2,
@@ -19,10 +20,15 @@ qc_test_rolling_sd(
 
 \item{rolling_sd_table}{Data frame with two columns: \code{variable}: must
 match the names of the variables being tested in \code{dat}.
-\code{stdev_max}: maximum accepted value for the rolling standard
+\code{rolling_sd_max}: maximum accepted value for the rolling standard
 deviation. Default values are used if \code{rolling_sd_table = NULL}.
 Optional additional column that is used to join with \code{dat}. This
 column must have the same name as the string \code{join_column}.}
+
+\item{county}{Character string indicating the county from which \code{dat}
+was collected. Used to filter the default \code{grossrange_table}. Not
+required if there is a \code{county} column in \code{dat} or if
+\code{grossrange_table} is provided.}
 
 \item{join_column}{Optional character string of a column name that is in both
 \code{dat} and \code{rolling_sd_table}. The specified column will be used

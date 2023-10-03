@@ -854,3 +854,11 @@
 "rolling_sd","temperature_degree_c","Shelburne",NA,NA,"rolling_sd_max",2
 "rolling_sd","temperature_degree_c","Victoria",NA,NA,"rolling_sd_max",1.72
 "rolling_sd","temperature_degree_c","Yarmouth",NA,NA,"rolling_sd_max",1.14
+"spike","temperature_degree_c",NA,NA,NA,"spike_high",9
+"spike","temperature_degree_c",NA,NA,NA,"spike_low",4
+"spike","dissolved_oxygen_percent_saturation",NA,NA,NA,"spike_high",9
+"spike","dissolved_oxygen_percent_saturation",NA,NA,NA,"spike_low",4
+"spike","dissolved_oxygen_mg_per_l",NA,NA,NA,"spike_high",9
+"spike","dissolved_oxygen_mg_per_l",NA,NA,NA,"spike_low",4
+"spike","salinity_psu",NA,NA,NA,"spike_high",9
+"spike","salinity_psu",NA,NA,NA,"spike_low",4

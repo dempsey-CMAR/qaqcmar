@@ -19,32 +19,32 @@ path <- system.file("testdata", package = "qaqcmar")
 
 dat <- readRDS(paste0(path, "/test_data_spike.RDS"))
 
-# sensorstrings::ss_ggplot_variables(dat) + geom_point(size = 2)
-
-spike_table <- data.frame(
-  qc_test = c("spike", "spike"),
-  variable = c("temperature_degree_c", "dissolved_oxygen_percent_saturation"),
-  spike_high = c(9, 9),
-  spike_low = c(4, 4)
-) %>%
-  pivot_longer(
-    cols = c("spike_high", "spike_low"),
-    names_to = "threshold",
-    values_to = "threshold_value"
-  )
+sensorstrings::ss_ggplot_variables(dat) + geom_point(size = 2)
+#
+# spike_table <- data.frame(
+#   qc_test = c("spike", "spike"),
+#   variable = c("temperature_degree_c", "dissolved_oxygen_percent_saturation"),
+#   spike_high = c(9, 9),
+#   spike_low = c(4, 4)
+# ) %>%
+#   pivot_longer(
+#     cols = c("spike_high", "spike_low"),
+#     names_to = "threshold",
+#     values_to = "threshold_value"
+#   )
 
 qc_sp <- dat %>%
-  qc_test_spike(spike_table = spike_table) %>%
+  qc_test_spike(county = "Halifax") %>%
   mutate(day = day(timestamp_utc)) %>%
   qc_pivot_longer(qc_tests = "spike")
 
-# p <- qc_plot_flags(
+# qc_plot_flags(
 #   qc_sp,
 #   qc_tests = "spike",
 #   vars = "temperature_degree_c"
 # )
 #
-# p <- qc_plot_flags(
+# qc_plot_flags(
 #   qc_sp,
 #   qc_tests = "spike",
 #   vars = "dissolved_oxygen_percent_saturation"

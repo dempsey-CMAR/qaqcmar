@@ -73,6 +73,15 @@ dat <- expand.grid(
       variable == "temperature_degree_c" & sensor_type == "vr2ar" ~ 1,
       variable == "dissolved_oxygen_percent_saturation" ~ 100
     ),
+
+    sensor_serial_number = case_when(
+      sensor_type == "hobo" ~ 123,
+      sensor_type == "aquameasure" ~ 456,
+      sensor_type == "hobo do" ~ 789,
+      sensor_type == "tidbit" ~ 234,
+      sensor_type == "vr2ar" ~ 567,
+      TRUE ~ NA_real_
+    ),
     # add values with known flags
     value = case_when(
       day == 3 ~ value - 10,
@@ -80,8 +89,7 @@ dat <- expand.grid(
       day == 17 ~ value + 10,
       day == 23 ~ value + 5,
       TRUE ~ value
-    ),
-    sensor_serial_number = ""
+    )
   ) %>%
   select(-c(month, day)) %>%
   ss_pivot_wider()
@@ -90,10 +98,10 @@ dat <- expand.grid(
 saveRDS(dat, file = here("inst/testdata/test_data_spike.RDS"))
 
 
-
-dat %>%
-  ss_ggplot_variables() +
-  geom_point(size = 3)
+#
+# dat %>%
+#   ss_ggplot_variables() +
+#   geom_point(size = 3)
 
 # qc_gr <- dat %>%
 #   qc_test_grossrange(county = "Lunenburg") %>%

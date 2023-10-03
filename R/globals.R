@@ -57,7 +57,7 @@ utils::globalVariables(
     "int_sample",
     "n_sample",
     "effective_sample",
-    "stdev_max",
+   # "stdev_max",
     "rolling_sd_flag",
     "sd_roll",
     "n_sample_effective",
