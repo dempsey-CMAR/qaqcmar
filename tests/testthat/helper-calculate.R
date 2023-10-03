@@ -40,6 +40,7 @@ clim_temp <- qc_calculate_climatology_thresholds(
 
 # qc_calculate_rolling_sd_threshold ---------------------------------------
 
+set.seed(4554)
 rolling_sd_dat <- data.frame(sd_roll = rlnorm(100))
 
 q_95 <- quantile(rolling_sd_dat$sd_roll, probs = 0.95)
