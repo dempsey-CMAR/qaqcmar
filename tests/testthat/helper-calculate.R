@@ -43,13 +43,17 @@ clim_temp <- qc_calculate_climatology_thresholds(
 set.seed(4554)
 rolling_sd_dat <- data.frame(sd_roll = rlnorm(100))
 
-q_95 <- quantile(rolling_sd_dat$sd_roll, probs = 0.95)
+q_95 <- round(quantile(rolling_sd_dat$sd_roll, probs = 0.95), digits = 2)
 mean_sd <- round(
   mean(rolling_sd_dat$sd_roll) + 3 * sd(rolling_sd_dat$sd_roll), digits = 2)
+
+names(q_95) <- NULL
 
 rolling_sd_quantile <- qc_calculate_rolling_sd_thresholds(
   rolling_sd_dat, var = "temperature", stat = "quartile", prob = 0.95
 )
+
+names(rolling_sd_quantile$threshold_value) <- NULL
 
 rolling_sd_mean_sd <- qc_calculate_rolling_sd_thresholds(
   rolling_sd_dat, var = "temperature", stat = "mean_sd", n_sd = 3
