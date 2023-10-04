@@ -25,8 +25,8 @@
 #' @param keep_stats Logical argument indicating whether to keep the calculated
 #'   mean and standard deviation columns.
 #'
-#' @return Returns a tibble with county, variable, user_min, user_max (and
-#'   optionally mean_var and sd_var).
+#' @return Tibble with columns \code{qc_test}, \code{sensor_type},
+#'   \code{variable}, \code{threshold}, and \code{threshold_value}.
 #'
 #' @importFrom dplyr everything mutate select summarise
 #' @importFrom ggplot2 ensym
@@ -88,7 +88,8 @@ qc_calculate_user_thresholds <- function(
 #'
 #' @param ... additional grouping variable
 #'
-#' @return tibble with
+#' @return Tibble with columns \code{qc_test}, \code{variable}, \code{month},
+#'   \code{threshold}, and \code{threshold_value}.
 #'
 #' @importFrom dplyr group_by mutate
 #' @importFrom lubridate month
@@ -137,12 +138,13 @@ qc_calculate_climatology_thresholds <- function(
 #'   2. "mean_sd", which calculates the threshold as the mean + \code{n_sd}
 #'   standard deviations. Used for variables with normal distributions for
 #'   rolling standard deviation.
-#' @param prob sent to quantile function. Only required when \code{stat =
-#'   "quartile"}.
+#' @param prob Quantile to use for the threshold. Sent to quantile function.
+#'   Only required when \code{stat = "quartile"}.
 #' @param n_sd Number of standard deviations to use. Default is \code{n_sd = 3}.
 #'   Only required when \code{stat = "mean_sd"}.
 #'
-#' @return tibble with
+#' @return Tibble with columns \code{qc_test}, \code{variable},
+#'   \code{threshold}, and \code{threshold_value}.
 #'
 #' @importFrom stats quantile
 #'
@@ -186,3 +188,63 @@ qc_calculate_rolling_sd_thresholds <- function(
       values_to = "threshold_value", names_to = "threshold"
     )
 }
+
+
+
+
+#' Calculate depth cross check thresholds
+#'
+#' @param dat Data frame. Must include columns
+#'   \code{sensor_depth_at_low_tide_m}, \code{sensor_depth_measured_m},
+#'   \code{county}, \code{station}, \code{deployment_range}, and
+#'   \code{sensor_serial_number}.
+#'
+#' @param prob Quantile to use for the threshold. Sent to \code{quantile()}.
+#'
+#' @return Tibble with columns \code{qc_test}, \code{variable},
+#'   \code{threshold}, and \code{threshold_value}.
+#'
+#' @importFrom dplyr everything group_by mutate summarise ungroup
+#' @importFrom tidyr pivot_longer
+#' @importFrom sensorstrings ss_pivot_wider
+#'
+#' @export
+
+qc_calculate_depth_crosscheck_thresholds <- function(
+    dat, prob = 0.95) {
+
+
+  if("variable" %in% colnames(dat)) {
+    dat <- ss_pivot_wider(dat)
+  }
+
+  dat %>%
+    group_by(
+      county, station, deployment_range,
+      sensor_serial_number, sensor_depth_at_low_tide_m
+    ) %>%
+    summarise(min_measured = min(sensor_depth_measured_m)
+    ) %>%
+    ungroup() %>%
+    mutate(abs_diff = abs(sensor_depth_at_low_tide_m - min_measured)) %>%
+    summarise(
+      depth_diff_max = quantile(abs_diff, probs = prob, na.rm = TRUE)
+    ) %>%
+    mutate(
+      qc_test = "depth_crosscheck",
+      variable = as.character("sensor_depth_at_low_tide_m"),
+      depth_diff_max = round(depth_diff_max, digits = 2)
+    ) %>%
+    select(qc_test, variable, everything()) %>%
+    pivot_longer(
+      cols = depth_diff_max,
+      values_to = "threshold_value", names_to = "threshold"
+    )
+}
+
+
+
+
+
+
+

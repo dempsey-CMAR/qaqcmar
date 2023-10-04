@@ -57,7 +57,7 @@ utils::globalVariables(
     "int_sample",
     "n_sample",
     "effective_sample",
-   # "stdev_max",
+    # "stdev_max",
     "rolling_sd_flag",
     "sd_roll",
     "n_sample_effective",
@@ -76,7 +76,16 @@ utils::globalVariables(
     "sd_var",
     "threshold_value",
     "mean_sd_roll",
-    "sd_sd_roll"
+    "sd_sd_roll",
+    "sensor_depth_measured_m",
+    "min_measured",
+    "abs_diff",
+    "depth_diff_max",
+
+    # qc_test_depth_crosscheck
+    "depth_crosscheck_flag",
+    "value_sensor_depth_measured_m",
+    "depth_crosscheck_flag_sensor_depth_measured_m"
 
   )
 )

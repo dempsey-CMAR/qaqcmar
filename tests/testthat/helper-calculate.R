@@ -39,7 +39,6 @@ clim_temp <- qc_calculate_climatology_thresholds(
 
 
 # qc_calculate_rolling_sd_threshold ---------------------------------------
-
 set.seed(4554)
 rolling_sd_dat <- data.frame(sd_roll = rlnorm(100))
 
@@ -61,6 +60,15 @@ rolling_sd_mean_sd <- qc_calculate_rolling_sd_thresholds(
 
 
 
+# estimated depth ---------------------------------------------------------
 
+path <- system.file("testdata", package = "qaqcmar")
 
+depth_crosscheck_dat <- readRDS(paste0(path, "/test_data_estimated_depth.RDS"))
+
+depth_crosscheck_quantile <- qc_calculate_depth_crosscheck_thresholds(
+  depth_crosscheck_dat, prob = 0.95
+)
+
+names(depth_crosscheck_quantile$threshold_value) <- NULL
 

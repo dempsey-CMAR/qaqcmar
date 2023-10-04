@@ -27,14 +27,15 @@ standard deviations. Used for variables with normal distributions for
 rolling standard deviation.
 }}
 
-\item{prob}{sent to quantile function. Only required when \code{stat =
-"quartile"}.}
+\item{prob}{Quantile to use for the threshold. Sent to quantile function.
+Only required when \code{stat = "quartile"}.}
 
 \item{n_sd}{Number of standard deviations to use. Default is \code{n_sd = 3}.
 Only required when \code{stat = "mean_sd"}.}
 }
 \value{
-tibble with
+Tibble with columns \code{qc_test}, \code{variable},
+\code{threshold}, and \code{threshold_value}.
 }
 \description{
 The rolling standard deviation thresholds are calculated from historical data

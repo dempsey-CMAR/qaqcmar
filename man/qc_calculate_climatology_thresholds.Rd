@@ -30,7 +30,8 @@ calculate the user thresholds. Default is \code{n_sd = 3}.}
 mean and standard deviation columns.}
 }
 \value{
-tibble with
+Tibble with columns \code{qc_test}, \code{variable}, \code{month},
+\code{threshold}, and \code{threshold_value}.
 }
 \description{
 The climatology thresholds are calculated from historical data for each month

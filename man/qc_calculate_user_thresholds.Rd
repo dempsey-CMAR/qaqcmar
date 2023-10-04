@@ -19,8 +19,8 @@ calculate the user thresholds. Default is \code{n_sd = 3}.}
 mean and standard deviation columns.}
 }
 \value{
-Returns a tibble with county, variable, user_min, user_max (and
-optionally mean_var and sd_var).
+Tibble with columns \code{qc_test}, \code{sensor_type},
+\code{variable}, \code{threshold}, and \code{threshold_value}.
 }
 \description{
 The gross range user thresholds are calculated from historical data as the

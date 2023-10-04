@@ -29,3 +29,11 @@ test_that("qc_calculate_rolling_sd_thresholds() returns correct errors", {
     qc_calculate_rolling_sd_thresholds(rolling_sd_dat, var = "temperature")
   )
 })
+
+
+# qc_calculate_depth_crosscheck_thresholds --------------------------------
+# the "expected" value is hard coded. Update if test_data_estimated_depth.RDS is updated
+test_that("qc_calculate_depth_crosscheck_thresholds() calculates correct thresholds", {
+  expect_equal(depth_crosscheck_quantile$threshold_value, 5.4, tolerance = 0.1)
+
+})
