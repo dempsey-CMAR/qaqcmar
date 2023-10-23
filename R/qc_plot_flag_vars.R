@@ -28,12 +28,42 @@
 
 qc_plot_flags <- function(
     dat,
-    qc_tests = c("climatology", "grossrange", "rolling_sd", "spike"),
+    qc_tests = c("climatology",
+                 "depth_crosscheck",
+                 "grossrange",
+                 "rolling_sd",
+                 "spike"),
     vars = "all",
     labels = TRUE, ncol = NULL, flag_title = TRUE) {
+
   dat <- dat %>%
     rename(tstamp = contains("timestamp")) %>%
     mutate(tstamp = as_datetime(tstamp))
+
+  p <- list(NULL)
+  p_out <- list(NULL)
+
+  # depth_crosscheck plot is made with a different function from the other tests
+  if("depth_crosscheck" %in% qc_tests) {
+
+    qc_tests <- qc_tests[qc_tests != "depth_crosscheck"]
+
+    p_out[["depth_crosscheck"]] <- ggplot_depth_crosscheck(
+      dat, flag_title = flag_title, labels = labels
+    )
+
+    p_out <- Filter(Negate(is.null), p_out)
+  }
+
+  #browser()
+
+  if(length(qc_tests) == 0) {
+  #  print("this SHOULD be printed")
+    return(p_out)
+   # stop()
+  }
+
+ # print("this should not be printed")
 
   if (!("variable" %in% colnames(dat))) {
     dat <- qc_pivot_longer(dat, qc_tests = qc_tests)
@@ -44,9 +74,6 @@ qc_plot_flags <- function(
   if (isTRUE(labels)) dat <- dat %>% qc_assign_flag_labels()
 
   if (is.null(ncol)) ncol <- 1
-
-  p <- list(NULL)
-  p_out <- list(NULL)
 
   # plot for each variable
   for (i in seq_along(vars)) {
@@ -132,3 +159,65 @@ ggplot_flags <- function(dat, qc_test, var, ncol = NULL, flag_title = TRUE) {
 
   p
 }
+
+
+
+#' Create a ggplot for the depth crosscheck test
+#'
+#' @param dat  Data frame of flagged sensor string data. Must include columns
+#'   \code{depth_measured_m}, \code{sensor_depth_at_low_tide_m},
+#'   \code{depth_crosscheck_flag_value}.
+#'
+#' @inheritParams qc_plot_flags
+#'
+#' @return Returns a ggplot object. Points are coloured by the flag value.
+#'
+#' @importFrom dplyr filter
+#' @importFrom ggplot2 aes geom_abline geom_point ggplot ggtitle guides
+#'   guide_legend scale_colour_manual scale_x_datetime scale_y_continuous
+#'   theme_light theme
+
+ggplot_depth_crosscheck <- function(dat, flag_title = TRUE, labels = TRUE) {
+
+  flag_colours <- c("chartreuse4", "#E6E1BC", "#EDA247", "#DB4325", "grey24")
+
+  labels <- labels
+
+  if (("variable" %in% colnames(dat))) {
+    dat <- ss_pivot_wider(dat)
+  }
+
+  if(!("sensor_depth_measured_m" %in% colnames(dat))) {
+    stop("sensor_depth_measured_m must be present in dat to plot depth_crosscheck figure")
+  }
+  if(!("sensor_depth_at_low_tide_m" %in% colnames(dat))) {
+    stop("sensor_depth_at_low_tide_m must be present in dat to plot depth_crosscheck figure")
+  }
+
+  dat <- dat %>%
+    filter(
+      !is.na(sensor_depth_measured_m) &
+        !is.na(sensor_depth_at_low_tide_m)
+    ) %>%
+    rename(depth_crosscheck_flag = contains("depth_crosscheck_flag"))
+
+  if (isTRUE(labels)) dat <- dat %>% qc_assign_flag_labels()
+
+  if(nrow(dat) == 0) {
+    stop("No observations to plot for depth_crosscheck figure.")
+  }
+
+   p <- ggplot(
+     dat,
+      aes(sensor_depth_measured_m, sensor_depth_at_low_tide_m,
+          col = depth_crosscheck_flag)
+    ) +
+    geom_point(size = 2, alpha = 0.75) +
+    geom_abline(intercept = 0, slope = 1) +
+    scale_colour_manual("Flag Value",values = flag_colours, drop = FALSE)
+
+  if (isTRUE(flag_title)) p + ggtitle("depth_crosscheck test")
+
+  p
+}
+

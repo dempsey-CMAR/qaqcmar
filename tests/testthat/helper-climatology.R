@@ -29,11 +29,11 @@ qc_cl <- dat %>%
   ) %>%
   qc_pivot_longer(qc_tests = "climatology")
 
-# qc_plot_flags(
-#   qc_cl,
-#   qc_tests = "climatology",
-#   vars = "temperature_degree_c"
-# )
+qc_plot_flags(
+  qc_cl,
+  qc_tests = "climatology",
+  vars = "temperature_degree_c"
+)
 # qc_plot_flags(
 #   qc_cl,
 #   qc_tests = "climatology",

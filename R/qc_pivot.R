@@ -8,7 +8,7 @@
 #' @return Returns \code{dat_wide}, with variables and flags pivoted to a long
 #'   format.
 #'
-#' @importFrom dplyr %>% filter select
+#' @importFrom dplyr %>% filter relocate select
 #' @importFrom tidyr pivot_longer
 #'
 #' @export
@@ -31,6 +31,7 @@ qc_pivot_longer <- function(dat_wide, qc_tests = NULL) {
   if (is.null(qc_tests)) {
     qc_test <- c(
       "climatology",
+      "depth_crosscheck",
       "grossrange",
       "rolling_sd",
       "spike"
@@ -41,7 +42,7 @@ qc_pivot_longer <- function(dat_wide, qc_tests = NULL) {
 
   tests_foo <- c(
     "climatology",
-    "flat_line",
+    "depth_crosscheck",
     "grossrange",
     "rolling_sd",
     "spike",
@@ -57,8 +58,13 @@ qc_pivot_longer <- function(dat_wide, qc_tests = NULL) {
     )
   }
 
+
   # pivot the variables
   dat <- dat_wide %>%
+    # # need this for the case where depth_cross check is the only qc_test
+    # rename(
+    #   value_sensor_depth_at_low_tide_m = sensor_depth_at_low_tide_m
+    # ) %>%
     pivot_longer(
       cols = contains("value"),
       names_to = "variable", names_prefix = "value_",
@@ -75,9 +81,16 @@ qc_pivot_longer <- function(dat_wide, qc_tests = NULL) {
     dat <- pivot_flags_longer(dat, qc_test = "climatology")
   }
 
+  # if ("depth_crosscheck" %in% qc_tests) {
+  #    dat <- dat %>% #pivot_flags_longer(dat, qc_test = "depth_crosscheck") %>%
+  #      pivot_wider(values_from = "value", names_from = "variable") %>%
+  #      relocate(sensor_depth_at_low_tide_m, .before = sensor_type)
+  # }
+
   if ("flat_line" %in% qc_tests) {
     dat <- pivot_flags_longer(dat, qc_test = "flat_line")
   }
+
 
   if ("grossrange" %in% qc_tests) {
     dat <- pivot_flags_longer(dat, qc_test = "grossrange")
@@ -113,7 +126,7 @@ qc_pivot_longer <- function(dat_wide, qc_tests = NULL) {
 pivot_flags_longer <- function(dat_wide, qc_test) {
   col_name <- paste0(qc_test, "_flag_variable")
 
-  dat_wide %>%
+ dat_wide %>%
     pivot_longer(
       cols = contains(qc_test),
       names_to = paste0(qc_test, "_flag_variable"),

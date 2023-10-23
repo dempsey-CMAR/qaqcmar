@@ -1,5 +1,19 @@
 
 
+#' Test the recorded sensor depth matches measured sensor depth.
+#'
+#' @param dat  Dat
+#' @param depth_table TBD
+#' @param county TBD
+#' @param keep_depth_cols TBD
+#'
+#' @return TBD
+#'
+#' @importFrom dplyr filter group_by left_join mutate rename select summarise ungroup
+#' @importFrom tidyr pivot_longer pivot_wider
+#'
+#' @export
+
 qc_test_depth_crosscheck <- function(
     dat,
     depth_table = NULL,
@@ -62,7 +76,10 @@ qc_test_depth_crosscheck <- function(
     ) %>%
     rename(
       sensor_depth_measured_m = value_sensor_depth_measured_m,
-      depth_crosscheck_flag_value =  depth_crosscheck_flag_sensor_depth_measured_m
+     depth_crosscheck_flag_value =  depth_crosscheck_flag_sensor_depth_measured_m
+      # # might need to use this long name to match other tests
+      # depth_crosscheck_flag_sensor_depth_at_low_tide_m =
+      #    depth_crosscheck_flag_sensor_depth_measured_m
     )
 
   if(isFALSE(keep_depth_cols)) {
