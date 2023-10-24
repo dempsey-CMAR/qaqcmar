@@ -60,7 +60,6 @@ qc_test_grossrange <- function(
   # check that not providing more than one county
   county <- assert_county(dat, county, "qc_test_grossrange()")
 
-
   # import default thresholds from internal data file -----------------------
   if (is.null(grossrange_table)) {
 

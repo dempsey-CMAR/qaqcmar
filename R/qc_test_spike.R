@@ -1,37 +1,38 @@
-#'Add flag columns for the spike test
+#' Add flag columns for the spike test
 #'
-#'Might want to make this dependent on sample rate (sensor type)
+#' Might want to make this dependent on sample rate (sensor type)
 #'
-#'@param dat Data frame of sensor string data in wide format.
+#' @param dat Data frame of sensor string data in wide format.
 #'
-#'@param spike_table Data frame with 3 columns: \code{variable}: should match
-#'  the names of the variables being tested in \code{dat}.
+#' @param spike_table Data frame with 3 columns: \code{variable}: should match
+#'   the names of the variables being tested in \code{dat}.
 #'
-#'  Default is \code{spike_table = NULL}, which uses default values. To see the
-#'  default \code{spike_table}, type \code{threshold_tables$spike_table}.
+#'   Default is \code{spike_table = NULL}, which uses default values. To see the
+#'   default \code{spike_table}, type \code{threshold_tables$spike_table}.
 #'
-#'@param county Character string indicating the county from which \code{dat} was
-#'  collected. Used to filter the default \code{grossrange_table}. Not required
-#'  if there is a \code{county} column in \code{dat} or if
-#'  \code{grossrange_table} is provided.
+#' @param county Character string indicating the county from which \code{dat}
+#'   was collected. Used to filter the default \code{grossrange_table}. Not
+#'   required if there is a \code{county} column in \code{dat} or if
+#'   \code{grossrange_table} is provided.
 #'
-#'@param join_column Optional character string of a column name that is in both
-#'  \code{dat} and \code{grossrange_table}. The specified column will be used to
-#'  join the two tables. Default is \code{join_column = NULL}, and the tables
-#'  are joined only on the \code{sensor_type} and \code{variable} columns.
+#' @param join_column Optional character string of a column name that is in both
+#'   \code{dat} and \code{grossrange_table}. The specified column will be used
+#'   to join the two tables. Default is \code{join_column = NULL}, and the
+#'   tables are joined only on the \code{sensor_type} and \code{variable}
+#'   columns.
 #'
-#'@return placeholder for now
+#' @return placeholder for now
 #'
-#'@family tests
+#' @family tests
 #'
-#'@importFrom dplyr %>% arrange case_when contains group_by if_else lag lead
-#'  left_join mutate select
-#'@importFrom lubridate day
-#'@importFrom sensorstrings ss_pivot_longer
-#'@importFrom stringr str_detect
-#'@importFrom tidyr pivot_wider separate
+#' @importFrom dplyr %>% arrange case_when contains group_by if_else lag lead
+#'   left_join mutate select
+#' @importFrom lubridate day
+#' @importFrom sensorstrings ss_pivot_longer
+#' @importFrom stringr str_detect
+#' @importFrom tidyr pivot_wider separate
 #'
-#'@export
+#' @export
 
 qc_test_spike <- function(
     dat,

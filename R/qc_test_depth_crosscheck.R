@@ -1,15 +1,53 @@
-
-
-#' Test the recorded sensor depth matches measured sensor depth.
+#' Apply the depth crosscheck test
 #'
-#' @param dat  Dat
-#' @param depth_table TBD
-#' @param county TBD
-#' @param keep_depth_cols TBD
+#' Sensor strings are assembled prior to deployment. The depth of each sensor at
+#' low tide is estimated fr
 #'
-#' @return TBD
 #'
-#' @importFrom dplyr filter group_by left_join mutate rename select summarise ungroup
+#' Sensor depth at low tide is estimated from tide charts and the position of
+#' each sensor on the string. The estimated depth is recorded in in the
+#' deployment log and included in the compiled data in the column
+#' \code{sensor_depth_at_low_tide_m}.
+#'
+#' Some sensors are capable of recording depth (pressure). When this is the
+#' case, the minimum sensor depth recorded (i.e., low tide) is compared to the
+#' estimated sensor depth at low tide. In the case of large discrepancies, the
+#' depth_crosscheck_flag value will indicate that the observation is "Suspect /
+#' Of Interest". In many cases, the measured sensor depth should be considered
+#' more accurate than the estimated depth; however, the measured depth should be
+#' carefully evaluated.
+#'
+#' Note that if there are multiple sensors on the string, *only* the sensor with
+#' measured depth values will be evaluated with the depth crosscheck test. If
+#' the depth crosscheck test identifies the estimated depth as "Suspect", the
+#' other estimated sensor depths should also be considered suspect. For example,
+#' if the string was moored in an area 10 m deeper than anticpated, all sensors
+#' will be 10 m deeper than recorded in the \code{sensor_depth_at_low_tide_m}
+#' column.
+#'
+#' @param dat  Data frame of sensor string data in a wide format.
+#'
+#' @param depth_table Data frame with 1 column: \code{depth_diff_max}.
+#'
+#'   Default values are used if \code{depth_table = NULL}. To see the
+#'   default \code{depth__table}, type \code{subset(thresholds,
+#'   qc_test == "depth_crosscheck")} in the console.
+#'
+#' @param county Character string indicating the county from which \code{dat}
+#'   was collected. Used to filter the default \code{depth_crosscheck_table}.
+#'   Not required if there is a \code{county} column in \code{dat} or if
+#'   \code{depth_table} is provided.
+#'
+#' @param keep_depth_cols Logical value. If \code{TRUE}, the columns used to
+#'   evaluate the difference between measured depth and estimated depth
+#'   (\code{min_measured} and \code{abs_diff}) are returned in
+#'   \code{dat}. Default is \code{FALSE}.
+#'
+#' @return Returns \code{dat} in a wide format, with depth crosscheck
+#'   flag column named "depth_crosscheck_flag_value".
+#'
+#' @importFrom dplyr filter group_by left_join mutate rename select summarise
+#'   ungroup
 #' @importFrom tidyr pivot_longer pivot_wider
 #'
 #' @export
@@ -34,15 +72,6 @@ qc_test_depth_crosscheck <- function(
   }
 
   # add thresholds to dat and assign flags ---------------------------------------------------
-  #dat <- ss_pivot_longer(dat)
-
-  # if(is.null(join_column)) {
-  #   dat <- left_join(dat, depth_table, by = "variable")
-  # } else {
-  #   dat <- left_join(dat, depth_table, by = c("variable", join_column))
-  # }
-
-
   dat_depth <- dat %>%
     ss_pivot_wider() %>%
     group_by(
