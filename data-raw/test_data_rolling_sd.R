@@ -1,6 +1,6 @@
 # February 10, 2023
 
-# Simulate data for the Spike test
+# Simulate data for the rolling standard deviation test
 
 # Day 2: Spike Flag 4 (low)
 # Day 5: Spike Flag 3 (low)
@@ -54,6 +54,7 @@ dat <- data.frame(
     station = "lighthouse",
     deployment_range = "2023-Jan-01 to 2023-Jan-15",
     sensor_depth_at_low_tide_m = 5,
+   sensor_depth_measured_m = 2 * sin(4 * pi / n_int * index) + 5,
     sensor_type = "abc",
     sensor_serial_number = 123,
   ) %>%
@@ -61,6 +62,7 @@ dat <- data.frame(
     county, waterbody, station, deployment_range,
     sensor_type, sensor_serial_number,
     timestamp_utc, sensor_depth_at_low_tide_m,
+    sensor_depth_measured_m,
     dissolved_oxygen_percent_saturation
   )
 

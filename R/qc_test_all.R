@@ -4,9 +4,10 @@
 #'
 #' @param qc_tests Character vector of quality control tests to apply to
 #'   \code{dat}. Defaults to all available tests: \code{qc_tests =
-#'   c("climatology", "grossrange", "rolling_sd", "spike")}
+#'   c("climatology", "depth_crosscheck", "grossrange", "rolling_sd", "spike")}
 #'
 #' @inheritParams qc_test_climatology
+#' @inheritParams qc_test_depth_crosscheck
 #' @inheritParams qc_test_flat_line
 #' @inheritParams qc_test_grossrange
 #' @inheritParams qc_test_rolling_sd
@@ -22,16 +23,29 @@
 qc_test_all <- function(
     dat,
     qc_tests = NULL,
+    county,
+
     climatology_table = NULL,
-    flat_line_table = NULL,
+    #  flat_line_table = NULL,
+    depth_table = NULL,
     grossrange_table = NULL,
     rolling_sd_table = NULL,
     join_column = NULL,
     spike_table = NULL,
-    county,
-    message = TRUE) {
+
+    message = TRUE,
+
+    period_hours = 24,
+    max_interval_hours = 2,
+    align_window = "center",
+    keep_sd_cols = FALSE
+
+
+    ) {
+
   if (is.null(qc_tests)) {
-    qc_test <- c("climatology", "grossrange", "rolling_sd", "spike")
+    qc_tests <- c("climatology", "depth_crosscheck",
+                 "grossrange", "rolling_sd", "spike")
   }
 
   qc_tests <- tolower(qc_tests)
@@ -46,8 +60,16 @@ qc_test_all <- function(
     )
   }
 
+  if ("depth_crosscheck" %in% qc_tests) {
+    dat_out[[2]] <- qc_test_depth_crosscheck(
+      dat,
+      depth_table = depth_table,
+      county = county
+    )
+  }
+
   if ("grossrange" %in% qc_tests) {
-    dat_out[[2]] <- qc_test_grossrange(
+    dat_out[[3]] <- qc_test_grossrange(
       dat,
       grossrange_table = grossrange_table,
       county = county,
@@ -56,18 +78,25 @@ qc_test_all <- function(
   }
 
   if ("rolling_sd" %in% qc_tests) {
-    dat_out[[3]] <- qc_test_rolling_sd(
+    dat_out[[4]] <- qc_test_rolling_sd(
       dat,
-      rolling_sd_table = rolling_sd_table, join_column = join_column
+      rolling_sd_table = rolling_sd_table,
+      county = county,
+      join_column = join_column,
+
+      period_hours = period_hours,
+      max_interval_hours = max_interval_hours,
+      align_window = align_window,
+      keep_sd_cols = keep_sd_cols
     )
   }
 
-  # if("spike" %in% qc_tests) {
-  #   dat_out[[3]] <- qc_test_spike(
-  #     dat,
-  #     spike_table = spike_table
-  #   )
-  # }
+  if("spike" %in% qc_tests) {
+    dat_out[[5]] <- qc_test_spike(
+      dat,
+      spike_table = spike_table
+    )
+  }
 
   # remove empty list elements
   dat_out <- Filter(Negate(is.null), dat_out)
@@ -97,7 +126,8 @@ qc_test_all <- function(
 
 qc_assign_max_flag <- function(
     dat,
-    qc_tests = c("climatology", "grossrange", "rolling_sd", "spike")) {
+    qc_tests = c("climatology", "depth_crosscheck",
+                 "grossrange", "rolling_sd", "spike")) {
   if (!("variable" %in% colnames(dat))) {
     dat <- qc_pivot_longer(dat, qc_tests = qc_tests)
   }

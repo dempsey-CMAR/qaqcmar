@@ -110,7 +110,7 @@ qc_test_grossrange <- function(
 #     }
 #   }
 
-  #  warning if there are variables in dat that do not have threshold --------
+  # #  warning if there are variables in dat that do not have threshold --------
   dat_vars <- dat %>%
     select(
       contains("depth_measured"),
@@ -119,15 +119,15 @@ qc_test_grossrange <- function(
       contains("temperature")
     ) %>%
     colnames()
-
-  if (!all(dat_vars %in% unique(grossrange_table$variable))) {
-    missing_var <- unique(dat_vars[which(!(dat_vars %in% grossrange_table$variable))])
-
-    warning(
-      "Variable(s)", paste("\n <<", missing_var, collapse = " >> \n"),
-      " >> \n found in dat, but not in grossrange_table"
-    )
-  }
+  #
+  # if (!all(dat_vars %in% unique(grossrange_table$variable))) {
+  #   missing_var <- unique(dat_vars[which(!(dat_vars %in% grossrange_table$variable))])
+  #
+  #   warning(
+  #     "Variable(s)", paste("\n <<", missing_var, collapse = " >> \n"),
+  #     " >> \n found in dat, but not in grossrange_table"
+  #   )
+  # }
 
   # if a hobo do sensor was used, change sensor_type from hobo to hobo do
   # because the temperature grossrange is different
@@ -152,7 +152,7 @@ qc_test_grossrange <- function(
     dat <- left_join(dat, grossrange_table, by = c("sensor_type", "variable", join_column))
   }
 
-  dat %>%
+ dat %>%
     # sensor_max and sensor_min get evaluated first, so don't need to worry
     # about if user_min < sensor_min (it will get assigned a flag of 4)
     mutate(

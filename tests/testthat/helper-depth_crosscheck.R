@@ -14,10 +14,9 @@ path <- system.file("testdata", package = "qaqcmar")
 
 dat <- readRDS(paste0(path, "/test_data_estimated_depth.RDS"))
 
-# dat %>%
-#   ss_pivot_wider() %>%
-#   ss_ggplot_variables() +
-#   geom_point(size = 2)
+dat <- dat %>%
+  ss_pivot_wider()
+
 
 # general test
 qc_depth <- dat %>%

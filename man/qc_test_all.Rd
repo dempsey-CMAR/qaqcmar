@@ -7,14 +7,18 @@
 qc_test_all(
   dat,
   qc_tests = NULL,
+  county,
   climatology_table = NULL,
-  flat_line_table = NULL,
+  depth_table = NULL,
   grossrange_table = NULL,
   rolling_sd_table = NULL,
   join_column = NULL,
   spike_table = NULL,
-  county,
-  message = TRUE
+  message = TRUE,
+  period_hours = 24,
+  max_interval_hours = 2,
+  align_window = "center",
+  keep_sd_cols = FALSE
 )
 }
 \arguments{
@@ -22,7 +26,12 @@ qc_test_all(
 
 \item{qc_tests}{Character vector of quality control tests to apply to
 \code{dat}. Defaults to all available tests: \code{qc_tests =
-  c("climatology", "grossrange", "rolling_sd", "spike")}}
+  c("climatology", "depth_crosscheck", "grossrange", "rolling_sd", "spike")}}
+
+\item{county}{Character string indicating the county from which \code{dat}
+was collected. Used to filter the default \code{climatology_table}. Not
+required if there is a \code{county} column in \code{dat} or if
+\code{climatology_table} is provided.}
 
 \item{climatology_table}{Data frame with 4 columns: \code{variable}: must
 match the names of the variables being tested in \code{dat}; \code{month}:
@@ -35,7 +44,11 @@ Default values are used if \code{climatology_table = NULL}. To see the
 default \code{climatology_table}, type \code{subset(threshold_tables,
   qc_test == "climatology")} in the console.}
 
-\item{flat_line_table}{text}
+\item{depth_table}{Data frame with 1 column: \code{depth_diff_max}.
+
+Default values are used if \code{depth_table = NULL}. To see the
+default \code{depth__table}, type \code{subset(thresholds,
+  qc_test == "depth_crosscheck")} in the console.}
 
 \item{grossrange_table}{Data frame with 7 columns: \code{variable}: must
 match the names of the variables being tested in \code{dat}.
@@ -67,14 +80,29 @@ the names of the variables being tested in \code{dat}.
 Default is \code{spike_table = NULL}, which uses default values. To see the
 default \code{spike_table}, type \code{threshold_tables$spike_table}.}
 
-\item{county}{Character string indicating the county from which \code{dat}
-was collected. Used to filter the default \code{climatology_table}. Not
-required if there is a \code{county} column in \code{dat} or if
-\code{climatology_table} is provided.}
-
 \item{message}{Logical argument indicating whether to display a message if
 any \code{user_min} < \code{sensor_min} and/or \code{user_max} >
 \code{sensor_max} (i.e., flag of 3 cannot be applied).}
+
+\item{period_hours}{Length of a full cycle in hours. Default assumes a daily
+cycle of \code{period_hours = 24}.}
+
+\item{max_interval_hours}{Maximum accepted interval between two observations.
+If the interval between two observations is greater than this value, the
+rolling standard deviation will be set to \code{NA}. This is important
+because for large intervals, the number of observations in
+\code{period_hours} will be small. For example, if samples are collected
+every 6 hours, only 4 observations would be used to calculate
+\code{roll_sd}.}
+
+\item{align_window}{Alignment for the window used to calculate the rolling
+standard deviation. Passed to \code{zoo::rollapply()}. Default is
+\code{align_window = "center"}. Other options are \code{"right"} (backward
+window) and \code{"left"} (forward window).}
+
+\item{keep_sd_cols}{Logical value. If \code{TRUE}, the columns used to
+produce the rolling standard deviation (\code{int_sample}, \code{n_sample},
+and \code{sd_roll}) are returned in \code{dat}. Default is \code{FALSE}.}
 }
 \value{
 Returns \code{dat} with additional quality control flag columns.

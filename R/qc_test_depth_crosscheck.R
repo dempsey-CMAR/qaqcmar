@@ -73,7 +73,7 @@ qc_test_depth_crosscheck <- function(
 
   # add thresholds to dat and assign flags ---------------------------------------------------
   dat_depth <- dat %>%
-    ss_pivot_wider() %>%
+    #ss_pivot_wider() %>%
     group_by(
       county, station, deployment_range,
       sensor_serial_number, sensor_depth_at_low_tide_m) %>%
@@ -93,26 +93,27 @@ qc_test_depth_crosscheck <- function(
         abs_diff  > depth_diff_max ~ 3,
         abs_diff  <= depth_diff_max ~ 1,
         is.na(abs_diff ) ~ 2
-      )
+      ),
+      depth_crosscheck_flag = ordered(depth_crosscheck_flag, levels = 1:4)
     ) %>%
-    ungroup() %>%
+    ungroup() #%>%
     # remove extra columns
-    select(-depth_diff_max) %>%
-    pivot_wider(
-      names_from = variable,
-      values_from = c(value, depth_crosscheck_flag),
-      names_sort = TRUE
-    ) %>%
-    rename(
-      sensor_depth_measured_m = value_sensor_depth_measured_m,
-     depth_crosscheck_flag_value =  depth_crosscheck_flag_sensor_depth_measured_m
-      # # might need to use this long name to match other tests
-      # depth_crosscheck_flag_sensor_depth_at_low_tide_m =
-      #    depth_crosscheck_flag_sensor_depth_measured_m
-    )
+    #select(-depth_diff_max) #%>%
+    # pivot_wider(
+    #   names_from = variable,
+    #   values_from = c(value, depth_crosscheck_flag),
+    #   names_sort = TRUE
+    # ) %>%
+    # rename(
+    #  # sensor_depth_measured_m = value_sensor_depth_measured_m,
+    #  depth_crosscheck_flag =  depth_crosscheck_flag_sensor_depth_measured_m
+    #   # # might need to use this long name to match other tests
+    #   # depth_crosscheck_flag_sensor_depth_at_low_tide_m =
+    #   #    depth_crosscheck_flag_sensor_depth_measured_m
+    # )
 
   if(isFALSE(keep_depth_cols)) {
-    dat <- dat %>% select(-c(min_measured, abs_diff))
+    dat <- dat %>% select(-c(min_measured, abs_diff, depth_diff_max))
   }
 
   dat

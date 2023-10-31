@@ -51,7 +51,7 @@ qc_test_climatology <- function(
 
     climatology_table <- thresholds %>%
       filter(qc_test == "climatology", county == !!county | is.na(county)) %>%
-      select(-c(qc_test, sensor_type)) %>%
+      select(-c(qc_test, county, sensor_type)) %>%
       tidyr::pivot_wider(
         names_from = "threshold", values_from = "threshold_value"
       )

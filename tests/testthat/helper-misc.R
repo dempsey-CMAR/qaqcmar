@@ -9,17 +9,23 @@ flag_labels <- data.frame(flag = c(1, 2, 3, 4, 9)) %>%
 
 path <- system.file("testdata", package = "qaqcmar")
 
-qc_tests <- c("climatology", "grossrange")
+qc_tests <- c("climatology", "depth_crosscheck",
+              "grossrange", "rolling_sd", "spike")
 
-dat_wide <- readRDS(paste0(path, "/test_data_grossrange.RDS")) %>%
+n_var <- readRDS(paste0(path, "/test_data_rolling_sd.RDS")) %>%
+  ss_pivot_longer() %>%
+  distinct(variable)
+n_var <- nrow(n_var)
+
+dat_wide <- readRDS(paste0(path, "/test_data_rolling_sd.RDS")) %>%
   qc_test_all(
     qc_tests = qc_tests,
-    county = "Lunenburg",
+    county = "Halifax",
     message = FALSE
   )
 
 dat_long <- dat_wide %>%
-  qc_pivot_longer(qc_tests = qc_tests)
+  qc_pivot_longer()
 
 # qc_plot_flags(dat_long)
 

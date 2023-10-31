@@ -6,7 +6,7 @@
 \usage{
 qc_assign_max_flag(
   dat,
-  qc_tests = c("climatology", "grossrange", "rolling_sd", "spike")
+  qc_tests = c("climatology", "depth_crosscheck", "grossrange", "rolling_sd", "spike")
 )
 }
 \arguments{

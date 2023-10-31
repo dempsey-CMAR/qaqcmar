@@ -138,24 +138,28 @@ qc_test_rolling_sd <- function(
         sd_roll > rolling_sd_max ~ 3,
         sd_roll <= rolling_sd_max ~ 1,
         is.na(sd_roll) ~ 2
-      )
+      ),
+      rolling_sd_flag = ordered(rolling_sd_flag, levels = 1:4)
     ) %>%
     ungroup() %>%
-    # remove extra columns
-    select(-rolling_sd_max) %>%
+    select(-rolling_sd_max)
+
+  # clean up columns --------------------------------------------------------
+
+  # move this before the pivot so dat will have the correct number of rows
+  if (isFALSE(keep_sd_cols)) {
+    dat <- dat %>%
+      select(-c(int_sample, n_sample, n_sample_effective, sd_roll))
+  }
+
+  #  pivot wider
+  dat <- dat %>%
     pivot_wider(
       names_from = variable,
       values_from = c(value, rolling_sd_flag),
       names_sort = TRUE
     )
 
-
-# clean up columns --------------------------------------------------------
-  if (isFALSE(keep_sd_cols)) {
-    dat <- dat %>% select(-c(int_sample, n_sample, n_sample_effective, sd_roll))
-  }
-
-  #if(!is.null(join_column)) dat <- select(dat, -all_of(join_column))
-
   dat
+
 }
