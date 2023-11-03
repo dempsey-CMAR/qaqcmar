@@ -5,7 +5,7 @@
 
 test_that("qc_test_all() returns correct dimensions", {
   expect_equal(nrow(dat_wide), 1009)
-  expect_equal(ncol(dat_wide), 21)
+  expect_equal(ncol(dat_wide), 19)
 })
 
 

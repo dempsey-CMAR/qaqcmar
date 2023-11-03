@@ -28,8 +28,9 @@
 
 
 qc_pivot_longer <- function(dat_wide, qc_tests = NULL) {
+
   if (is.null(qc_tests)) {
-    qc_test <- c(
+    qc_tests <- c(
       "climatology",
       "depth_crosscheck",
       "grossrange",
@@ -58,16 +59,12 @@ qc_pivot_longer <- function(dat_wide, qc_tests = NULL) {
     )
   }
 
-
-  # pivot the variables
+  # pivot the variables - this adds flags that shouldn't exist but will get cleaned up below
   dat <- dat_wide %>%
-    # # need this for the case where depth_cross check is the only qc_test
-    # rename(
-    #   value_sensor_depth_at_low_tide_m = sensor_depth_at_low_tide_m
-    # ) %>%
     pivot_longer(
       cols = contains("value"),
-      names_to = "variable", names_prefix = "value_",
+      names_to = "variable",
+      names_prefix = "value_",
       values_to = "value",
       values_drop_na = TRUE
     )
@@ -81,16 +78,29 @@ qc_pivot_longer <- function(dat_wide, qc_tests = NULL) {
     dat <- pivot_flags_longer(dat, qc_test = "climatology")
   }
 
-  # if ("depth_crosscheck" %in% qc_tests) {
-  #    dat <- dat %>% #pivot_flags_longer(dat, qc_test = "depth_crosscheck") %>%
-  #      pivot_wider(values_from = "value", names_from = "variable") %>%
-  #      relocate(sensor_depth_at_low_tide_m, .before = sensor_type)
-  # }
-
-  if ("flat_line" %in% qc_tests) {
-    dat <- pivot_flags_longer(dat, qc_test = "flat_line")
+  if ("depth_crosscheck" %in% qc_tests) {
+    # this is not a true pivot because there is only ONE depth_crosscheck flag
+    dat <- dat %>%
+      rename(
+        depth_crosscheck_flag_value = depth_crosscheck_flag_sensor_depth_measured_m
+      ) %>%
+      mutate(
+        # any variable that is not measured depth should have a flag 2
+        depth_crosscheck_flag_value = if_else(
+          variable == "sensor_depth_measured_m",
+          depth_crosscheck_flag_value,
+          ordered(2)
+        ),
+        depth_crosscheck_flag_value = ordered(
+          depth_crosscheck_flag_value, levels = 1:4
+        )
+      ) %>%
+      relocate(depth_crosscheck_flag_value, .after = value)
   }
 
+  # if ("flat_line" %in% qc_tests) {
+  #   dat <- pivot_flags_longer(dat, qc_test = "flat_line")
+  # }
 
   if ("grossrange" %in% qc_tests) {
     dat <- pivot_flags_longer(dat, qc_test = "grossrange")
@@ -124,9 +134,10 @@ qc_pivot_longer <- function(dat_wide, qc_tests = NULL) {
 
 
 pivot_flags_longer <- function(dat_wide, qc_test) {
+
   col_name <- paste0(qc_test, "_flag_variable")
 
- dat_wide %>%
+  dat_wide %>%
     pivot_longer(
       cols = contains(qc_test),
       names_to = paste0(qc_test, "_flag_variable"),

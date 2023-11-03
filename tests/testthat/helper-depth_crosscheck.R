@@ -12,10 +12,11 @@
 
 path <- system.file("testdata", package = "qaqcmar")
 
-dat <- readRDS(paste0(path, "/test_data_estimated_depth.RDS"))
-
-dat <- dat %>%
+dat <- readRDS(paste0(path, "/test_data_estimated_depth.RDS")) %>%
   ss_pivot_wider()
+
+# use this test data to make sure function works with other variables present
+#dat <- readRDS(paste0(path, "/test_data_rolling_sd.RDS"))
 
 
 # general test
