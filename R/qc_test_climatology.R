@@ -44,7 +44,7 @@ qc_test_climatology <- function(
     county = NULL) {
 
   # check that not providing more than one county
-  county <- assert_county(dat, county, "qc_test_grossrange()")
+  county <- assert_county(dat, county, "qc_test_climatology()")
 
   # import default thresholds from internal data file & format
   if (is.null(climatology_table)) {

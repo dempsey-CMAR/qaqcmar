@@ -56,12 +56,12 @@ qc_plot_flags <- function(
   }
 
   #browser()
-
-  if(length(qc_tests) == 0) {
-  #  print("this SHOULD be printed")
-    return(p_out)
-   # stop()
-  }
+#
+#   if(length(qc_tests) == 0) {
+#   #  print("this SHOULD be printed")
+#     return(p_out)
+#    # stop()
+#   }
 
  # print("this should not be printed")
 
@@ -176,6 +176,8 @@ ggplot_flags <- function(dat, qc_test, var, ncol = NULL, flag_title = TRUE) {
 #' @importFrom ggplot2 aes geom_abline geom_point ggplot ggtitle guides
 #'   guide_legend scale_colour_manual scale_x_datetime scale_y_continuous
 #'   theme_light theme
+#'
+#' @export
 
 ggplot_depth_crosscheck <- function(dat, flag_title = TRUE, labels = TRUE) {
 

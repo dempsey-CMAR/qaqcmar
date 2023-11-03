@@ -26,7 +26,8 @@ qc_roll_int <- dat %>%
 # general test
 qc_roll_sd <- dat %>%
   qc_test_rolling_sd(keep_sd_cols = TRUE) %>%
-  qc_pivot_longer(qc_tests = "rolling_sd")
+  qc_pivot_longer(qc_tests = "rolling_sd") %>%
+  filter(variable == "dissolved_oxygen_percent_saturation")
 
 # p <- qc_plot_flags(
 #   qc_roll_sd,

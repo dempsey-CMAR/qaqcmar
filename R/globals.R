@@ -85,7 +85,15 @@ utils::globalVariables(
     # qc_test_depth_crosscheck
     "depth_crosscheck_flag",
     "value_sensor_depth_measured_m",
-    "depth_crosscheck_flag_sensor_depth_measured_m"
+    "depth_crosscheck_flag_sensor_depth_measured_m",
+
+    # qc_summarise_flags
+    "flag_value",
+    "n_obs",
+    "n_fl",
+
+    # qc_pivot_longer
+    "depth_crosscheck_flag_value"
 
   )
 )

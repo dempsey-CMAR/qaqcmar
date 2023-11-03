@@ -142,7 +142,6 @@ qc_test_grossrange <- function(
       )
   }
 
-
   # add thresholds to dat and assign flags ---------------------------------------------------
   dat <- ss_pivot_longer(dat)
 

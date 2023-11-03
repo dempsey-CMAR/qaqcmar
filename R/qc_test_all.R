@@ -23,7 +23,7 @@
 qc_test_all <- function(
     dat,
     qc_tests = NULL,
-    county,
+    county = NULL,
 
     climatology_table = NULL,
     #  flat_line_table = NULL,
@@ -128,6 +128,7 @@ qc_assign_max_flag <- function(
     dat,
     qc_tests = c("climatology", "depth_crosscheck",
                  "grossrange", "rolling_sd", "spike")) {
+
   if (!("variable" %in% colnames(dat))) {
     dat <- qc_pivot_longer(dat, qc_tests = qc_tests)
   }

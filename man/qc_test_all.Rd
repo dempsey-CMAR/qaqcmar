@@ -7,7 +7,7 @@
 qc_test_all(
   dat,
   qc_tests = NULL,
-  county,
+  county = NULL,
   climatology_table = NULL,
   depth_table = NULL,
   grossrange_table = NULL,

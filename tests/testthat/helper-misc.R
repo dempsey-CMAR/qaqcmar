@@ -27,15 +27,15 @@ dat_wide <- readRDS(paste0(path, "/test_data_rolling_sd.RDS")) %>%
 dat_long <- dat_wide %>%
   qc_pivot_longer()
 
-# qc_plot_flags(dat_long)
+ #qc_plot_flags(dat_long)
 
 # max flag ----------------------------------------------------------------
 
 dat_wide_max <- dat_wide %>%
-  qc_assign_max_flag(qc_tests = c("climatology", "grossrange"))
+  qc_assign_max_flag()
 
 dat_long_max <- dat_long %>%
-  qc_assign_max_flag(qc_tests = c("climatology", "grossrange"))
+  qc_assign_max_flag()
 
 
 df <- data.frame(

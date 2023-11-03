@@ -65,7 +65,7 @@ rolling_sd_mean_sd <- qc_calculate_rolling_sd_thresholds(
 path <- system.file("testdata", package = "qaqcmar")
 
 depth_crosscheck_dat <- readRDS(paste0(path, "/test_data_estimated_depth.RDS"))
-
+rolling_sd_dat
 depth_crosscheck_quantile <- qc_calculate_depth_crosscheck_thresholds(
   depth_crosscheck_dat, prob = 0.95
 )
