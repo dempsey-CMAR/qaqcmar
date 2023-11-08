@@ -86,10 +86,11 @@ qc_pivot_longer <- function(dat_wide, qc_tests = NULL) {
       ) %>%
       mutate(
         # any variable that is not measured depth should have a flag 2
+        depth_crosscheck_flag_value = as.numeric(depth_crosscheck_flag_value),
         depth_crosscheck_flag_value = if_else(
           variable == "sensor_depth_measured_m",
           depth_crosscheck_flag_value,
-          ordered(2)
+          2
         ),
         depth_crosscheck_flag_value = ordered(
           depth_crosscheck_flag_value, levels = 1:4
