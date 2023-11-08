@@ -114,8 +114,9 @@ qc_pivot_longer <- function(dat_wide, qc_tests = NULL) {
     dat <- pivot_flags_longer(dat, qc_test = "spike")
   }
 
+  # don't arrange by deployment_range (because it will be alphabetical not chronological)
   dat %>%
-    arrange(county, station, deployment_range,
+    arrange(county, station,
             sensor_type, variable, timestamp_utc)
 }
 
