@@ -10,7 +10,8 @@ qc_plot_flags(
   vars = "all",
   labels = TRUE,
   ncol = NULL,
-  flag_title = TRUE
+  flag_title = TRUE,
+  jitter_height = 0
 )
 }
 \arguments{
@@ -19,7 +20,7 @@ Must include at least one column name with the string "_flag_variable".}
 
 \item{qc_tests}{Character vector of quality control tests to apply to
 \code{dat}. Defaults to all available tests: \code{qc_tests =
-  c("climatology", "depth_crosscheck", "grossrange", "rolling_sd", "spike")}}
+  c("climatology", "depth_crosscheck", "grossrange", "rolling_sd", "spike")}.}
 
 \item{vars}{Character vector of variables to plot. Default is \code{vars =
 "all"}, which will make a plot for each recognized variable in \code{dat}.}
@@ -31,6 +32,9 @@ values to text labels for the legend.}
 
 \item{flag_title}{Logical argument indicating whether to include a ggtitle of
 the qc test and variable plotted.}
+
+\item{jitter_height}{Numeric value. Amount of vertical jitter in the
+deth_crosscheck figure.}
 }
 \value{
 Returns a list of ggplot objects; one figure for each test in

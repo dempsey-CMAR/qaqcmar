@@ -14,6 +14,11 @@
 #' @param flag_title Logical argument indicating whether to include a ggtitle of
 #'   the qc test and variable plotted.
 #'
+#' @param jitter_height Numeric value. Amount of vertical jitter in the
+#'   deth_crosscheck figure. Only recommended to check for overlapping
+#'   deployment points because it introduces random noise into the scatter plot
+#'   that can be misleading.
+#'
 #' @inheritParams qc_test_all
 #'
 #' @return Returns a list of ggplot objects; one figure for each test in
@@ -34,7 +39,9 @@ qc_plot_flags <- function(
                  "rolling_sd",
                  "spike"),
     vars = "all",
-    labels = TRUE, ncol = NULL, flag_title = TRUE) {
+    labels = TRUE, ncol = NULL, flag_title = TRUE,
+    jitter_height = 0
+    ) {
 
   dat <- dat %>%
     rename(tstamp = contains("timestamp")) %>%
@@ -49,7 +56,7 @@ qc_plot_flags <- function(
     qc_tests <- qc_tests[qc_tests != "depth_crosscheck"]
 
     p_out[["depth_crosscheck"]] <- ggplot_depth_crosscheck(
-      dat, flag_title = flag_title, labels = labels
+      dat, flag_title = flag_title, labels = labels, jitter_height = jitter_height
     )
 
     p_out <- Filter(Negate(is.null), p_out)
@@ -168,18 +175,24 @@ ggplot_flags <- function(dat, qc_test, var, ncol = NULL, flag_title = TRUE) {
 #'   \code{depth_measured_m}, \code{sensor_depth_at_low_tide_m},
 #'   \code{depth_crosscheck_flag_value}.
 #'
+#' @param jitter_height Numeric value. Amount of vertical jitter. Only
+#'   recommended to check for overlapping deployment points because it introduces
+#'   random noise into the scatter plot that can be misleading.
+#'
 #' @inheritParams qc_plot_flags
 #'
 #' @return Returns a ggplot object. Points are coloured by the flag value.
 #'
 #' @importFrom dplyr filter
-#' @importFrom ggplot2 aes geom_abline geom_point ggplot ggtitle guides
-#'   guide_legend scale_colour_manual scale_x_datetime scale_y_continuous
-#'   theme_light theme
+#' @importFrom ggplot2 aes geom_abline geom_hline geom_point geom_vline ggplot
+#'   ggtitle guides guide_legend position_jitter scale_colour_manual
+#'   scale_x_datetime scale_y_continuous theme_light theme
+#' @importFrom stringr str_remove_all
 #'
 #' @export
 
-ggplot_depth_crosscheck <- function(dat, flag_title = TRUE, labels = TRUE) {
+ggplot_depth_crosscheck <- function(
+    dat, flag_title = TRUE, labels = TRUE, jitter_height = 0) {
 
   flag_colours <- c("chartreuse4", "#E6E1BC", "#EDA247", "#DB4325", "grey24")
 
@@ -188,6 +201,8 @@ ggplot_depth_crosscheck <- function(dat, flag_title = TRUE, labels = TRUE) {
   if (("variable" %in% colnames(dat))) {
     dat <- ss_pivot_wider(dat)
   }
+
+  colnames(dat) <- str_remove_all(colnames(dat), "value_")
 
   if(!("sensor_depth_measured_m" %in% colnames(dat))) {
     stop("sensor_depth_measured_m must be present in dat to plot depth_crosscheck figure")
@@ -198,10 +213,19 @@ ggplot_depth_crosscheck <- function(dat, flag_title = TRUE, labels = TRUE) {
 
   dat <- dat %>%
     filter(
-      !is.na(sensor_depth_measured_m) &
-        !is.na(sensor_depth_at_low_tide_m)
+      !is.na(sensor_depth_measured_m) & !is.na(sensor_depth_at_low_tide_m)
     ) %>%
-    rename(depth_crosscheck_flag = contains("depth_crosscheck_flag"))
+    group_by(county, station, deployment_range,
+             sensor_serial_number, sensor_depth_at_low_tide_m) %>%
+    mutate(min_depth = min(sensor_depth_measured_m, na.rm = TRUE)) %>%
+    filter(sensor_depth_measured_m  == min_depth) %>%
+    rename(depth_crosscheck_flag = contains("depth_crosscheck_flag")) %>%
+    distinct(
+      county, station, deployment_range,
+      sensor_serial_number,
+      depth_crosscheck_flag,
+      sensor_depth_at_low_tide_m, .keep_all = TRUE
+    )
 
   if (isTRUE(labels)) dat <- dat %>% qc_assign_flag_labels()
 
@@ -209,14 +233,26 @@ ggplot_depth_crosscheck <- function(dat, flag_title = TRUE, labels = TRUE) {
     stop("No observations to plot for depth_crosscheck figure.")
   }
 
-   p <- ggplot(
-     dat,
-      aes(sensor_depth_measured_m, sensor_depth_at_low_tide_m,
-          col = depth_crosscheck_flag)
+  p <- ggplot(
+    dat,
+    aes(sensor_depth_measured_m, sensor_depth_at_low_tide_m,
+        col = depth_crosscheck_flag)
+  ) +
+    geom_hline(
+      yintercept = unique(dat$sensor_depth_at_low_tide_m),
+      linewidth = 1, col = "grey70"
     ) +
-    geom_point(size = 2, alpha = 0.75) +
-    geom_abline(intercept = 0, slope = 1) +
-    scale_colour_manual("Flag Value",values = flag_colours, drop = FALSE)
+    geom_vline(
+      xintercept = unique(dat$sensor_depth_at_low_tide_m),
+      linewidth = 1, col = "grey70"
+    ) +
+    geom_point(
+      size = 3, alpha = 1,
+      position = position_jitter(width = 0, height = jitter_height)
+    ) +
+    scale_colour_manual("Flag Value",values = flag_colours, drop = FALSE) +
+    facet_wrap(~sensor_depth_at_low_tide_m) +
+    theme_light()
 
   if (isTRUE(flag_title)) p + ggtitle("depth_crosscheck test")
 
