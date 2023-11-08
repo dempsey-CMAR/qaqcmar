@@ -22,7 +22,9 @@ the qc test and variable plotted.}
 \item{labels}{Logical argument indicating whether to convert numeric flag
 values to text labels for the legend.}
 
-\item{jitter_height}{Numeric value. Amount of vertical jitter.}
+\item{jitter_height}{Numeric value. Amount of vertical jitter. Only
+recommended to check for overlapping deployment points because it introduces
+random noise into the scatter plot that can be misleading.}
 }
 \value{
 Returns a ggplot object. Points are coloured by the flag value.

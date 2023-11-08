@@ -34,7 +34,9 @@ values to text labels for the legend.}
 the qc test and variable plotted.}
 
 \item{jitter_height}{Numeric value. Amount of vertical jitter in the
-deth_crosscheck figure.}
+deth_crosscheck figure. Only recommended to check for overlapping
+deployment points because it introduces random noise into the scatter plot
+that can be misleading.}
 }
 \value{
 Returns a list of ggplot objects; one figure for each test in
