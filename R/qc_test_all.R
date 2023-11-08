@@ -4,7 +4,13 @@
 #'
 #' @param qc_tests Character vector of quality control tests to apply to
 #'   \code{dat}. Defaults to all available tests: \code{qc_tests =
-#'   c("climatology", "depth_crosscheck", "grossrange", "rolling_sd", "spike")}
+#'   c("climatology", "depth_crosscheck", "grossrange", "rolling_sd", "spike")}.
+#'
+#' @param ping Logical argument. If \code{TRUE}, a "ping" sound will be played
+#'   when the function has completed. If function is run several times in quick
+#'   succession (e.g., for testing the package), this can cause R to abort the
+#'   session. Caution is advised when setting this argument to \code{TRUE}.
+#'   Default is \code{ping = FALSE}.
 #'
 #' @inheritParams qc_test_climatology
 #' @inheritParams qc_test_depth_crosscheck
@@ -15,6 +21,7 @@
 #'
 #' @return Returns \code{dat} with additional quality control flag columns.
 #'
+#' @importFrom beepr beep
 #' @importFrom dplyr %>% left_join
 #' @importFrom purrr reduce
 #'
@@ -38,9 +45,9 @@ qc_test_all <- function(
     period_hours = 24,
     max_interval_hours = 2,
     align_window = "center",
-    keep_sd_cols = FALSE
+    keep_sd_cols = FALSE,
 
-
+    ping = FALSE
     ) {
 
   if (is.null(qc_tests)) {
@@ -56,7 +63,8 @@ qc_test_all <- function(
     dat_out[[1]] <- qc_test_climatology(
       dat,
       climatology_table = climatology_table,
-      county = county
+      county = county,
+      join_column = join_column
     )
   }
 
@@ -73,6 +81,7 @@ qc_test_all <- function(
       dat,
       grossrange_table = grossrange_table,
       county = county,
+      join_column = join_column,
       message = message
     )
   }
@@ -100,6 +109,8 @@ qc_test_all <- function(
 
   # remove empty list elements
   dat_out <- Filter(Negate(is.null), dat_out)
+
+  if(isTRUE(ping)) beep("ping")
 
   # join by all common columns
   dat_out %>%

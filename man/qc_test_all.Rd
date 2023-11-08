@@ -18,7 +18,8 @@ qc_test_all(
   period_hours = 24,
   max_interval_hours = 2,
   align_window = "center",
-  keep_sd_cols = FALSE
+  keep_sd_cols = FALSE,
+  ping = FALSE
 )
 }
 \arguments{
@@ -26,7 +27,7 @@ qc_test_all(
 
 \item{qc_tests}{Character vector of quality control tests to apply to
 \code{dat}. Defaults to all available tests: \code{qc_tests =
-  c("climatology", "depth_crosscheck", "grossrange", "rolling_sd", "spike")}}
+  c("climatology", "depth_crosscheck", "grossrange", "rolling_sd", "spike")}.}
 
 \item{county}{Character string indicating the county from which \code{dat}
 was collected. Used to filter the default \code{climatology_table}. Not
@@ -103,6 +104,12 @@ window) and \code{"left"} (forward window).}
 \item{keep_sd_cols}{Logical value. If \code{TRUE}, the columns used to
 produce the rolling standard deviation (\code{int_sample}, \code{n_sample},
 and \code{sd_roll}) are returned in \code{dat}. Default is \code{FALSE}.}
+
+\item{ping}{Logical argument. If \code{TRUE}, a "ping" sound will be played
+when the function has completed. If function is run several times in quick
+succession (e.g., for testing the package), this can cause R to abort the
+session. Caution is advised when setting this argument to \code{TRUE}.
+Default is \code{ping = FALSE}.}
 }
 \value{
 Returns \code{dat} with additional quality control flag columns.
