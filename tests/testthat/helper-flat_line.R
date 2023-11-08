@@ -10,12 +10,12 @@
 #' only the expected flag value.
 
 
-#' @importFrom dplyr %>% anti_join
-#' @importFrom lubridate day
+# @importFrom dplyr %>% anti_join
+# @importFrom lubridate day
 
-path <- system.file("testdata", package = "qaqcmar")
+#path <- system.file("testdata", package = "qaqcmar")
 
-dat <- readRDS(paste0(path, "/test_data_flat_line.RDS"))
+#dat <- readRDS(paste0(path, "/test_data_flat_line.RDS"))
 
 # ss_ggplot_variables(dat) +
 #   geom_point(size = 3)

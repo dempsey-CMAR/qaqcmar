@@ -29,8 +29,7 @@ dat <- readRDS(paste0(path, "/test_data_grossrange.RDS"))
 # sensorstrings::ss_ggplot_variables(dat)
 
 qc_gr <- dat %>%
-  qc_test_grossrange(county = "Lunenburg", message = FALSE) %>%
-  mutate(sensor_serial_number = "") %>%
+  qc_test_grossrange(county = "Lunenburg") %>%
   qc_pivot_longer(qc_tests = "grossrange") %>%
   mutate(day = lubridate::day(timestamp_utc))
 
