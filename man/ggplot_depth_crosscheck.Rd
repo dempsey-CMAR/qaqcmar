@@ -4,7 +4,12 @@
 \alias{ggplot_depth_crosscheck}
 \title{Create a ggplot for the depth crosscheck test}
 \usage{
-ggplot_depth_crosscheck(dat, flag_title = TRUE, labels = TRUE)
+ggplot_depth_crosscheck(
+  dat,
+  flag_title = TRUE,
+  labels = TRUE,
+  jitter_height = 0
+)
 }
 \arguments{
 \item{dat}{Data frame of flagged sensor string data. Must include columns
@@ -16,6 +21,8 @@ the qc test and variable plotted.}
 
 \item{labels}{Logical argument indicating whether to convert numeric flag
 values to text labels for the legend.}
+
+\item{jitter_height}{Numeric value. Amount of vertical jitter.}
 }
 \value{
 Returns a ggplot object. Points are coloured by the flag value.
