@@ -43,6 +43,8 @@ qc_test_climatology <- function(
     join_column = NULL,
     county = NULL) {
 
+  message("applying climatology test")
+
   # check that not providing more than one county
   county <- assert_county(dat, county, "qc_test_climatology()")
 

@@ -40,6 +40,8 @@ qc_test_spike <- function(
     join_column = NULL,
     spike_table = NULL) {
 
+  message("applying spike test")
+
   # check that not providing more than one county
   county <- assert_county(dat, county, "qc_test_spike()")
 
@@ -63,11 +65,9 @@ qc_test_spike <- function(
   }
 
   dat %>%
-   # ss_pivot_longer() %>%
-   # left_join(spike_table, by = "variable") %>%
-  #  pivot_wider(names_from = "threshold", values_from = "threshold_value") %>%
-   # mutate(sensor = paste(sensor_type, sensor_serial_number, sep = "-")) %>%
-    group_by(sensor_serial_number, variable) %>%
+    group_by(
+      county, station, deployment_range, sensor_serial_number, variable
+    ) %>%
     dplyr::arrange(timestamp_utc, .by_group = TRUE) %>%
     mutate(
       lag_value = lag(value),

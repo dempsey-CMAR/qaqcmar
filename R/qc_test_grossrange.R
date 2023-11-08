@@ -57,6 +57,8 @@ qc_test_grossrange <- function(
     join_column = NULL,
     message = TRUE) {
 
+  message("applying grossrange test")
+
   # check that not providing more than one county
   county <- assert_county(dat, county, "qc_test_grossrange()")
 

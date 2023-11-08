@@ -81,6 +81,8 @@ qc_test_rolling_sd <- function(
     align_window = "center",
     keep_sd_cols = FALSE) {
 
+  message("applying rolling_sd test. This could take several minutes")
+
   # check that not providing more than one county
   county <- assert_county(dat, county, "qc_test_rolling_sd()")
 
@@ -103,7 +105,9 @@ qc_test_rolling_sd <- function(
   }
 
   dat <- dat %>%
-    group_by(county, station, deployment_range, variable, sensor_serial_number) %>%
+    group_by(
+      county, station, deployment_range, sensor_serial_number, variable
+    ) %>%
     dplyr::arrange(timestamp_utc, .by_group = TRUE) %>%
     mutate(
       # sample interval

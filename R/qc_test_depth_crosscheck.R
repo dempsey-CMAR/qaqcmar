@@ -59,6 +59,8 @@ qc_test_depth_crosscheck <- function(
     keep_depth_cols = FALSE
 ) {
 
+  message("applying depth_crosscheck test")
+
   # check that not providing more than one county
   county <- assert_county(dat, county, "qc_test_depth_crosscheck()")
 
@@ -85,16 +87,17 @@ qc_test_depth_crosscheck <- function(
     left_join(
       dat_depth,
       by = c("county", "station", "deployment_range",
-             "sensor_serial_number", "sensor_depth_at_low_tide_m")) %>%
+             "sensor_serial_number", "sensor_depth_at_low_tide_m")
+    ) %>%
     mutate(
       depth_diff_max = depth_table$depth_diff_max,
       depth_crosscheck_flag = case_when(
-        abs_diff  > depth_diff_max ~ 3,
-        abs_diff  <= depth_diff_max ~ 1,
+        abs_diff > depth_diff_max ~ 3,
+        abs_diff <= depth_diff_max ~ 1,
         is.na(abs_diff ) ~ 2
-      )
+      ),
+      depth_crosscheck_flag = ordered(depth_crosscheck_flag, levels = 1:4)
     ) %>%
-    #ss_pivot_longer() %>%
     pivot_longer(
       cols = c(
         contains("temperature"),
@@ -107,46 +110,13 @@ qc_test_depth_crosscheck <- function(
       names_prefix = "value_",
       values_drop_na = FALSE # keep rows without measured depth
     ) %>%
-    mutate(
-      # depth_crosscheck_flag can only be evaluated when variable == sensor_depth_measured_m
-      depth_crosscheck_flag = if_else(
-        variable == "sensor_depth_measured_m", depth_crosscheck_flag, 2),
-
-      depth_crosscheck_flag = ordered(depth_crosscheck_flag, levels = 1:4)
-    ) %>%
+    # mutate(
+    #   # depth_crosscheck_flag can only be evaluated when variable == sensor_depth_measured_m
+    #   depth_crosscheck_flag = if_else(
+    #     variable == "sensor_depth_measured_m", depth_crosscheck_flag, 2),
+    #   depth_crosscheck_flag = ordered(depth_crosscheck_flag, levels = 1:4)
+    # ) %>%
     ungroup()
-
-
-  # # add value_ to beginning of variable columns to match output of  --------
-  # cols <- colnames(dat)
-  #
-  # if("dissolved_oxygen_percent_saturation" %in% cols) {
-  #   dat <- dat %>%
-  #     rename(
-  #       value_dissolved_oxygen_percent_saturation = dissolved_oxygen_percent_saturation)
-  # }
-  #
-  # if("dissolved_oxygen_uncorrected_mg_per_l" %in% cols) {
-  #   dat <- dat %>%
-  #     rename(
-  #       value_dissolved_oxygen_uncorrected_mg_per_l = dissolved_oxygen_uncorrected_mg_per_l)
-  # }
-  #
-  #
-  # if("sensor_depth_measured_m" %in% cols) {
-  #   dat <- dat %>%
-  #     rename(value_sensor_depth_measured_m = sensor_depth_measured_m)
-  # }
-  #
-  # if("salinity_psu" %in% cols) {
-  #   dat <- dat %>%
-  #     rename(value_salinity_psu = salinity_psu)
-  # }
-  #
-  # if("temperature_degree_c" %in% cols) {
-  #   dat <- dat %>%
-  #     rename(value_temperature_degree_c = temperature_degree_c)
-  # }
 
   # clean up columns --------------------------------------------------------
 
@@ -154,7 +124,7 @@ qc_test_depth_crosscheck <- function(
     dat <- dat %>% select(-c(min_measured, abs_diff, depth_diff_max))
   }
 
- dat %>%
+  dat %>%
     pivot_wider(
       names_from = variable,
       values_from = c(value, depth_crosscheck_flag),
