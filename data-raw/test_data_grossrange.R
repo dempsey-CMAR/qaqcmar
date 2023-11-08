@@ -16,7 +16,7 @@
 # library(here)
 # library(sensorstrings)
 # library(qaqcmar)
-
+# library(tidyr)
 
 #' @importfrom dplyr %>% filter mutate relocate select
 #' @importFrom here here
@@ -96,7 +96,13 @@ dat <- expand.grid(
     )
   ) %>%
   select(-c(month, sensor_min, sensor_max, user_min, user_max)) %>%
-  ss_pivot_wider()
+  ss_pivot_wider() %>%
+  mutate(
+    county = "Lunenburg",
+    station = "White Tower",
+    deployment_range = "2023-Jan-01 to 2023-Dec-28",
+    sensor_serial_number = "123"
+  )
 
 
 dat[
@@ -110,7 +116,17 @@ dat[
   "temperature_degree_c"
 ] <- NA
 
-dat <- dat %>% select(-day)
+attributes(dat$temperature_degree_c) <- NULL
+attributes(dat$dissolved_oxygen_percent_saturation) <- NULL
+
+
+dat <- dat %>%
+  select(county, station, deployment_range,
+         sensor_type, sensor_serial_number, sensor_depth_at_low_tide_m,
+         timestamp_utc,
+         dissolved_oxygen_percent_saturation,
+         temperature_degree_c
+  )
 
 # Export rds file
 saveRDS(dat, file = here("inst/testdata/test_data_grossrange.RDS"))

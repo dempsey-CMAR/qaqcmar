@@ -1,10 +1,10 @@
-library(readr)
-library(dplyr)
-library(lubridate)
-library(here)
-library(sensorstrings) # V. 0.1.0
-library(qaqcmar) # V. 0.0.1
-library(tidyr)
+# library(readr)
+# library(dplyr)
+# library(lubridate)
+# library(here)
+# library(sensorstrings) # V. 0.1.0
+# library(qaqcmar) # V. 0.0.1
+# library(tidyr)
 
 # Raw data ----------------------------------------------------------------
 
@@ -41,7 +41,23 @@ dat <- expand.grid(month = months, day = days, variable = variables) %>%
   ) %>%
   select(-c(month, day, season_min, season_max)) %>%
   ss_pivot_wider() %>%
-  arrange(timestamp_utc)
+  arrange(timestamp_utc) %>%
+  mutate(
+    county = "Lunenburg",
+    station = "White Tower",
+    deployment_range = "2023-Jan-01 to 2023-Dec-28",
+    sensor_serial_number = "123", sensor_type = "abc"
+  ) %>%
+  select(county, station, deployment_range,
+         sensor_type, sensor_serial_number, sensor_depth_at_low_tide_m,
+         timestamp_utc,
+         dissolved_oxygen_percent_saturation,
+         temperature_degree_c
+  )
+
+
+attributes(dat$temperature_degree_c) <- NULL
+attributes(dat$dissolved_oxygen_percent_saturation) <- NULL
 
 
 # ss_ggplot_variables(dat) +
@@ -49,3 +65,4 @@ dat <- expand.grid(month = months, day = days, variable = variables) %>%
 
 # Export rds file
 saveRDS(dat, file = here("inst/testdata/test_data_climatology.RDS"))
+
