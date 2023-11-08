@@ -8,7 +8,7 @@
 #' @return Returns \code{dat_wide}, with variables and flags pivoted to a long
 #'   format.
 #'
-#' @importFrom dplyr %>% filter relocate select
+#' @importFrom dplyr %>% arrange filter relocate select
 #' @importFrom tidyr pivot_longer
 #'
 #' @export
@@ -114,7 +114,9 @@ qc_pivot_longer <- function(dat_wide, qc_tests = NULL) {
     dat <- pivot_flags_longer(dat, qc_test = "spike")
   }
 
-  dat
+  dat %>%
+    arrange(county, station, deployment_range,
+            sensor_type, variable, timestamp_utc)
 }
 
 
