@@ -69,6 +69,7 @@ utils::globalVariables(
     # ggplot_all_tests
     "depth",
     "sensor_depth_at_low_tide_m",
+    "min_depth",
 
     # qc_calculate_thresholds
     "rolling_sd_max",
