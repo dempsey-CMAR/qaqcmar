@@ -16,21 +16,24 @@
 #' \code{sd_roll} is rounded to 2 decimal places.
 #'
 #'
-#' When int_sample = period_hours, n_sample = 1, so sd_roll = NA
+#' When int_sample = period_hours, n_sample = 1, so sd_roll = NA.
 #'
 #' @param dat Data frame of sensor string data in wide format.
 #'
-#' @param rolling_sd_table Data frame with two columns: \code{variable}: must
-#'   match the names of the variables being tested in \code{dat}.
-#'   \code{rolling_sd_max}: maximum accepted value for the rolling standard
-#'   deviation. Default values are used if \code{rolling_sd_table = NULL}.
-#'   Optional additional column that is used to join with \code{dat}. This
-#'   column must have the same name as the string \code{join_column}.
+#' @param rolling_sd_table Data frame with at least two columns:
+#'   \code{variable}: must match the names of the variables being tested in
+#'   \code{dat}. \code{rolling_sd_max}: maximum accepted value for the rolling
+#'   standard deviation. Default values are used if \code{rolling_sd_table =
+#'   NULL}. Optional additional column that is used to join with \code{dat}.
+#'   This column must have the same name as the string \code{join_column}.
+#'
+#'   Default values are used if \code{rolling_sd_table = NULL}. To see the
+#'   default \code{rolling_sd_table}, type \code{subset(thresholds,
+#'   qc_test == "rolling_sd")} in the console.
 #'
 #' @param county Character string indicating the county from which \code{dat}
-#'   was collected. Used to filter the default \code{grossrange_table}. Not
-#'   required if there is a \code{county} column in \code{dat} or if
-#'   \code{grossrange_table} is provided.
+#'   was collected. Used to filter the default \code{rolling_sd_table}. Not
+#'   required if there is a \code{county} column in \code{dat}.
 #'
 #' @param join_column Optional character string of a column name that is in both
 #'   \code{dat} and \code{rolling_sd_table}. The specified column will be used
@@ -91,7 +94,7 @@ qc_test_rolling_sd <- function(
 
     rolling_sd_table <- thresholds %>%
       filter(qc_test == "rolling_sd", county == !!county | is.na(county)) %>%
-      select(-c(qc_test, county, month, sensor_type)) %>%
+      select(-c(county, qc_test, month, sensor_type)) %>%
       pivot_wider(values_from = "threshold_value", names_from = threshold)
   }
 

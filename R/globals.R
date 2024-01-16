@@ -82,6 +82,11 @@ utils::globalVariables(
     "min_measured",
     "abs_diff",
     "depth_diff_max",
+    "mean_spike",
+    "sd_spike",
+    "spike_max",
+    "spike_low",
+    "spike_max",
 
     # qc_test_depth_crosscheck
     "depth_crosscheck_flag",

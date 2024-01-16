@@ -12,6 +12,11 @@
 #'   session. Caution is advised when setting this argument to \code{TRUE}.
 #'   Default is \code{ping = FALSE}.
 #'
+#' @param join_column_spike Optional character string of a column name that is in both
+#'   \code{dat} and \code{spike_table}. The specified column will be used to
+#'   join the two tables. Default is \code{join_column = NULL}, and the tables
+#'   are joined only on the \code{sensor_type} and \code{variable} columns.
+#'
 #' @inheritParams qc_test_climatology
 #' @inheritParams qc_test_depth_crosscheck
 #' @inheritParams qc_test_flat_line
@@ -37,15 +42,15 @@ qc_test_all <- function(
     depth_table = NULL,
     grossrange_table = NULL,
     rolling_sd_table = NULL,
-    join_column = NULL,
     spike_table = NULL,
-
-    message = TRUE,
+    join_column = NULL,
+    join_column_spike = NULL,
 
     period_hours = 24,
     max_interval_hours = 2,
     align_window = "center",
     keep_sd_cols = FALSE,
+    keep_spike_cols = FALSE,
 
     ping = FALSE
     ) {
@@ -81,8 +86,7 @@ qc_test_all <- function(
       dat,
       grossrange_table = grossrange_table,
       county = county,
-      join_column = join_column,
-      message = message
+      join_column = join_column
     )
   }
 
@@ -103,7 +107,9 @@ qc_test_all <- function(
   if("spike" %in% qc_tests) {
     dat_out[[5]] <- qc_test_spike(
       dat,
-      spike_table = spike_table
+      spike_table = spike_table,
+      join_column = join_column_spike,
+      keep_spike_cols = keep_spike_cols
     )
   }
 
@@ -144,7 +150,10 @@ qc_assign_max_flag <- function(
     dat <- qc_pivot_longer(dat, qc_tests = qc_tests)
   }
 
+  # check if ALL flag values are "2". if so, max flag is 2. Otherwise ignore
+  # OR just assign 2
   dat %>%
+    # rowwise is REALLY slow - need to change to map_ of apply
     rowwise() %>%
     # mutate(qc_col = max(c_across(contains("flag"))), na.rm = TRUE) %>%
     mutate(qc_col = max(c_across(contains("flag")))) %>%

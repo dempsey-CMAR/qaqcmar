@@ -17,9 +17,11 @@ qc_test_flat_line(dat, flat_line_table = NULL, keep_lag_cols = FALSE)
 Format depends on keep_lag_cols
 }
 \description{
-Only checks if values are \emph{equal} (no tolerance).
+Not used for 2023 data.
 }
 \details{
+Only checks if values are \emph{equal} (no tolerance).
+
 Flag of 2 assigned until can evaluate if it fails.
 }
 \seealso{

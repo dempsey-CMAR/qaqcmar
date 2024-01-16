@@ -26,61 +26,35 @@
 months <- seq(1, 2)
 days <- rep(c(1:28), 2)
 variables <- c("temperature_degree_c", "dissolved_oxygen_percent_saturation")
-sensors <- c("aquameasure", "hobo", "tidbit", "vr2ar")
 
-dat <- expand.grid(
-  month = months, day = days, variable = variables, sensor_type = sensors
-) %>%
-  distinct(month, day, variable, sensor_type) %>%
-  # filter out impossible sensor-variable combinations
-  filter(
-    !((variable == "dissolved_oxygen_percent_saturation" |
-      variable == "dissolved_oxygen_mg_per_l") &
-      (sensor_type == "tidbit" | sensor_type == "hobo" | sensor_type == "vr2ar")),
-    !(variable == "dissolved_oxygen_percent_saturation" & sensor_type == "hobo do")
-  ) %>%
+dat <- expand.grid(month = months, day = days, variable = variables) %>%
+  distinct(month, day, variable) %>%
   mutate(
-    # add depths (so easier to view simulated data when plotted)
-    sensor_depth_at_low_tide_m = case_when(
-      sensor_type == "hobo" ~ 2,
-      sensor_type == "aquameasure" ~ 5,
-      sensor_type == "hobo do" ~ 10,
-      sensor_type == "tidbit" ~ 15,
-      sensor_type == "vr2ar" ~ 25,
-      TRUE ~ NA_real_
-    ),
     timestamp_utc = as_datetime(paste("2023", month, day, sep = "-")),
+    sensor_depth_at_low_tide_m = 2,
+    sensor_serial_number = 123,
+    sensor_type = "aquameasure",
     # add :"good values"
     value = case_when(
-      variable == "temperature_degree_c" & sensor_type == "hobo" ~ 22,
-      variable == "temperature_degree_c" & sensor_type == "aquameasure" ~ 16,
-      variable == "temperature_degree_c" & sensor_type == "hobo do" ~ 11,
-      variable == "temperature_degree_c" & sensor_type == "tidbit" ~ 4,
-      variable == "temperature_degree_c" & sensor_type == "vr2ar" ~ 1,
+      variable == "temperature_degree_c" ~ 20,
       variable == "dissolved_oxygen_percent_saturation" ~ 100
     ),
 
-    sensor_serial_number = case_when(
-      sensor_type == "hobo" ~ 123,
-      sensor_type == "aquameasure" ~ 456,
-      sensor_type == "hobo do" ~ 789,
-      sensor_type == "tidbit" ~ 234,
-      sensor_type == "vr2ar" ~ 567,
-      TRUE ~ NA_real_
-    ),
     # add values with known flags
     value = case_when(
-      day == 3 ~ value - 10,
-      day == 10 ~ value - 5,
-      day == 17 ~ value + 10,
-      day == 23 ~ value + 5,
+      day == 3 & variable == "temperature_degree_c" ~ value + 1,
+      day == 3 & variable == "dissolved_oxygen_percent_saturation" ~ value + 2.5,
+      day == 10 & variable == "temperature_degree_c" ~ value + 2,
+      day == 10 & variable == "dissolved_oxygen_percent_saturation" ~ value + 8,
+      day == 17 & variable == "temperature_degree_c" ~ value - 1,
+      day == 17 & variable == "dissolved_oxygen_percent_saturation" ~ value - 2.5,
       TRUE ~ value
     )
   ) %>%
   select(-c(month, day)) %>%
   ss_pivot_wider() %>%
   mutate(
-    county = "Two Rivers",
+    county = "Halifax",
     station = "Emonds Field",
     deployment_range = "2019-Nov-01 to 2020-Jun-15"
   )

@@ -22,7 +22,7 @@ dat <- readRDS(paste0(path, "/test_data_spike.RDS"))
 # sensorstrings::ss_ggplot_variables(dat) + geom_point(size = 2)
 
 qc_sp <- dat %>%
-  qc_test_spike() %>%
+  qc_test_spike(county = "Halifax") %>%
   mutate(day = day(timestamp_utc)) %>%
   qc_pivot_longer(qc_tests = "spike")
 
@@ -31,7 +31,7 @@ qc_sp <- dat %>%
 #   qc_tests = "spike",
 #   vars = "temperature_degree_c"
 # )
-#
+
 # qc_plot_flags(
 #   qc_sp,
 #   qc_tests = "spike",
@@ -46,12 +46,12 @@ qc_sp_2 <- qc_sp %>%
 
 # flag 3's from the 4 spikes AND 3 spikes
 qc_sp_3 <- qc_sp %>%
-  filter(day %in% c(2, 4, 16, 18, 10, 23))
+  filter(day %in% c(3, 9, 11, 17))
 
 # flag 4
 qc_sp_4 <- qc_sp %>%
-  filter(day %in% c(3, 17))
+  filter(day == 10)
 
 # flag 1
 qc_sp_1 <- qc_sp %>%
-  filter(!(day %in% c(1, 2, 3, 4, 10, 16, 17, 18, 23, 28)))
+  filter(!(day %in% c(1 , 3, 9, 10, 11, 17, 28)))

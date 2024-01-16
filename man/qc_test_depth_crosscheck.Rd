@@ -27,36 +27,33 @@ Not required if there is a \code{county} column in \code{dat} or if
 
 \item{keep_depth_cols}{Logical value. If \code{TRUE}, the columns used to
 evaluate the difference between measured depth and estimated depth
-(\code{min_measured} and \code{abs_diff}) are returned in
-\code{dat}. Default is \code{FALSE}.}
+(\code{min_measured} and \code{abs_diff}) are returned in \code{dat}.
+Default is \code{FALSE}.}
 }
 \value{
-Returns \code{dat} in a wide format, with depth crosscheck
-flag column named "depth_crosscheck_flag_value".
+Returns \code{dat} in a wide format, with depth crosscheck flag
+column named "depth_crosscheck_flag_value".
 }
 \description{
-Sensor strings are assembled prior to deployment. The depth of each sensor at
-low tide is estimated fr
-}
-\details{
 Sensor depth at low tide is estimated from tide charts and the position of
 each sensor on the string. The estimated depth is recorded in in the
 deployment log and included in the compiled data in the column
 \code{sensor_depth_at_low_tide_m}.
-
+}
+\details{
 Some sensors are capable of recording depth (pressure). When this is the
 case, the minimum sensor depth recorded (i.e., low tide) is compared to the
 estimated sensor depth at low tide. In the case of large discrepancies, the
-depth_crosscheck_flag value will indicate that the observation is "Suspect /
-Of Interest". In many cases, the measured sensor depth should be considered
-more accurate than the estimated depth; however, the measured depth should be
+depth_crosscheck_flag will indicate that the observation is "Suspect / Of
+Interest". In many cases, the measured sensor depth should be considered more
+accurate than the estimated depth; however, the measured depth should be
 carefully evaluated.
 
-Note that if there are multiple sensors on the string, \emph{only} the sensor with
-measured depth values will be evaluated with the depth crosscheck test. If
-the depth crosscheck test identifies the estimated depth as "Suspect", the
+Note that if there are multiple sensors on the string, \emph{only} the sensor(s)
+with measured depth values will be evaluated with the depth crosscheck test.
+If the depth crosscheck test identifies the estimated depth as "Suspect", the
 other estimated sensor depths should also be considered suspect. For example,
-if the string was moored in an area 10 m deeper than anticpated, all sensors
-will be 10 m deeper than recorded in the \code{sensor_depth_at_low_tide_m}
-column.
+if the string was moored in an area 10 m deeper than anticipated, all sensors
+will likely be 10 m deeper than recorded in the
+\code{sensor_depth_at_low_tide_m} column.
 }

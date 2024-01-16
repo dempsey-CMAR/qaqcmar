@@ -7,7 +7,7 @@
 qc_calculate_user_thresholds(dat, var, n_sd = 3, keep_stats = FALSE)
 }
 \arguments{
-\item{dat}{Data frame with at least one column.}
+\item{dat}{Data frame with at least one column named << var >>.}
 
 \item{var}{Unquoted character string indicating which column in \code{dat} to
 calculate the thresholds for, e.g., \code{var = temperature_degree_c}.}

@@ -2,27 +2,27 @@
 #'
 #' @inheritParams qc_test_grossrange
 #'
-#' @param climatology_table Data frame with 4 columns: \code{variable}: must
-#'   match the names of the variables being tested in \code{dat}; \code{month}:
-#'   numeric values from 1 to 12 for each variable; \code{season_min}: minimum
-#'   reasonable value for the corresponding variable and month;
-#'   \code{season_max}: maximum reasonable value for the corresponding variable
-#'   and month.
+#' @param climatology_table Data frame with at least 4 columns: \code{variable}:
+#'   must match the names of the variables being tested in \code{dat};
+#'   \code{month}: numeric values from 1 to 12 for each variable;
+#'   \code{season_min}: minimum reasonable value for the corresponding variable
+#'   and month; \code{season_max}: maximum reasonable value for the
+#'   corresponding variable and month. Optional additional column(s) that is
+#'   used to join with \code{dat}. This column must have the same name as the
+#'   string \code{join_column}.
 #'
 #'   Default values are used if \code{climatology_table = NULL}. To see the
-#'   default \code{climatology_table}, type \code{subset(threshold_tables,
+#'   default \code{climatology_table}, type \code{subset(thresholds,
 #'   qc_test == "climatology")} in the console.
 #'
 #' @param county Character string indicating the county from which \code{dat}
 #'   was collected. Used to filter the default \code{climatology_table}. Not
-#'   required if there is a \code{county} column in \code{dat} or if
-#'   \code{climatology_table} is provided.
+#'   required if there is a \code{county} column in \code{dat}.
 #'
 #' @param join_column Optional character string of a column name that is in both
 #'   \code{dat} and \code{climatology_table}. The specified column will be used
 #'   to join the two tables. Default is \code{join_column = NULL}, and the
-#'   tables are joined only on the \code{month} and \code{variable}
-#'   columns.
+#'   tables are joined only on the \code{month} and \code{variable} columns.
 #'
 #' @return Returns \code{dat} in a wide format, with climatology flag columns
 #'   for each variable in the form "climatology_flag_variable".
@@ -93,8 +93,6 @@ qc_test_climatology <- function(
 
 
   dat <- dat %>%
-   # ss_pivot_longer() %>%
-    #left_join(climatology_table, by = c("month", "variable")) %>%
     mutate(
       climatology_flag = case_when(
         value > season_max | value < season_min ~ 3,

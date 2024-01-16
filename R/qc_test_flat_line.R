@@ -1,5 +1,7 @@
 #' Apply the flat line test
 #'
+#' Not used for 2023 data.
+#'
 #' Only checks if values are *equal* (no tolerance).
 #'
 #' Flag of 2 assigned until can evaluate if it fails.

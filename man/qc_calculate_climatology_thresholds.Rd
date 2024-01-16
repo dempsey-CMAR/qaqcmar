@@ -21,7 +21,7 @@ there is no column named \code{month}, the month will be extracted from
 \item{var}{Unquoted character string indicating which column in \code{dat} to
 calculate the thresholds for, e.g., \code{var = temperature_degree_c}.}
 
-\item{...}{additional grouping variable}
+\item{...}{Additional grouping variable(s).}
 
 \item{n_sd}{Number of standard deviations to add / subtract from mean to
 calculate the user thresholds. Default is \code{n_sd = 3}.}
@@ -44,8 +44,8 @@ avg_{season} + 3 * stdev_{season}}
 \eqn{avg_{season}} is calculated as the average of all observations for a
 given month, and \code{stdev_{season}} is the associated standard deviation.
 
-This function does only automatically groups by any \strong{month}. To calculate
+This function only automatically groups by \strong{month}. To calculate
 the climatology thresholds by group (e.g., county) use
 \code{dplyr::group_by(group_variable)}, and send the results to
-\code{qc_calculate_climatology_thresholds()}
+\code{qc_calculate_climatology_thresholds()}.
 }

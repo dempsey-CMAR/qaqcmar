@@ -10,12 +10,14 @@
 #'
 #' @param dat Data frame of sensor string data in wide format.
 #'
-#' @param grossrange_table Data frame with 7 columns: \code{variable}: must
-#'   match the names of the variables being tested in \code{dat}.
+#' @param grossrange_table Data frame with at least 7 columns: \code{variable}:
+#'   entries must match the names of the variables being tested in \code{dat}.
 #'   \code{sensor_type}: type of sensor that recorded the observation;
 #'   \code{sensor_min}: minimum value the sensor can record; \code{sensor_max}:
 #'   maximum value the sensor can record. \code{user_min}: minimum reasonable
-#'   value; \code{user_max}: maximum reasonable value.
+#'   value; \code{user_max}: maximum reasonable value. Optional additional
+#'   column(s) that is used to join with \code{dat}. This column must have the
+#'   same name as the string \code{join_column}.
 #'
 #'   Default values are used if \code{grossrange_table = NULL}. To see the
 #'   default \code{grossrange_table}, type \code{subset(thresholds,
@@ -23,18 +25,13 @@
 #'
 #' @param county Character string indicating the county from which \code{dat}
 #'   was collected. Used to filter the default \code{grossrange_table}. Not
-#'   required if there is a \code{county} column in \code{dat} or if
-#'   \code{grossrange_table} is provided.
+#'   required if there is a \code{county} column in \code{dat}.
 #'
 #' @param join_column Optional character string of a column name that is in both
 #'   \code{dat} and \code{grossrange_table}. The specified column will be used
 #'   to join the two tables. Default is \code{join_column = NULL}, and the
 #'   tables are joined only on the \code{sensor_type} and \code{variable}
 #'   columns.
-#'
-#' @param message Logical argument indicating whether to display a message if
-#'   any \code{user_min} < \code{sensor_min} and/or \code{user_max} >
-#'   \code{sensor_max} (i.e., flag of 3 cannot be applied).
 #'
 #' @return Returns \code{dat} in a wide format, with grossrange flag columns for
 #'   each variable in the form "grossrange_flag_variable".
@@ -54,8 +51,7 @@ qc_test_grossrange <- function(
     dat,
     grossrange_table = NULL,
     county = NULL,
-    join_column = NULL,
-    message = TRUE) {
+    join_column = NULL) {
 
   message("applying grossrange test")
 
@@ -83,36 +79,8 @@ qc_test_grossrange <- function(
       inner_join(user_thresh, by = "variable")
   }
 
-  # # message if user thresholds are larger than sensor thresholds --------------
-  # grossrange_check <- grossrange_table %>%
-  #   mutate(
-  #     check_max = user_max > sensor_max,
-  #     check_min = user_min < sensor_min
-  #   )
-  #
-  # check_max <- grossrange_check %>%
-  #   filter(check_max == 1) %>%
-  #   distinct(sensor_type, variable) %>%
-  #   as.data.frame()
-#
-#   if (isTRUE(message)) {
-#     if (nrow(check_max) > 0) {
-#       message("<< user_max >> is greater than << sensor_max >> for: ")
-#       message(paste(utils::capture.output(check_max), collapse = "\n"))
-#     }
-#
-#     check_min <- grossrange_check %>%
-#       filter(check_min == 1) %>%
-#       distinct(sensor_type, variable) %>%
-#       as.data.frame()
-#
-#     if (nrow(check_min) > 0) {
-#       message("<< user_min >> is less than << sensor_min >> for: ")
-#       message(paste(utils::capture.output(check_min), collapse = "\n"))
-#     }
-#   }
 
-  # #  warning if there are variables in dat that do not have threshold --------
+  # variables in dat (could also pivot then use unique())
   dat_vars <- dat %>%
     select(
       contains("depth_measured"),

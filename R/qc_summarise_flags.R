@@ -1,6 +1,7 @@
 #' Generate summary table of flags
 #'
 #' @inheritParams qc_plot_flags
+#'
 #' @param ... Optional argument. Column names (not quoted) from \code{dat} to
 #'   use as grouping variables.
 #'

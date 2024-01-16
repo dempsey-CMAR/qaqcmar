@@ -42,6 +42,9 @@ The rolling standard deviation thresholds are calculated from historical data
 as the upper quartile of historical observations.
 }
 \details{
+This function does not calculate the rolling standard deviation - column
+\code{sd_roll} must be included in \code{dat}.
+
 This function does not automatically group by any variables. To calculate the
 thresholds by group (e.g., county) use
 \code{dplyr::group_by(group_variable)}, and send the results to

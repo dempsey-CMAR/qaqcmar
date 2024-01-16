@@ -83,8 +83,7 @@ Consider simulated Water Quality data from January 1 to December 2023.(Note: thi
 # read in example data
 path <- system.file("testdata", package = "qaqcmar")
 
-dat <- readRDS(paste0(path, "/test_data_grossrange.RDS")) %>%
-  mutate(sensor_serial_number = "123")
+dat <- readRDS(paste0(path, "/test_data_grossrange.RDS")) 
 
 kable(dat[1:5, ])
 ```
@@ -110,7 +109,9 @@ kable(dat_gr[1:5, ])
 
 The flagged data can be plotted with `qc_plot_flags()`, specifying argument `qc_tests = "grossrange"`.
 ```{r fig2}
-qc_plot_flags(dat_gr, qc_tests = "grossrange", ncol = 2)
+dat_gr %>% 
+  qc_pivot_longer(qc_tests = "grossrange") %>% 
+  qc_plot_flags( qc_tests = "grossrange", ncol = 2)
 ```
 
 
@@ -139,7 +140,9 @@ kable(dat_qc[1:5, ])
 The flagged data can be plotted with `qc_plot_flags()`, specifying argument `qc_tests = "qc"`.
 
 ```{r fig3}
-qc_plot_flags(dat_qc, qc_tests = "qc")
+dat_qc %>% 
+  qc_pivot_longer(qc_tests = "qc") %>% 
+  qc_plot_flags(qc_tests = "qc")
 ```
 
 

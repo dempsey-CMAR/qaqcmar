@@ -9,7 +9,7 @@
 
 [![License: GPL
 v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-[![](https://img.shields.io/badge/devel%20version-0.0.6-blue.svg)](https://github.com/dempsey-cmar/qaqcmar)
+[![](https://img.shields.io/badge/devel%20version-0.1.1-blue.svg)](https://github.com/dempsey-cmar/qaqcmar)
 [![CodeFactor](https://www.codefactor.io/repository/github/dempsey-cmar/qaqcmar/badge)](https://www.codefactor.io/repository/github/dempsey-cmar/qaqcmar)
 [![R-CMD-check](https://github.com/dempsey-CMAR/qaqcmar/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/dempsey-CMAR/qaqcmar/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
@@ -91,8 +91,7 @@ processes and does not reflect expected profiles.)
 # read in example data
 path <- system.file("testdata", package = "qaqcmar")
 
-dat <- readRDS(paste0(path, "/test_data_grossrange.RDS")) %>%
-  mutate(sensor_serial_number = "123")
+dat <- readRDS(paste0(path, "/test_data_grossrange.RDS")) 
 
 kable(dat[1:5, ])
 ```
@@ -101,7 +100,19 @@ kable(dat[1:5, ])
 <thead>
 <tr>
 <th style="text-align:left;">
+county
+</th>
+<th style="text-align:left;">
+station
+</th>
+<th style="text-align:left;">
+deployment_range
+</th>
+<th style="text-align:left;">
 sensor_type
+</th>
+<th style="text-align:left;">
+sensor_serial_number
 </th>
 <th style="text-align:right;">
 sensor_depth_at_low_tide_m
@@ -115,15 +126,24 @@ dissolved_oxygen_percent_saturation
 <th style="text-align:right;">
 temperature_degree_c
 </th>
-<th style="text-align:left;">
-sensor_serial_number
-</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td style="text-align:left;">
+Lunenburg
+</td>
+<td style="text-align:left;">
+White Tower
+</td>
+<td style="text-align:left;">
+2023-Jan-01 to 2023-Dec-28
+</td>
+<td style="text-align:left;">
 aquameasure
+</td>
+<td style="text-align:left;">
+123
 </td>
 <td style="text-align:right;">
 5
@@ -137,13 +157,22 @@ aquameasure
 <td style="text-align:right;">
 -10
 </td>
-<td style="text-align:left;">
-123
-</td>
 </tr>
 <tr>
 <td style="text-align:left;">
+Lunenburg
+</td>
+<td style="text-align:left;">
+White Tower
+</td>
+<td style="text-align:left;">
+2023-Jan-01 to 2023-Dec-28
+</td>
+<td style="text-align:left;">
 aquameasure
+</td>
+<td style="text-align:left;">
+123
 </td>
 <td style="text-align:right;">
 5
@@ -157,13 +186,22 @@ aquameasure
 <td style="text-align:right;">
 -10
 </td>
-<td style="text-align:left;">
-123
-</td>
 </tr>
 <tr>
 <td style="text-align:left;">
+Lunenburg
+</td>
+<td style="text-align:left;">
+White Tower
+</td>
+<td style="text-align:left;">
+2023-Jan-01 to 2023-Dec-28
+</td>
+<td style="text-align:left;">
 aquameasure
+</td>
+<td style="text-align:left;">
+123
 </td>
 <td style="text-align:right;">
 5
@@ -177,13 +215,22 @@ aquameasure
 <td style="text-align:right;">
 -10
 </td>
-<td style="text-align:left;">
-123
-</td>
 </tr>
 <tr>
 <td style="text-align:left;">
+Lunenburg
+</td>
+<td style="text-align:left;">
+White Tower
+</td>
+<td style="text-align:left;">
+2023-Jan-01 to 2023-Dec-28
+</td>
+<td style="text-align:left;">
 aquameasure
+</td>
+<td style="text-align:left;">
+123
 </td>
 <td style="text-align:right;">
 5
@@ -197,13 +244,22 @@ aquameasure
 <td style="text-align:right;">
 -10
 </td>
-<td style="text-align:left;">
-123
-</td>
 </tr>
 <tr>
 <td style="text-align:left;">
+Lunenburg
+</td>
+<td style="text-align:left;">
+White Tower
+</td>
+<td style="text-align:left;">
+2023-Jan-01 to 2023-Dec-28
+</td>
+<td style="text-align:left;">
 aquameasure
+</td>
+<td style="text-align:left;">
+123
 </td>
 <td style="text-align:right;">
 5
@@ -216,9 +272,6 @@ aquameasure
 </td>
 <td style="text-align:right;">
 -10
-</td>
-<td style="text-align:left;">
-123
 </td>
 </tr>
 </tbody>
@@ -250,16 +303,25 @@ kable(dat_gr[1:5, ])
 <thead>
 <tr>
 <th style="text-align:left;">
+county
+</th>
+<th style="text-align:left;">
+station
+</th>
+<th style="text-align:left;">
+deployment_range
+</th>
+<th style="text-align:left;">
 sensor_type
+</th>
+<th style="text-align:left;">
+sensor_serial_number
 </th>
 <th style="text-align:right;">
 sensor_depth_at_low_tide_m
 </th>
 <th style="text-align:left;">
 timestamp_utc
-</th>
-<th style="text-align:left;">
-sensor_serial_number
 </th>
 <th style="text-align:right;">
 value_dissolved_oxygen_percent_saturation
@@ -278,7 +340,19 @@ grossrange_flag_temperature_degree_c
 <tbody>
 <tr>
 <td style="text-align:left;">
+Lunenburg
+</td>
+<td style="text-align:left;">
+White Tower
+</td>
+<td style="text-align:left;">
+2023-Jan-01 to 2023-Dec-28
+</td>
+<td style="text-align:left;">
 aquameasure
+</td>
+<td style="text-align:left;">
+123
 </td>
 <td style="text-align:right;">
 5
@@ -286,9 +360,6 @@ aquameasure
 <td style="text-align:left;">
 2023-01-01
 </td>
-<td style="text-align:left;">
-123
-</td>
 <td style="text-align:right;">
 -5
 </td>
@@ -304,7 +375,19 @@ aquameasure
 </tr>
 <tr>
 <td style="text-align:left;">
+Lunenburg
+</td>
+<td style="text-align:left;">
+White Tower
+</td>
+<td style="text-align:left;">
+2023-Jan-01 to 2023-Dec-28
+</td>
+<td style="text-align:left;">
 aquameasure
+</td>
+<td style="text-align:left;">
+123
 </td>
 <td style="text-align:right;">
 5
@@ -312,9 +395,6 @@ aquameasure
 <td style="text-align:left;">
 2023-02-01
 </td>
-<td style="text-align:left;">
-123
-</td>
 <td style="text-align:right;">
 -5
 </td>
@@ -330,7 +410,19 @@ aquameasure
 </tr>
 <tr>
 <td style="text-align:left;">
+Lunenburg
+</td>
+<td style="text-align:left;">
+White Tower
+</td>
+<td style="text-align:left;">
+2023-Jan-01 to 2023-Dec-28
+</td>
+<td style="text-align:left;">
 aquameasure
+</td>
+<td style="text-align:left;">
+123
 </td>
 <td style="text-align:right;">
 5
@@ -338,9 +430,6 @@ aquameasure
 <td style="text-align:left;">
 2023-03-01
 </td>
-<td style="text-align:left;">
-123
-</td>
 <td style="text-align:right;">
 -5
 </td>
@@ -356,7 +445,19 @@ aquameasure
 </tr>
 <tr>
 <td style="text-align:left;">
+Lunenburg
+</td>
+<td style="text-align:left;">
+White Tower
+</td>
+<td style="text-align:left;">
+2023-Jan-01 to 2023-Dec-28
+</td>
+<td style="text-align:left;">
 aquameasure
+</td>
+<td style="text-align:left;">
+123
 </td>
 <td style="text-align:right;">
 5
@@ -364,9 +465,6 @@ aquameasure
 <td style="text-align:left;">
 2023-04-01
 </td>
-<td style="text-align:left;">
-123
-</td>
 <td style="text-align:right;">
 -5
 </td>
@@ -382,16 +480,25 @@ aquameasure
 </tr>
 <tr>
 <td style="text-align:left;">
+Lunenburg
+</td>
+<td style="text-align:left;">
+White Tower
+</td>
+<td style="text-align:left;">
+2023-Jan-01 to 2023-Dec-28
+</td>
+<td style="text-align:left;">
 aquameasure
+</td>
+<td style="text-align:left;">
+123
 </td>
 <td style="text-align:right;">
 5
 </td>
 <td style="text-align:left;">
 2023-05-01
-</td>
-<td style="text-align:left;">
-123
 </td>
 <td style="text-align:right;">
 -5
@@ -413,7 +520,9 @@ The flagged data can be plotted with `qc_plot_flags()`, specifying
 argument `qc_tests = "grossrange"`.
 
 ``` r
-qc_plot_flags(dat_gr, qc_tests = "grossrange", ncol = 2)
+dat_gr %>% 
+  qc_pivot_longer(qc_tests = "grossrange") %>% 
+  qc_plot_flags( qc_tests = "grossrange", ncol = 2)
 #> $dissolved_oxygen_percent_saturation
 #> $dissolved_oxygen_percent_saturation$grossrange
 ```
@@ -442,16 +551,25 @@ kable(dat_qc[1:5, ])
 <thead>
 <tr>
 <th style="text-align:left;">
+county
+</th>
+<th style="text-align:left;">
+station
+</th>
+<th style="text-align:left;">
+deployment_range
+</th>
+<th style="text-align:left;">
 sensor_type
+</th>
+<th style="text-align:left;">
+sensor_serial_number
 </th>
 <th style="text-align:right;">
 sensor_depth_at_low_tide_m
 </th>
 <th style="text-align:left;">
 timestamp_utc
-</th>
-<th style="text-align:left;">
-sensor_serial_number
 </th>
 <th style="text-align:right;">
 value_dissolved_oxygen_percent_saturation
@@ -476,7 +594,19 @@ grossrange_flag_temperature_degree_c
 <tbody>
 <tr>
 <td style="text-align:left;">
+Lunenburg
+</td>
+<td style="text-align:left;">
+White Tower
+</td>
+<td style="text-align:left;">
+2023-Jan-01 to 2023-Dec-28
+</td>
+<td style="text-align:left;">
 aquameasure
+</td>
+<td style="text-align:left;">
+123
 </td>
 <td style="text-align:right;">
 5
@@ -484,9 +614,6 @@ aquameasure
 <td style="text-align:left;">
 2023-01-01
 </td>
-<td style="text-align:left;">
-123
-</td>
 <td style="text-align:right;">
 -5
 </td>
@@ -508,7 +635,19 @@ aquameasure
 </tr>
 <tr>
 <td style="text-align:left;">
+Lunenburg
+</td>
+<td style="text-align:left;">
+White Tower
+</td>
+<td style="text-align:left;">
+2023-Jan-01 to 2023-Dec-28
+</td>
+<td style="text-align:left;">
 aquameasure
+</td>
+<td style="text-align:left;">
+123
 </td>
 <td style="text-align:right;">
 5
@@ -516,9 +655,6 @@ aquameasure
 <td style="text-align:left;">
 2023-02-01
 </td>
-<td style="text-align:left;">
-123
-</td>
 <td style="text-align:right;">
 -5
 </td>
@@ -540,7 +676,19 @@ aquameasure
 </tr>
 <tr>
 <td style="text-align:left;">
+Lunenburg
+</td>
+<td style="text-align:left;">
+White Tower
+</td>
+<td style="text-align:left;">
+2023-Jan-01 to 2023-Dec-28
+</td>
+<td style="text-align:left;">
 aquameasure
+</td>
+<td style="text-align:left;">
+123
 </td>
 <td style="text-align:right;">
 5
@@ -548,9 +696,6 @@ aquameasure
 <td style="text-align:left;">
 2023-03-01
 </td>
-<td style="text-align:left;">
-123
-</td>
 <td style="text-align:right;">
 -5
 </td>
@@ -572,7 +717,19 @@ aquameasure
 </tr>
 <tr>
 <td style="text-align:left;">
+Lunenburg
+</td>
+<td style="text-align:left;">
+White Tower
+</td>
+<td style="text-align:left;">
+2023-Jan-01 to 2023-Dec-28
+</td>
+<td style="text-align:left;">
 aquameasure
+</td>
+<td style="text-align:left;">
+123
 </td>
 <td style="text-align:right;">
 5
@@ -580,9 +737,6 @@ aquameasure
 <td style="text-align:left;">
 2023-04-01
 </td>
-<td style="text-align:left;">
-123
-</td>
 <td style="text-align:right;">
 -5
 </td>
@@ -604,16 +758,25 @@ aquameasure
 </tr>
 <tr>
 <td style="text-align:left;">
+Lunenburg
+</td>
+<td style="text-align:left;">
+White Tower
+</td>
+<td style="text-align:left;">
+2023-Jan-01 to 2023-Dec-28
+</td>
+<td style="text-align:left;">
 aquameasure
+</td>
+<td style="text-align:left;">
+123
 </td>
 <td style="text-align:right;">
 5
 </td>
 <td style="text-align:left;">
 2023-05-01
-</td>
-<td style="text-align:left;">
-123
 </td>
 <td style="text-align:right;">
 -5
@@ -637,7 +800,7 @@ aquameasure
 </tbody>
 </table>
 
-There are now 10 columns in `dat_qc`!
+There are now 13 columns in `dat_qc`!
 
 `qc_assign_max_flag()` reduces the number of columns in `dat_qc` by
 keeping the *worst* flag for each variable.
@@ -653,16 +816,25 @@ kable(dat_qc[1:5, ])
 <thead>
 <tr>
 <th style="text-align:left;">
+county
+</th>
+<th style="text-align:left;">
+station
+</th>
+<th style="text-align:left;">
+deployment_range
+</th>
+<th style="text-align:left;">
 sensor_type
+</th>
+<th style="text-align:left;">
+sensor_serial_number
 </th>
 <th style="text-align:right;">
 sensor_depth_at_low_tide_m
 </th>
 <th style="text-align:left;">
 timestamp_utc
-</th>
-<th style="text-align:left;">
-sensor_serial_number
 </th>
 <th style="text-align:right;">
 value_dissolved_oxygen_percent_saturation
@@ -681,7 +853,19 @@ qc_flag_temperature_degree_c
 <tbody>
 <tr>
 <td style="text-align:left;">
+Lunenburg
+</td>
+<td style="text-align:left;">
+White Tower
+</td>
+<td style="text-align:left;">
+2023-Jan-01 to 2023-Dec-28
+</td>
+<td style="text-align:left;">
 aquameasure
+</td>
+<td style="text-align:left;">
+123
 </td>
 <td style="text-align:right;">
 5
@@ -689,9 +873,6 @@ aquameasure
 <td style="text-align:left;">
 2023-01-01
 </td>
-<td style="text-align:left;">
-123
-</td>
 <td style="text-align:right;">
 -5
 </td>
@@ -707,22 +888,101 @@ aquameasure
 </tr>
 <tr>
 <td style="text-align:left;">
-aquameasure
-</td>
-<td style="text-align:right;">
-5
+Lunenburg
 </td>
 <td style="text-align:left;">
-2023-02-01
+White Tower
+</td>
+<td style="text-align:left;">
+2023-Jan-01 to 2023-Dec-28
+</td>
+<td style="text-align:left;">
+aquameasure
 </td>
 <td style="text-align:left;">
 123
 </td>
 <td style="text-align:right;">
--5
+5
+</td>
+<td style="text-align:left;">
+2023-01-05
 </td>
 <td style="text-align:right;">
--10
+1
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:left;">
+3
+</td>
+<td style="text-align:left;">
+NA
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Lunenburg
+</td>
+<td style="text-align:left;">
+White Tower
+</td>
+<td style="text-align:left;">
+2023-Jan-01 to 2023-Dec-28
+</td>
+<td style="text-align:left;">
+aquameasure
+</td>
+<td style="text-align:left;">
+123
+</td>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:left;">
+2023-01-10
+</td>
+<td style="text-align:right;">
+100
+</td>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:left;">
+1
+</td>
+<td style="text-align:left;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Lunenburg
+</td>
+<td style="text-align:left;">
+White Tower
+</td>
+<td style="text-align:left;">
+2023-Jan-01 to 2023-Dec-28
+</td>
+<td style="text-align:left;">
+aquameasure
+</td>
+<td style="text-align:left;">
+123
+</td>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:left;">
+2023-01-15
+</td>
+<td style="text-align:right;">
+155
+</td>
+<td style="text-align:right;">
+40
 </td>
 <td style="text-align:left;">
 4
@@ -733,80 +993,37 @@ aquameasure
 </tr>
 <tr>
 <td style="text-align:left;">
-aquameasure
-</td>
-<td style="text-align:right;">
-5
+Lunenburg
 </td>
 <td style="text-align:left;">
-2023-03-01
+White Tower
+</td>
+<td style="text-align:left;">
+2023-Jan-01 to 2023-Dec-28
+</td>
+<td style="text-align:left;">
+aquameasure
 </td>
 <td style="text-align:left;">
 123
 </td>
 <td style="text-align:right;">
--5
-</td>
-<td style="text-align:right;">
--10
-</td>
-<td style="text-align:left;">
-4
-</td>
-<td style="text-align:left;">
-4
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-aquameasure
-</td>
-<td style="text-align:right;">
 5
 </td>
 <td style="text-align:left;">
-2023-04-01
-</td>
-<td style="text-align:left;">
-123
+2023-01-28
 </td>
 <td style="text-align:right;">
--5
+149
 </td>
 <td style="text-align:right;">
--10
+34
 </td>
 <td style="text-align:left;">
-4
+3
 </td>
 <td style="text-align:left;">
-4
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-aquameasure
-</td>
-<td style="text-align:right;">
-5
-</td>
-<td style="text-align:left;">
-2023-05-01
-</td>
-<td style="text-align:left;">
-123
-</td>
-<td style="text-align:right;">
--5
-</td>
-<td style="text-align:right;">
--10
-</td>
-<td style="text-align:left;">
-4
-</td>
-<td style="text-align:left;">
-4
+3
 </td>
 </tr>
 </tbody>
@@ -816,7 +1033,9 @@ The flagged data can be plotted with `qc_plot_flags()`, specifying
 argument `qc_tests = "qc"`.
 
 ``` r
-qc_plot_flags(dat_qc, qc_tests = "qc")
+dat_qc %>% 
+  qc_pivot_longer(qc_tests = "qc") %>% 
+  qc_plot_flags(qc_tests = "qc")
 #> $dissolved_oxygen_percent_saturation
 #> $dissolved_oxygen_percent_saturation$qc
 ```

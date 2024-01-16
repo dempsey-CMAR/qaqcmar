@@ -2,35 +2,54 @@
 % Please edit documentation in R/qc_test_spike.R
 \name{qc_test_spike}
 \alias{qc_test_spike}
-\title{Add flag columns for the spike test}
+\title{Apply the spike test}
 \usage{
-qc_test_spike(dat, county = NULL, join_column = NULL, spike_table = NULL)
+qc_test_spike(
+  dat,
+  county = NULL,
+  join_column = NULL,
+  spike_table = NULL,
+  keep_spike_cols = FALSE
+)
 }
 \arguments{
 \item{dat}{Data frame of sensor string data in wide format.}
 
 \item{county}{Character string indicating the county from which \code{dat}
 was collected. Used to filter the default \code{grossrange_table}. Not
-required if there is a \code{county} column in \code{dat} or if
-\code{grossrange_table} is provided.}
+required if there is a \code{county} column in \code{dat}.}
 
 \item{join_column}{Optional character string of a column name that is in both
-\code{dat} and \code{grossrange_table}. The specified column will be used
-to join the two tables. Default is \code{join_column = NULL}, and the
-tables are joined only on the \code{sensor_type} and \code{variable}
-columns.}
+\code{dat} and \code{spike_table}. The specified column will be used to
+join the two tables. Default is \code{join_column = NULL}, and the tables
+are joined only on the code{variable} columns (unless the variable is
+sensor_depth_at_low_tide_m, in which case the tables are also joined by the
+\code{sensor_type} column).}
 
-\item{spike_table}{Data frame with 3 columns: \code{variable}: should match
-the names of the variables being tested in \code{dat}.
+\item{spike_table}{Data frame with at least 3 columns: \code{variable}:
+should match the names of the variables being tested in \code{dat}.
+\code{spike_low}: maximum acceptable spike value to "Pass", and
+\code{spike_high}: maximum acceptable value to be flagged "Suspect/Of
+Interest". For variable = sensor_depth_measured_m, the column
+\code{sensor_type} is also required.
 
-Default is \code{spike_table = NULL}, which uses default values. To see the
-default \code{spike_table}, type \code{threshold_tables$spike_table}.}
+Optional additional column(s) that is used to join with \code{dat}. This
+column must have the same name as the string \code{join_column}.
+
+Default values are used if \code{spike_able = NULL}. To see the
+default \code{spike_table}, type \code{subset(thresholds,
+  qc_test == "spike")} in the console.}
+
+\item{keep_spike_cols}{Logical value. If \code{TRUE}, the columns used to
+produce the spike value are returned in \code{dat}. Default is
+\code{FALSE}.}
 }
 \value{
-placeholder for now
+Returns \code{dat} in a wide format, with spike flag columns for each
+variable in the form "spike_flag_variable".
 }
 \description{
-Might want to make this dependent on sample rate (sensor type)
+Apply the spike test
 }
 \seealso{
 Other tests: 
