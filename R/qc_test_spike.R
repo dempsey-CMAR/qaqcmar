@@ -21,6 +21,10 @@
 #'   tables are joined only on the \code{sensor_type} and \code{variable}
 #'   columns.
 #'
+#' @param keep_spike_cols  Logical value. If \code{TRUE}, the columns used to
+#'   produce the spike value are returned in \code{dat}. Default is
+#'   \code{FALSE}.
+#'
 #' @return placeholder for now
 #'
 #' @family tests
@@ -31,6 +35,7 @@
 #' @importFrom sensorstrings ss_pivot_longer
 #' @importFrom stringr str_detect
 #' @importFrom tidyr pivot_wider separate
+#' @importFrom tidyselect where
 #'
 #' @export
 
@@ -38,7 +43,10 @@ qc_test_spike <- function(
     dat,
     county = NULL,
     join_column = NULL,
-    spike_table = NULL) {
+    spike_table = NULL,
+
+    keep_spike_cols = FALSE
+) {
 
   message("applying spike test")
 
@@ -49,8 +57,11 @@ qc_test_spike <- function(
   if (is.null(spike_table)) {
     spike_table <- thresholds %>%
       filter(qc_test == "spike") %>%
-      select(-c(qc_test, county, month, sensor_type)) %>%
-      pivot_wider(values_from = "threshold_value", names_from = threshold)
+      select(-c(qc_test, month)) %>%
+      pivot_wider(values_from = "threshold_value", names_from = threshold) %>%
+      select(where(~ !any(is.na(.))))
+
+ #   spike_table <- spike_table[, !names(spike_table) %in% join_columns]
   }
 
   # spike_table <- spike_table %>%
@@ -64,7 +75,7 @@ qc_test_spike <- function(
     dat <- left_join(dat, spike_table, by = c("variable", join_column))
   }
 
-  dat %>%
+  dat <- dat %>%
     group_by(
       county, station, deployment_range, sensor_serial_number, variable
     ) %>%
@@ -82,14 +93,16 @@ qc_test_spike <- function(
       ),
       spike_flag = ordered(spike_flag, levels = 1:4)
     ) %>%
-    ungroup() %>%
-    # remove extra columns
-    select(
-      -c(
-        lag_value, lead_value, spike_ref, spike_value,
-        spike_high, spike_low
-      )
-    ) %>%
+    ungroup()
+
+  if(isFALSE(keep_spike_cols)) {
+    dat <- dat %>%
+      select(-c(lag_value, lead_value,
+                spike_ref, spike_value,
+                spike_high, spike_low))
+  }
+
+  dat %>%
     pivot_wider(
       names_from = variable,
       values_from = c(value, spike_flag),

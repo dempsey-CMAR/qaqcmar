@@ -1,0 +1,86 @@
+---
+format: 
+  html:
+    toc: true
+    toc-depth: 3
+    embed-resources: true
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, dpi = 600, fig.width = 8)
+
+library(dplyr)
+ 
+```
+
+# Spike Test
+
+Following QARTOD: $$spike_{value} = abs(value - spike_{ref})$$ where $spike_{ref} = (lead_{value} - lag_{value}) / 2$
+
+```{r}
+
+dat <- data.frame(x = 1:11, y = seq(-5, 5, 1)) %>% 
+  mutate(
+    spike_ref = (lag(y) + lead(y)) / 2,
+    spike_value = abs(y - spike_ref),
+    spike_value2 = abs(abs(y) - spike_ref)
+)
+        
+dat
+ 
+```
+
+```{r}
+plot(dat$x, dat$y)
+```
+
+```{r}
+plot(dat$x, dat$spike_ref)
+```
+
+```{r}
+plot(dat$x, dat$spike_value)
+```
+
+```{r}
+plot(dat$x, dat$spike_value2)
+```
+
+
+```{r}
+dat[7, 2] <- -1
+```
+
+```{r}
+plot(dat$x, dat$y)
+```
+
+```{r}
+dat <- dat %>% 
+  mutate(
+    spike_ref = (lag(y) + lead(y)) / 2,
+    spike_value = abs(y - spike_ref),
+    spike_value2 = abs(abs(y) - spike_ref)
+)
+
+dat
+```
+
+```{r}
+plot(dat$x, dat$spike_ref)
+```
+
+```{r}
+plot(dat$x, dat$spike_value)
+```
+
+```{r}
+plot(dat$x, dat$spike_value2)
+```
+
+
+
+
+
