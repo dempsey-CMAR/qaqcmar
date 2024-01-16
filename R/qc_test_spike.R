@@ -1,31 +1,38 @@
-#' Add flag columns for the spike test
-#'
-#' Might want to make this dependent on sample rate (sensor type)
+#' Apply the spike test
 #'
 #' @param dat Data frame of sensor string data in wide format.
 #'
-#' @param spike_table Data frame with 3 columns: \code{variable}: should match
-#'   the names of the variables being tested in \code{dat}.
+#' @param spike_table Data frame with at least 3 columns: \code{variable}:
+#'   should match the names of the variables being tested in \code{dat}.
+#'   \code{spike_low}: maximum acceptable spike value to "Pass", and
+#'   \code{spike_high}: maximum acceptable value to be flagged "Suspect/Of
+#'   Interest". For variable = sensor_depth_measured_m, the column
+#'   \code{sensor_type} is also required.
 #'
-#'   Default is \code{spike_table = NULL}, which uses default values. To see the
-#'   default \code{spike_table}, type \code{threshold_tables$spike_table}.
+#'   Optional additional column(s) that is used to join with \code{dat}. This
+#'   column must have the same name as the string \code{join_column}.
+#'
+#'   Default values are used if \code{spike_able = NULL}. To see the
+#'   default \code{spike_table}, type \code{subset(thresholds,
+#'   qc_test == "spike")} in the console.
 #'
 #' @param county Character string indicating the county from which \code{dat}
 #'   was collected. Used to filter the default \code{grossrange_table}. Not
-#'   required if there is a \code{county} column in \code{dat} or if
-#'   \code{grossrange_table} is provided.
+#'   required if there is a \code{county} column in \code{dat}.
 #'
 #' @param join_column Optional character string of a column name that is in both
-#'   \code{dat} and \code{grossrange_table}. The specified column will be used
-#'   to join the two tables. Default is \code{join_column = NULL}, and the
-#'   tables are joined only on the \code{sensor_type} and \code{variable}
-#'   columns.
+#'   \code{dat} and \code{spike_table}. The specified column will be used to
+#'   join the two tables. Default is \code{join_column = NULL}, and the tables
+#'   are joined only on the code{variable} columns (unless the variable is
+#'   sensor_depth_at_low_tide_m, in which case the tables are also joined by the
+#'   \code{sensor_type} column).
 #'
 #' @param keep_spike_cols  Logical value. If \code{TRUE}, the columns used to
 #'   produce the spike value are returned in \code{dat}. Default is
 #'   \code{FALSE}.
 #'
-#' @return placeholder for now
+#' @return Returns \code{dat} in a wide format, with spike flag columns for each
+#'   variable in the form "spike_flag_variable".
 #'
 #' @family tests
 #'
@@ -56,23 +63,57 @@ qc_test_spike <- function(
   # import default thresholds from internal data file
   if (is.null(spike_table)) {
     spike_table <- thresholds %>%
-      filter(qc_test == "spike") %>%
-      select(-c(qc_test, month)) %>%
-      pivot_wider(values_from = "threshold_value", names_from = threshold) %>%
-      select(where(~ !any(is.na(.))))
-
- #   spike_table <- spike_table[, !names(spike_table) %in% join_columns]
+      filter(qc_test == "spike", county == !!county | is.na(county)) %>%
+      select(-c(qc_test, county, month)) %>%
+      pivot_wider(values_from = "threshold_value", names_from = threshold)
   }
 
-  # spike_table <- spike_table %>%
-  #   select(variable, threshold, threshold_value)
   # add thresholds to dat and assign flags ---------------------------------------------------
   dat <- ss_pivot_longer(dat)
 
+  # find a work around for this
+  if("sensor_depth_measured_m" %in% unique(dat$variable)) {
+
+    if(!("sensor_type" %in% join_column)) {
+
+      stop("spike_table must include column << sensor_type >> for variable
+            << sensor_depth_measured_m >>")
+    }
+  }
+
+  # join
   if(is.null(join_column)) {
-    dat <- left_join(dat, spike_table, by = "variable")
+
+    dat <- left_join(dat, select(spike_table, -sensor_type), by = "variable")
+
+  } else if("sensor_type" %in% join_column) {
+
+    dat1 <- dat %>%
+      filter(variable == "sensor_depth_measured_m") %>%
+      left_join(
+        filter(spike_table, variable == "sensor_depth_measured_m"),
+        by = c("variable", join_column)
+      )
+
+    join2 <- join_column[-which(join_column == "sensor_type")]
+
+    dat2 <- dat %>%
+      filter(variable != "sensor_depth_measured_m") %>%
+      left_join(
+        spike_table %>%
+        filter(variable != "sensor_depth_measured_m") %>%
+          select(-sensor_type),
+        by = c("variable", join2)
+      )
+
+    dat <- bind_rows(dat1, dat2)
+
   } else {
-    dat <- left_join(dat, spike_table, by = c("variable", join_column))
+    dat <- left_join(
+      dat,
+      select(spike_table, -sensor_type),
+      by = c("variable", join_column)
+    )
   }
 
   dat <- dat %>%
