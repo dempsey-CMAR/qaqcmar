@@ -36,7 +36,7 @@ qc_summarise_flags <- function(dat, qc_tests, ...) {
     # don't use "flag" in column name because qc_assign_flag_labels will try to convert, resulting in NA
     summarise(n_fl  = n()) %>%
     ungroup() %>%
-    mutate(n_percent = round(n_fl / n_obs, digits = 2)) %>%
+    mutate(n_percent = round(100 * n_fl / n_obs, digits = 2)) %>%
     qc_assign_flag_labels() %>%
     select(-n_obs) %>%
     rename(n_flag = n_fl) %>%
