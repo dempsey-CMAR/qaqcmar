@@ -8,7 +8,8 @@ ggplot_depth_crosscheck(
   dat,
   flag_title = TRUE,
   labels = TRUE,
-  jitter_height = 0
+  jitter_height = 0,
+  ncol = NULL
 )
 }
 \arguments{
@@ -23,8 +24,10 @@ the qc test and variable plotted.}
 values to text labels for the legend.}
 
 \item{jitter_height}{Numeric value. Amount of vertical jitter. Only
-recommended to check for overlapping deployment points because it introduces
-random noise into the scatter plot that can be misleading.}
+recommended to check for overlapping deployment points because it
+introduces random noise into the scatter plot that can be misleading.}
+
+\item{ncol}{Number of columns for faceted plots.}
 }
 \value{
 Returns a ggplot object. Points are coloured by the flag value.
