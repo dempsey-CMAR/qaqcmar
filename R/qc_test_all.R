@@ -53,11 +53,11 @@ qc_test_all <- function(
     keep_spike_cols = FALSE,
 
     ping = FALSE
-    ) {
+) {
 
   if (is.null(qc_tests)) {
     qc_tests <- c("climatology", "depth_crosscheck",
-                 "grossrange", "rolling_sd", "spike")
+                  "grossrange", "rolling_sd", "spike")
   }
 
   qc_tests <- tolower(qc_tests)
@@ -119,50 +119,14 @@ qc_test_all <- function(
   if(isTRUE(ping)) beep("ping")
 
   # join by all common columns
-  dat_out %>%
-    purrr::reduce(dplyr::left_join)
-}
+  dat_out <- dat_out %>%
+    purrr::reduce(dplyr::left_join, by = colnames(dat))
 
-
-#' Assign each observation the maximum flag from applied QC tests.
-#'
-#' ** change the spike test values at beginning/end to NA instead of 2
-#'
-#' @param dat Data frame in long or wide format with flag columns from multiple
-#'   quality control tests.
-#'
-#' @param qc_tests Quality control tests included in \code{dat}.
-#'
-#' @return Returns \code{dat} in a wide format, with a single flag column for
-#'   each variable column.
-#'
-#' @importFrom dplyr %>% c_across contains mutate rename rowwise select ungroup
-#' @importFrom tidyr pivot_wider
-#'
-#' @export
-
-qc_assign_max_flag <- function(
-    dat,
-    qc_tests = c("climatology", "depth_crosscheck",
-                 "grossrange", "rolling_sd", "spike")) {
-
-  if (!("variable" %in% colnames(dat))) {
-    dat <- qc_pivot_longer(dat, qc_tests = qc_tests)
+  if("depth_crosscheck_flag" %in% colnames(dat_out)) {
+    dat_out <- dat_out %>%
+      relocate(depth_crosscheck_flag, .after = sensor_depth_at_low_tide_m)
   }
 
-  # check if ALL flag values are "2". if so, max flag is 2. Otherwise ignore
-  # OR just assign 2
-  dat %>%
-    # rowwise is REALLY slow - need to change to map_ of apply
-    rowwise() %>%
-    # mutate(qc_col = max(c_across(contains("flag"))), na.rm = TRUE) %>%
-    mutate(qc_col = max(c_across(contains("flag")))) %>%
-    ungroup() %>%
-    select(-contains("flag")) %>%
-    rename(qc_flag = qc_col) %>%
-    pivot_wider(
-      names_from = variable,
-      values_from = c(value, qc_flag),
-      names_sort = TRUE
-    )
+  dat_out
 }
+
