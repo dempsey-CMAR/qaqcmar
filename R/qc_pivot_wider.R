@@ -29,21 +29,10 @@ qc_pivot_wider <- function(dat_long, vars = NULL, var_position = NULL) {
     "county", "waterbody", "station", "lease", "latitude", "longitude",
     "deployment_range", "string_configuration",
     "sensor_type", "sensor_serial_number",
-    "timestamp_utc", "sensor_depth_at_low_tide_m"
+    "timestamp_utc", "sensor_depth_at_low_tide_m", "depth_crosscheck_flag"
   )
 
   dat_out <- list(NULL)
-
-  if("depth_crosscheck_flag_value" %in% colnames(dat_long)) {
-   # dat_long <- rename(dat_long, depth_crosscheck = depth_crosscheck_flag_value)
-
-    depth_crosscheck <- dat_long# %>%
-      select(any_of(first_cols), depth_crosscheck_flag_value)
-
-      x <- pivot_flags_wider(dat_long, var = "depth_crosscheck")
-
-    dat_long <- dat_long %>% select(-depth_crosscheck_flag_value)
-  }
 
   if("dissolved_oxygen_percent_saturation" %in% vars) {
     dat_out[[1]] <- pivot_flags_wider(
@@ -78,33 +67,22 @@ qc_pivot_wider <- function(dat_long, vars = NULL, var_position = NULL) {
 
   # join by all common columns
   dat_out3 <- dat_out2 %>%
-    purrr::reduce(dplyr::left_join, by = join_cols)# %>%
-    left_join(depth_crosscheck)
+    purrr::reduce(dplyr::left_join, by = join_cols) %>%
     select(
       any_of(first_cols),
-      all_of(paste0("value_", vars)),
+      all_of(vars),
       contains("depth_crosscheck"),
       contains("climatology"),
       contains("grossrange"),
       contains("rolling_sd"),
       contains("spike")
-      #everything()
     )
 
-  if("depth_crosscheck" %in% colnames(dat_out)) {
-    dat_out <- rename(
-      dat_out,
-      depth_crosscheck_flag_sensor_depth_measured_m = depth_crosscheck
-    )
-  }
-
-  dat_out
+  dat_out3
 }
 
 
 #' Complete pivot_wider of flagged sensor string data
-#'
-#' @inheritParams qc_pivot_wider
 #'
 #' @param dat_long Data frame of flagged sensor string data with the variables
 #'   in a long format and flags in wide format.
@@ -121,24 +99,34 @@ qc_pivot_wider <- function(dat_long, vars = NULL, var_position = NULL) {
 #' @export
 
 
-pivot_flags_wider <- function(dat_long, var, var_position = NULL) {
+pivot_flags_wider <- function(dat_long, var) {
 
-  if(is.null(var_position)) var_position <- "sensor_depth_at_low_tide_m"
+  if("depth_crosscheck_flag" %in% colnames(dat_long)) {
+    dat_long <- rename(
+      dat_long,
+      depth_crosscheck = depth_crosscheck_flag
+    )
+  }
 
   dat_wide <- dat_long %>%
     filter(variable == var) %>%
     pivot_wider(
       names_from = variable,
-      names_prefix = "value_",
       values_from = value
       ) %>%
     dplyr::rename_with(
       ~ paste0(.x, "_", var),
       .cols = contains("flag")
-    ) #%>%
-   # relocate(all_of(var), .after = all_of(var_position))
+    )
 
   colnames(dat_wide) <- str_remove_all(colnames(dat_wide), pattern = "_value")
+
+  if("depth_crosscheck" %in% colnames(dat_wide)) {
+    dat_wide<- rename(
+      dat_wide,
+      depth_crosscheck_flag = depth_crosscheck
+    )
+  }
 
   dat_wide
 
