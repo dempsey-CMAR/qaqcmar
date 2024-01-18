@@ -57,7 +57,6 @@ utils::globalVariables(
     "int_sample",
     "n_sample",
     "effective_sample",
-    # "stdev_max",
     "rolling_sd_flag",
     "sd_roll",
     "n_sample_effective",
@@ -65,11 +64,13 @@ utils::globalVariables(
     # qc_assign_max_flag
     "qc_col",
     "qc_flag",
+    "depth_crosscheck",
 
     # ggplot_all_tests
     "depth",
     "sensor_depth_at_low_tide_m",
     "min_depth",
+    "depth_label",
 
     # qc_calculate_thresholds
     "rolling_sd_max",
