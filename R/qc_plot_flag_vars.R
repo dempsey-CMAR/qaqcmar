@@ -52,7 +52,16 @@ qc_plot_flags <- function(
 
   dat <- dat %>%
     rename(tstamp = contains("timestamp")) %>%
-    mutate(tstamp = as_datetime(tstamp))
+    mutate(
+      tstamp = as_datetime(tstamp),
+
+      sensor = paste(sensor_type, sensor_serial_number, sep = "-"),
+      depth_label = paste0(sensor_depth_at_low_tide_m, " m", " (", sensor, ")"),
+      depth_label = ordered(
+        depth_label,
+        levels = gtools::mixedsort(unique(depth_label))
+      )
+    )
 
   #browser()
 
@@ -71,8 +80,6 @@ qc_plot_flags <- function(
 
     p_out <- Filter(Negate(is.null), p_out)
   }
-
-
 
   if (vars == "all") vars <- unique(dat$variable)
 
@@ -139,20 +146,20 @@ ggplot_flags <- function(dat, qc_test, var, ncol = NULL, flag_title = TRUE) {
   flag_column <- paste0(qc_test, "_flag_value")
 
   p <- dat %>%
-    mutate(
-      sensor = paste(sensor_type, sensor_serial_number, sep = "-"),
-      depth = paste0(sensor_depth_at_low_tide_m, " m", " (", sensor, ")"),
-      depth = ordered(
-        depth,
-        levels = gtools::mixedsort(unique(depth))
-      )
-    ) %>%
+    # mutate(
+    #   sensor = paste(sensor_type, sensor_serial_number, sep = "-"),
+    #   depth = paste0(sensor_depth_at_low_tide_m, " m", " (", sensor, ")"),
+    #   depth = ordered(
+    #     depth,
+    #     levels = gtools::mixedsort(unique(depth))
+    #   )
+   # ) %>%
     ggplot(aes(tstamp, value, colour = !!sym(flag_column))) +
     geom_point() +
     scale_y_continuous(var) +
     scale_x_datetime("Date") +
     scale_colour_manual("Flag Value", values = flag_colours, drop = FALSE) +
-    facet_wrap(~depth, ncol = ncol) +
+    facet_wrap(~depth_label, ncol = ncol) +
     theme_light() +
     theme(
       strip.text = element_text(colour = "black", size = 10),
@@ -164,8 +171,6 @@ ggplot_flags <- function(dat, qc_test, var, ncol = NULL, flag_title = TRUE) {
 
   p
 }
-
-
 
 #' Create a ggplot for the depth crosscheck test
 #'
@@ -199,7 +204,7 @@ ggplot_depth_crosscheck <- function(
 
   flag_colours <- c("chartreuse4", "#E6E1BC", "#EDA247", "#DB4325", "grey24")
 
- # browser()
+  #browser()
 
   labels <- labels
 
@@ -207,7 +212,7 @@ ggplot_depth_crosscheck <- function(
     dat <- dat %>% rename(timestamp_utc = tstamp) %>% ss_pivot_wider()
   }
 
-  colnames(dat) <- str_remove_all(colnames(dat), "value_")
+  #colnames(dat) <- str_remove_all(colnames(dat), "value_")
 
   if(!("sensor_depth_measured_m" %in% colnames(dat))) {
     stop("sensor_depth_measured_m must be present in dat to plot depth_crosscheck figure")
@@ -220,36 +225,28 @@ ggplot_depth_crosscheck <- function(
     filter(
       !is.na(sensor_depth_measured_m) & !is.na(sensor_depth_at_low_tide_m)
     ) %>%
-    mutate(
-      sensor = paste(sensor_type, sensor_serial_number, sep = "-"),
-      depth_label = paste0(sensor_depth_at_low_tide_m, " m", " (", sensor, ")"),
-      depth_label = ordered(
-        depth_label,
-        levels = gtools::mixedsort(unique(depth_label))
-      )
-    ) %>%
-    group_by(
-      county, station, deployment_range,
-      sensor_serial_number, depth_label, sensor_depth_at_low_tide_m
-    ) %>%
-    mutate(min_depth = min(sensor_depth_measured_m, na.rm = TRUE)) %>%
-    filter(sensor_depth_measured_m == min_depth) %>%
-    rename(depth_crosscheck_flag = contains("depth_crosscheck_flag")) %>%
     distinct(
       county, station, deployment_range,
-      sensor_serial_number, depth_label,
-      depth_crosscheck_flag,
-      sensor_depth_at_low_tide_m, .keep_all = TRUE
-    )
+      sensor_serial_number, depth_label, sensor_depth_at_low_tide_m,
+      .keep_all = TRUE
+    ) #%>%
+    # mutate(min_depth = min(sensor_depth_measured_m, na.rm = TRUE)) %>%
+    # filter(sensor_depth_measured_m == min_depth) %>%
+    # rename(depth_crosscheck_flag = contains("depth_crosscheck_flag")) %>%
+    # distinct(
+    #   county, station, deployment_range,
+    #   sensor_serial_number, depth_label,
+    #   depth_crosscheck_flag,
+    #   sensor_depth_at_low_tide_m, .keep_all = TRUE
+    # )
 
   if (isTRUE(labels)) dat <- dat %>% qc_assign_flag_labels()
 
-  if(nrow(dat) == 0) {
-    stop("No observations to plot for depth_crosscheck figure.")
-  }
+  # if(nrow(dat) == 0) {
+  #   stop("No observations to plot for depth_crosscheck figure.")
+  # }
 
-  p <- ggplot(
-    dat,
+  p <- ggplot(dat,
     aes(sensor_depth_measured_m, sensor_depth_at_low_tide_m,
         col = depth_crosscheck_flag)
   ) +
