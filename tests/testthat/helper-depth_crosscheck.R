@@ -15,10 +15,6 @@ path <- system.file("testdata", package = "qaqcmar")
 dat <- readRDS(paste0(path, "/test_data_estimated_depth.RDS")) %>%
   ss_pivot_wider()
 
-# use this test data to make sure function works with other variables present
-#dat <- readRDS(paste0(path, "/test_data_rolling_sd.RDS"))
-
-
 # general test
 qc_depth <- dat %>%
   qc_test_depth_crosscheck()
@@ -29,10 +25,18 @@ p <- qc_plot_flags(
   ncol = 1
 )
 
-p2 <- qc_plot_flags(
-    qc_depth %>% qc_pivot_longer(qc_tests = "depth_crosscheck"),
-    qc_tests = "depth_crosscheck", ncol = 1
-  )
+# use this test data to make sure function works with other variables present
+dat2 <- readRDS(paste0(path, "/test_data_rolling_sd.RDS"))
+
+# general test
+qc_depth2 <- dat2 %>%
+  qc_test_depth_crosscheck()
+
+p <- qc_plot_flags(
+  qc_depth2,
+  qc_tests = "depth_crosscheck",
+  ncol = 1
+)
 
 # even though sensor depth was not measured at 10 m, the WHOLE deployment
 # gets assigned depth_crosscheck_flag = 1 because both of the sensors that

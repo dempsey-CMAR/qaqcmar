@@ -186,7 +186,7 @@ ggplot_flags <- function(dat, qc_test, var, ncol = NULL, flag_title = TRUE) {
 #'
 #' @return Returns a ggplot object. Points are coloured by the flag value.
 #'
-#' @importFrom dplyr filter
+#' @importFrom dplyr filter group_by summarise ungroup
 #' @importFrom ggplot2 aes element_text element_rect geom_abline geom_hline
 #'   geom_point geom_vline ggplot ggtitle guides guide_legend position_jitter
 #'   scale_colour_manual scale_x_datetime scale_y_continuous theme_light theme
@@ -212,8 +212,6 @@ ggplot_depth_crosscheck <- function(
     dat <- dat %>% rename(timestamp_utc = tstamp) %>% ss_pivot_wider()
   }
 
-  #colnames(dat) <- str_remove_all(colnames(dat), "value_")
-
   if(!("sensor_depth_measured_m" %in% colnames(dat))) {
     stop("sensor_depth_measured_m must be present in dat to plot depth_crosscheck figure")
   }
@@ -225,29 +223,25 @@ ggplot_depth_crosscheck <- function(
     filter(
       !is.na(sensor_depth_measured_m) & !is.na(sensor_depth_at_low_tide_m)
     ) %>%
-    distinct(
+    group_by(
       county, station, deployment_range,
       sensor_serial_number, depth_label, sensor_depth_at_low_tide_m,
-      .keep_all = TRUE
-    ) #%>%
-    # mutate(min_depth = min(sensor_depth_measured_m, na.rm = TRUE)) %>%
-    # filter(sensor_depth_measured_m == min_depth) %>%
-    # rename(depth_crosscheck_flag = contains("depth_crosscheck_flag")) %>%
-    # distinct(
-    #   county, station, deployment_range,
-    #   sensor_serial_number, depth_label,
-    #   depth_crosscheck_flag,
-    #   sensor_depth_at_low_tide_m, .keep_all = TRUE
-    # )
+      depth_crosscheck_flag
+    ) %>%
+    summarise(
+      min_sensor_depth_measured_m =
+        min(sensor_depth_measured_m, na.rm = TRUE)
+    ) %>%
+    ungroup()
 
   if (isTRUE(labels)) dat <- dat %>% qc_assign_flag_labels()
 
-  # if(nrow(dat) == 0) {
-  #   stop("No observations to plot for depth_crosscheck figure.")
-  # }
+  if(nrow(dat) == 0) {
+    stop("No observations to plot for depth_crosscheck figure.")
+  }
 
   p <- ggplot(dat,
-    aes(sensor_depth_measured_m, sensor_depth_at_low_tide_m,
+    aes(min_sensor_depth_measured_m, sensor_depth_at_low_tide_m,
         col = depth_crosscheck_flag)
   ) +
     geom_hline(

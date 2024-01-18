@@ -71,6 +71,7 @@ utils::globalVariables(
     "sensor_depth_at_low_tide_m",
     "min_depth",
     "depth_label",
+    "min_sensor_depth_measured_m",
 
     # qc_calculate_thresholds
     "rolling_sd_max",
