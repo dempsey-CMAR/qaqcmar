@@ -55,7 +55,7 @@ dat <- data.frame(
     deployment_range = "2023-Jan-01 to 2023-Jan-15",
     sensor_depth_at_low_tide_m = 5,
     sensor_depth_measured_m = 2 * sin(4 * pi / n_int * index) + 5,
-    sensor_type = "abc",
+    sensor_type = "aquameasure",
     sensor_serial_number = 123,
   ) %>%
   select(
