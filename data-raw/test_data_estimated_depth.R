@@ -43,7 +43,7 @@ dat10 <- ts %>%
     station = "Emonds_Field",
     sensor_depth_at_low_tide_m = rep(10, n()),
     sensor_type = rep("aquameasure", n()),
-    sensor_serial_number = rep(456, n()),
+    sensor_serial_number = rep(789, n()),
     sensor_depth_measured_m = NA
   )
 
@@ -54,14 +54,24 @@ dat15 <- ts %>%
     station = "Taren_Ferry",
     sensor_depth_at_low_tide_m = rep(15, n()),
     sensor_type = rep("vemco", n()),
-    sensor_serial_number = rep(789, n()),
+    sensor_serial_number = rep(012, n()),
     sensor_depth_measured_m = amp * sin(4 * pi / n_int * index) + 22
   )
 
 
-dat <- bind_rows(dat2, dat5, dat10, dat15) %>%
+dat20 <- ts %>%
   mutate(
-    county = "Two_Rivers",
+    index = 0:(n() - 1),
+    station = "White_Tower",
+    sensor_depth_at_low_tide_m = rep(20, n()),
+    sensor_type = rep("vemco", n()),
+    sensor_serial_number = rep(345, n()),
+    sensor_depth_measured_m = NA
+  )
+
+dat <- bind_rows(dat2, dat5, dat10, dat15, dat20) %>%
+  mutate(
+    county = "Halifax",
     deployment_range = "Third_Age"
   ) %>%
   pivot_longer(
