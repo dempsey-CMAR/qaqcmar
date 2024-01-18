@@ -4,17 +4,10 @@
 \alias{qc_pivot_wider}
 \title{Pivot flagged sensor string data from long to wide format by variable}
 \usage{
-qc_pivot_wider(dat_long, vars = NULL, var_position = NULL)
+qc_pivot_wider(dat_long)
 }
 \arguments{
 \item{dat_long}{Data frame of flagged sensor string data in long format.}
-
-\item{vars}{Variables included in \code{dat_long}.}
-
-\item{var_position}{Character string. Name of the column in \code{dat_long}
-that the the variable column will be located after. By default, each
-variable column will be located after the column
-\code{sensor_depth_at_low_tide_m}.}
 }
 \value{
 Returns \code{dat_long}, with variables and flags pivoted to a wide
