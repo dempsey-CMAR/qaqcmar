@@ -19,7 +19,6 @@
 #'
 #' @inheritParams qc_test_climatology
 #' @inheritParams qc_test_depth_crosscheck
-#' @inheritParams qc_test_flat_line
 #' @inheritParams qc_test_grossrange
 #' @inheritParams qc_test_rolling_sd
 #' @inheritParams qc_test_spike
@@ -38,7 +37,6 @@ qc_test_all <- function(
     county = NULL,
 
     climatology_table = NULL,
-    #  flat_line_table = NULL,
     depth_table = NULL,
     grossrange_table = NULL,
     rolling_sd_table = NULL,

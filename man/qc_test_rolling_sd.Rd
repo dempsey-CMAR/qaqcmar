@@ -83,7 +83,6 @@ When int_sample = period_hours, n_sample = 1, so sd_roll = NA.
 \seealso{
 Other tests: 
 \code{\link{qc_test_climatology}()},
-\code{\link{qc_test_flat_line}()},
 \code{\link{qc_test_grossrange}()},
 \code{\link{qc_test_spike}()}
 }

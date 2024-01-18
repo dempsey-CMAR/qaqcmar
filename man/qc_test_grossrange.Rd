@@ -54,7 +54,6 @@ do_concentration is not \code{NA} so that the data can be joined with the
 \seealso{
 Other tests: 
 \code{\link{qc_test_climatology}()},
-\code{\link{qc_test_flat_line}()},
 \code{\link{qc_test_rolling_sd}()},
 \code{\link{qc_test_spike}()}
 }
