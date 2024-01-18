@@ -13,7 +13,7 @@
 #' @return Returns \code{dat} in a wide format, with a single flag
 #'   column for each variable column.
 #'
-#' @importFrom dplyr %>% c_across contains mutate rename rowwise select ungroup
+#' @importFrom dplyr %>% any_of contains everything mutate rename select
 #' @importFrom purrr pmap
 #' @importFrom stringr str_remove_all
 #' @importFrom tidyr pivot_wider
@@ -35,7 +35,7 @@ qc_assign_max_flag <- function(dat, qc_tests = NULL) {
     dat <- rename(dat, depth_crosscheck = depth_crosscheck_flag)
   }
 
-  vars <- unique(dat$variable)
+  #vars <- unique(dat$variable)
 
   dat <- dat %>%
     mutate(
@@ -56,7 +56,34 @@ qc_assign_max_flag <- function(dat, qc_tests = NULL) {
 
   colnames(dat) <- str_remove_all(colnames(dat), pattern = "value_")
 
-  dat
+  col_order <- c(
+    "county",
+    "waterbody",
+    "station",
+    "lease",
+    "latitude" ,
+    "longitude" ,
+    "deployment_range"   ,
+    "string_configuration",
+    "sensor_type"     ,
+    "sensor_serial_number"  ,
+    "timestamp_utc"  ,
+    "sensor_depth_at_low_tide_m",
+    "depth_crosscheck_flag"  ,
+    "dissolved_oxygen_percent_saturation"   ,
+    "dissolved_oxygen_uncorrected_mg_per_l",
+    "salinity_psu",
+    "sensor_depth_measured_m",
+    "temperature_degree_c",
+    "qc_flag_dissolved_oxygen_percent_saturation"   ,
+    "qc_flag_dissolved_oxygen_uncorrected_mg_per_l",
+    "qc_flag_salinity_psu",
+    "qc_flag_sensor_depth_measured_m",
+    "qc_flag_temperature_degree_c"
+  )
+
+  dat %>%
+    select(any_of(col_order), everything())
 }
 
 # Assign each observation the maximum flag from applied QC tests.
