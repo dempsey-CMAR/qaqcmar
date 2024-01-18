@@ -8,7 +8,7 @@
 #' @return Returns \code{dat_wide}, with variables and flags pivoted to a long
 #'   format.
 #'
-#' @importFrom dplyr %>% arrange filter relocate select
+#' @importFrom dplyr %>% any_of arrange filter relocate select
 #' @importFrom tidyr pivot_longer
 #'
 #' @export
@@ -59,12 +59,21 @@ qc_pivot_longer <- function(dat_wide, qc_tests = NULL) {
     )
   }
 
+  vars <- c(
+    "dissolved_oxygen_percent_saturation",
+    "dissolved_oxygen_uncorrected_mg_per_l",
+    "salinity_psu",
+    "sensor_depth_measured_m",
+    "temperature_degree_c"
+  )
+
   # pivot the variables - this adds flags that shouldn't exist but will get cleaned up below
   dat <- dat_wide %>%
     pivot_longer(
-      cols = contains("value"),
+      cols = any_of(vars),
+      #cols = contains("value"),
       names_to = "variable",
-      names_prefix = "value_",
+    #  names_prefix = "value_",
       values_to = "value",
       values_drop_na = TRUE
     )
@@ -78,26 +87,24 @@ qc_pivot_longer <- function(dat_wide, qc_tests = NULL) {
     dat <- pivot_flags_longer(dat, qc_test = "climatology")
   }
 
-  if ("depth_crosscheck" %in% qc_tests) {
-    # this is not a true pivot because there is only ONE depth_crosscheck flag
-    dat <- dat %>%
-      rename(
-        depth_crosscheck_flag_value = depth_crosscheck_flag_sensor_depth_measured_m
-      ) %>%
-      mutate(
-        # any variable that is not measured depth should have a flag 2
-        depth_crosscheck_flag_value = as.numeric(depth_crosscheck_flag_value),
-        depth_crosscheck_flag_value = if_else(
-          variable == "sensor_depth_measured_m",
-          depth_crosscheck_flag_value,
-          2
-        ),
-        depth_crosscheck_flag_value = ordered(
-          depth_crosscheck_flag_value, levels = 1:4
-        )
-      ) %>%
-      relocate(depth_crosscheck_flag_value, .after = value)
-  }
+  # if ("depth_crosscheck" %in% qc_tests) {
+  #   # this is not a true pivot because there is only ONE depth_crosscheck flag
+  #   dat <- dat %>%
+  #     rename(depth_crosscheck_flag_value = contains("depth_crosscheck")) %>%
+  #     mutate(
+  #       # any variable that is not measured depth should have a flag 2
+  #       depth_crosscheck_flag_value = as.numeric(depth_crosscheck_flag_value),
+  #       depth_crosscheck_flag_value = if_else(
+  #         variable == "sensor_depth_measured_m",
+  #         depth_crosscheck_flag_value,
+  #         2
+  #       ),
+  #       depth_crosscheck_flag_value = ordered(
+  #         depth_crosscheck_flag_value, levels = 1:4
+  #       )
+  #     ) %>%
+  #     relocate(depth_crosscheck_flag_value, .after = value)
+  # }
 
   # if ("flat_line" %in% qc_tests) {
   #   dat <- pivot_flags_longer(dat, qc_test = "flat_line")
@@ -110,6 +117,7 @@ qc_pivot_longer <- function(dat_wide, qc_tests = NULL) {
   if ("rolling_sd" %in% qc_tests) {
     dat <- pivot_flags_longer(dat, qc_test = "rolling_sd")
   }
+
 
   if ("spike" %in% qc_tests) {
     dat <- pivot_flags_longer(dat, qc_test = "spike")
