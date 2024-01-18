@@ -10,12 +10,15 @@ qc_assign_max_flag(dat, qc_tests = NULL)
 \item{dat}{Data frame in long or wide format with flag columns from multiple
 quality control tests.}
 
-\item{qc_tests}{Quality control tests included in \code{dat}.}
+\item{qc_tests}{Quality control tests included in \code{dat}. Default is
+\code{qc_tests = c("climatology", "grossrange", "rolling_sd", "spike")}.}
 }
 \value{
-Returns \code{dat} in a wide format, with a single flag column for
-each variable column.
+Returns \code{dat} in a wide format, with a single flag
+column for each variable column.
 }
 \description{
-** change the spike test values at beginning/end to NA instead of 2
+\code{depth_crosscheck_flag} is not considered when evaluating the maximum
+flag value.  \code{depth_crosscheck_flag} remains its own column with a
+single value for the whole deployment.
 }
