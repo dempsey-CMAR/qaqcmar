@@ -69,6 +69,7 @@
 #'   select ungroup
 #' @importFrom sensorstrings ss_pivot_longer
 #' @importFrom stats sd
+#' @importFrom stringr str_remove_all
 #' @importFrom tidyr pivot_wider
 #' @importFrom zoo rollapply
 #'
@@ -167,6 +168,7 @@ qc_test_rolling_sd <- function(
       names_sort = TRUE
     )
 
-  dat
+  colnames(dat) <- str_remove_all(colnames(dat), pattern = "value_")
 
+  dat
 }

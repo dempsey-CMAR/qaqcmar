@@ -40,7 +40,7 @@
 #'   left_join mutate select
 #' @importFrom lubridate day
 #' @importFrom sensorstrings ss_pivot_longer
-#' @importFrom stringr str_detect
+#' @importFrom stringr str_detect str_remove_all
 #' @importFrom tidyr pivot_wider separate
 #' @importFrom tidyselect where
 #'
@@ -143,10 +143,14 @@ qc_test_spike <- function(
                 spike_high, spike_low))
   }
 
-  dat %>%
+  dat <- dat %>%
     pivot_wider(
       names_from = variable,
       values_from = c(value, spike_flag),
       names_sort = TRUE
     )
+
+  colnames(dat) <- str_remove_all(colnames(dat), pattern = "value_")
+
+  dat
 }

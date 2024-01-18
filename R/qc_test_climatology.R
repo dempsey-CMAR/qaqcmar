@@ -32,7 +32,7 @@
 #' @importFrom dplyr %>% as_tibble bind_rows case_when left_join mutate rename
 #'   tibble
 #' @importFrom lubridate month parse_date_time
-#' @importFrom stringr str_detect str_replace
+#' @importFrom stringr str_detect str_remove_all str_replace
 #' @importFrom tidyr pivot_wider
 #'
 #' @export
@@ -110,6 +110,7 @@ qc_test_climatology <- function(
     )
 
   colnames(dat)[which(colnames(dat) == "tstamp")] <- colname_ts
+  colnames(dat) <- str_remove_all(colnames(dat), pattern = "value_")
 
   dat
 }

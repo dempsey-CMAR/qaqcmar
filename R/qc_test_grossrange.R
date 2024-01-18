@@ -41,7 +41,7 @@
 #' @importFrom dplyr %>% case_when contains distinct inner_join left_join mutate
 #'   select
 #' @importFrom sensorstrings ss_pivot_longer
-#' @importFrom stringr str_detect str_remove
+#' @importFrom stringr str_detect str_remove str_remove_all
 #' @importFrom tidyr pivot_wider separate
 #' @importFrom utils capture.output
 #'
@@ -78,7 +78,6 @@ qc_test_grossrange <- function(
     grossrange_table <- sensor_thresh %>%
       inner_join(user_thresh, by = "variable")
   }
-
 
   # variables in dat (could also pivot then use unique())
   dat_vars <- dat %>%
@@ -121,7 +120,7 @@ qc_test_grossrange <- function(
     dat <- left_join(dat, grossrange_table, by = c("sensor_type", "variable", join_column))
   }
 
- dat %>%
+  dat <- dat %>%
     # sensor_max and sensor_min get evaluated first, so don't need to worry
     # about if user_min < sensor_min (it will get assigned a flag of 4)
     mutate(
@@ -142,4 +141,8 @@ qc_test_grossrange <- function(
       values_from = c(value, grossrange_flag),
       names_sort = TRUE
     )
+
+  colnames(dat) <- str_remove_all(colnames(dat), pattern = "value_")
+
+  dat
 }
