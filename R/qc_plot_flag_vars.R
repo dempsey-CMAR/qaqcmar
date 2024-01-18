@@ -146,14 +146,6 @@ ggplot_flags <- function(dat, qc_test, var, ncol = NULL, flag_title = TRUE) {
   flag_column <- paste0(qc_test, "_flag_value")
 
   p <- dat %>%
-    # mutate(
-    #   sensor = paste(sensor_type, sensor_serial_number, sep = "-"),
-    #   depth = paste0(sensor_depth_at_low_tide_m, " m", " (", sensor, ")"),
-    #   depth = ordered(
-    #     depth,
-    #     levels = gtools::mixedsort(unique(depth))
-    #   )
-   # ) %>%
     ggplot(aes(tstamp, value, colour = !!sym(flag_column))) +
     geom_point() +
     scale_y_continuous(var) +
@@ -203,8 +195,6 @@ ggplot_depth_crosscheck <- function(
     ncol = NULL) {
 
   flag_colours <- c("chartreuse4", "#E6E1BC", "#EDA247", "#DB4325", "grey24")
-
-  #browser()
 
   labels <- labels
 
