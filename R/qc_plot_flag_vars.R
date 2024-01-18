@@ -63,8 +63,6 @@ qc_plot_flags <- function(
       )
     )
 
-  #browser()
-
   # depth_crosscheck plot is made with a different function from the other tests
   if("depth_crosscheck" %in% qc_tests) {
 

@@ -43,22 +43,24 @@ dat_wide2 <- dat_long %>%
 dat_wide_max <- dat_wide %>%
   qc_assign_max_flag()
 
+dat_wide_max2 <- dat_wide %>%
+  qc_assign_max_flag(return_all = FALSE)
+
 dat_long_max <- dat_long %>%
   qc_assign_max_flag()
 
 
-# df <- data.frame(
-#   variable = c("var1", "var2", "var3"),
-#   qc_test = rep("grossrange", 3),
-#   value = c(1, 2, 3),
-#   flag1 = c(100, 1, 1),
-#   flag2 = c(1, 200, 1),
-#   flag3 = c(1, 1, 300)
-# )
-#
-# this test does not work with the new qc_pivot_wider used in qc_assign_max_flag
-# df_max_flag <- qc_assign_max_flag2(df, qc_tests = "grossrange")
-#
+
+# pivot max flags ---------------------------------------------------------
+
+dat_pivot_long_max <- dat_wide_max %>%
+  qc_pivot_longer(qc_tests = c("qc", qc_tests))
+
+dat_pivot_long_max2 <- dat_wide_max2 %>%
+  qc_pivot_longer(qc_tests = "qc")
+
+
+
 
 
 
