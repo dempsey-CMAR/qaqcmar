@@ -13,12 +13,13 @@
 #' accurate than the estimated depth; however, the measured depth should be
 #' carefully evaluated.
 #'
-#' Note that if there are multiple sensors on the string, *only* the sensor(s)
-#' with measured depth values will be evaluated with the depth crosscheck test.
-#' If the depth crosscheck test identifies the estimated depth as "Suspect", the
-#' other estimated sensor depths should also be considered suspect. For example,
-#' if the string was moored in an area 10 m deeper than anticipated, all sensors
-#' will likely be 10 m deeper than recorded in the
+#' Note that all observations from a deployment will have the same
+#' \code{depth_crosscheck_flag}. If there is more than one sensor on the string
+#' that measures depth, the worst (highest) flag will be assigned to the
+#' deployment. If the depth crosscheck test identifies the estimated depth as
+#' "Suspect", the other estimated sensor depths should also be considered
+#' suspect. For example, if the string was moored in an area 10 m deeper than
+#' anticipated, all sensors will likely be 10 m deeper than recorded in the
 #' \code{sensor_depth_at_low_tide_m} column.
 #'
 #' @param dat Data frame of sensor string data in a wide format.
@@ -34,16 +35,16 @@
 #'   Not required if there is a \code{county} column in \code{dat} or if
 #'   \code{depth_table} is provided.
 #'
-#' @param keep_depth_cols Logical value. If \code{TRUE}, the columns used to
+#' @param crosscheck_table Logical value. If \code{TRUE}, the table used to
 #'   evaluate the difference between measured depth and estimated depth
-#'   (\code{min_measured} and \code{abs_diff}) are returned in \code{dat}.
-#'   Default is \code{FALSE}.
+#'   (\code{min_measured} and \code{abs_diff}) is returned instead of
+#'   \code{dat}. Default is \code{FALSE}.
 #'
 #' @return Returns \code{dat} in a wide format, with depth crosscheck flag
 #'   column named "depth_crosscheck_flag_value".
 #'
-#' @importFrom dplyr filter group_by left_join mutate rename select summarise
-#'   ungroup
+#' @importFrom dplyr filter group_by join_by left_join mutate rename right_join
+#'   select summarise ungroup
 #' @importFrom tidyr pivot_longer pivot_wider
 #'
 #' @export
@@ -52,7 +53,7 @@ qc_test_depth_crosscheck <- function(
     dat,
     depth_table = NULL,
     county = NULL,
-    keep_depth_cols = FALSE
+    crosscheck_table = FALSE
 ) {
 
   message("applying depth_crosscheck test")
@@ -70,60 +71,66 @@ qc_test_depth_crosscheck <- function(
   }
 
   # add thresholds to dat and assign flags ---------------------------------------------------
+
+  # create a table with the estimated (log) depth and minimum measured depth
+  # for each deployment
+  # apply flag
   dat_depth <- dat %>%
+    filter(!is.na(sensor_depth_measured_m)) %>%
     group_by(
       county, station, deployment_range,
       sensor_serial_number, sensor_depth_at_low_tide_m) %>%
     summarise(min_measured = min(sensor_depth_measured_m)) %>%
     ungroup() %>%
-    mutate(abs_diff = abs(sensor_depth_at_low_tide_m - min_measured))
-
-
-  dat <- dat %>%
-    left_join(
-      dat_depth,
-      by = c("county", "station", "deployment_range",
-             "sensor_serial_number", "sensor_depth_at_low_tide_m")
+    # make sure there is a row for every station, deployment, sensor
+    right_join(
+      dat %>%
+        distinct(county, station, deployment_range,
+                 sensor_serial_number, sensor_depth_at_low_tide_m),
+      by = join_by(county, station, deployment_range,
+                   sensor_serial_number, sensor_depth_at_low_tide_m)
     ) %>%
+    # calculate difference and apply preliminary flag
     mutate(
+      abs_diff = abs(sensor_depth_at_low_tide_m - min_measured),
+
       depth_diff_max = depth_table$depth_diff_max,
       depth_crosscheck_flag = case_when(
         abs_diff > depth_diff_max ~ 3,
         abs_diff <= depth_diff_max ~ 1,
-        is.na(abs_diff ) ~ 2
-      ),
-      depth_crosscheck_flag = ordered(depth_crosscheck_flag, levels = 1:4)
-    ) %>%
-    pivot_longer(
-      cols = c(
-        contains("temperature"),
-        contains("dissolved_oxygen"),
-        contains("salinity"),
-        contains("depth_measured")
-      ),
-      names_to = "variable",
-      values_to = "value",
-      names_prefix = "value_",
-      values_drop_na = FALSE # keep rows without measured depth
-    ) %>%
+        # for sensors without measured depth, set flag to 0 for now so that these
+        # deployments are not counted in the max() below
+        # will be converted to 2 before export
+        is.na(abs_diff ) ~ 0
+      )
+    )
+
+  # find the worst flag for each deployment (not counting "Not Evaluated")
+  dat_depth2 <- dat_depth %>%
+    group_by(county, station, deployment_range) %>%
+    summarise(depth_crosscheck_flag = max(depth_crosscheck_flag)) %>%
     ungroup()
+
+  # join flags to data and convert 0 to 2
+  dat <- dat %>%
+    left_join(dat_depth2, by = join_by(county, station, deployment_range)) %>%
+    mutate(
+      depth_crosscheck_flag =
+        if_else(depth_crosscheck_flag == 0, 2, depth_crosscheck_flag),
+      depth_crosscheck_flag = ordered(depth_crosscheck_flag, levels = 1:4)
+    )
+
 
   # clean up columns --------------------------------------------------------
 
-  if(isFALSE(keep_depth_cols)) {
-    dat <- dat %>% select(-c(min_measured, abs_diff, depth_diff_max))
-  }
+  if(isTRUE(crosscheck_table)) {
+    dat_depth %>%
+      mutate(
+        depth_crosscheck_flag =
+          if_else(depth_crosscheck_flag == 0, 2, depth_crosscheck_flag),
+        depth_crosscheck_flag = ordered(depth_crosscheck_flag, levels = 1:4)
+      )
+  } else dat
 
-  dat %>%
-    pivot_wider(
-      names_from = variable,
-      values_from = c(value, depth_crosscheck_flag),
-      names_sort = TRUE
-    ) %>%
-   select(-c(
-     contains("depth_crosscheck_flag_dissolved_oxygen"),
-     contains("depth_crosscheck_flag_temperature"),
-     contains("depth_crosscheck_flag_salinity")
-   ))
 
 }

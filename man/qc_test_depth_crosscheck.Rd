@@ -8,7 +8,7 @@ qc_test_depth_crosscheck(
   dat,
   depth_table = NULL,
   county = NULL,
-  keep_depth_cols = FALSE
+  crosscheck_table = FALSE
 )
 }
 \arguments{
@@ -25,10 +25,10 @@ was collected. Used to filter the default \code{depth_crosscheck_table}.
 Not required if there is a \code{county} column in \code{dat} or if
 \code{depth_table} is provided.}
 
-\item{keep_depth_cols}{Logical value. If \code{TRUE}, the columns used to
+\item{crosscheck_table}{Logical value. If \code{TRUE}, the table used to
 evaluate the difference between measured depth and estimated depth
-(\code{min_measured} and \code{abs_diff}) are returned in \code{dat}.
-Default is \code{FALSE}.}
+(\code{min_measured} and \code{abs_diff}) is returned instead of
+\code{dat}. Default is \code{FALSE}.}
 }
 \value{
 Returns \code{dat} in a wide format, with depth crosscheck flag
@@ -49,11 +49,12 @@ Interest". In many cases, the measured sensor depth should be considered more
 accurate than the estimated depth; however, the measured depth should be
 carefully evaluated.
 
-Note that if there are multiple sensors on the string, \emph{only} the sensor(s)
-with measured depth values will be evaluated with the depth crosscheck test.
-If the depth crosscheck test identifies the estimated depth as "Suspect", the
-other estimated sensor depths should also be considered suspect. For example,
-if the string was moored in an area 10 m deeper than anticipated, all sensors
-will likely be 10 m deeper than recorded in the
+Note that all observations from a deployment will have the same
+\code{depth_crosscheck_flag}. If there is more than one sensor on the string
+that measures depth, the worst (highest) flag will be assigned to the
+deployment. If the depth crosscheck test identifies the estimated depth as
+"Suspect", the other estimated sensor depths should also be considered
+suspect. For example, if the string was moored in an area 10 m deeper than
+anticipated, all sensors will likely be 10 m deeper than recorded in the
 \code{sensor_depth_at_low_tide_m} column.
 }
