@@ -76,7 +76,7 @@ qc_assign_max_flag <- function(dat, qc_tests = NULL, return_all = TRUE) {
   }
 
   # use to join and sort the columns of the output
-  var_cols <- unique(dat$variable)
+  var_cols <- sort(unique(dat$variable))
 
   # rename columns so depth_crosscheck_test doesn't affect max_flag
   if("depth_crosscheck_flag" %in% colnames(dat)) {
