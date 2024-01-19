@@ -26,7 +26,7 @@
 #' @return Returns \code{dat} with additional quality control flag columns.
 #'
 #' @importFrom beepr beep
-#' @importFrom dplyr %>% left_join
+#' @importFrom dplyr %>% arrange distinct left_join
 #' @importFrom purrr reduce
 #'
 #' @export
@@ -60,6 +60,36 @@ qc_test_all <- function(
 
   qc_tests <- tolower(qc_tests)
 
+  # # remove columns that are all NA (because they will be dropped during testing,
+  # # which causes a problem for the final join)
+  # this doesn't work because lease columns gets dropped
+  # dat <- dat %>% select_if(~ !all(is.na(.)))
+
+  # # use for the join and to order columns in output
+  depl_cols <- c(
+    "county",
+    "waterbody",
+    "station",
+    "lease",
+    "latitude" ,
+    "longitude" ,
+    "deployment_range"   ,
+    "string_configuration",
+    "sensor_type"     ,
+    "sensor_serial_number"  ,
+    "timestamp_utc"  ,
+    "sensor_depth_at_low_tide_m",
+    "depth_crosscheck_flag"
+  )
+
+  #  use for the join and to order columns in output
+  var_cols <- dat %>%
+    ss_pivot_longer() %>%
+    distinct(variable) %>%
+    arrange()
+  var_cols <- var_cols$variable
+
+  # apply tests
   dat_out <- list(NULL)
 
   if ("climatology" %in% qc_tests) {
@@ -114,16 +144,20 @@ qc_test_all <- function(
   # remove empty list elements
   dat_out <- Filter(Negate(is.null), dat_out)
 
-  if(isTRUE(ping)) beep("ping")
+  # join results from each test
+  join_cols <- c(
+    depl_cols[which(depl_cols %in% colnames(dat))], var_cols)
 
   # join by all common columns
   dat_out <- dat_out %>%
-    purrr::reduce(dplyr::left_join, by = colnames(dat))
+    purrr::reduce(dplyr::left_join, by = join_cols)
 
   if("depth_crosscheck_flag" %in% colnames(dat_out)) {
     dat_out <- dat_out %>%
       relocate(depth_crosscheck_flag, .after = sensor_depth_at_low_tide_m)
   }
+
+  if(isTRUE(ping)) beep("ping")
 
   dat_out
 }
