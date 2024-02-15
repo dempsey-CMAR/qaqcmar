@@ -52,31 +52,24 @@ qc_test_climatology <- function(
   if (is.null(climatology_table)) {
 
     climatology_table <- thresholds %>%
-      filter(qc_test == "climatology", county == !!county | is.na(county)) %>%
+      filter(qc_test == "climatology", county == !!county | is.na(county))
+
+    # Inverness has separate thresholds for salinity compared to the other counties
+    if (county == "Inverness") {
+      climatology_table <- climatology_table %>%
+        filter(
+          !(is.na(county) &
+              variable == "salinity_psu" &
+              (threshold == "season_min" | threshold == "season_max"))
+        )
+    }
+
+    climatology_table <- climatology_table %>%
       select(-c(qc_test, county, sensor_type)) %>%
       tidyr::pivot_wider(
         names_from = "threshold", values_from = "threshold_value"
       )
   }
-
-  #  warning if there are variables in dat that do not have threshold --------
-  # dat_vars <- dat %>%
-  #   select(
-  #     contains("depth_measured"),
-  #     contains("dissolved_oxygen"),
-  #     contains("salinity"),
-  #     contains("temperature")
-  #   ) %>%
-  #   colnames()
-  #
-  # if (!all(dat_vars %in% unique(climatology_table$variable))) {
-  #   missing_var <- unique(dat_vars[which(!(dat_vars %in% climatology_table$variable))])
-  #
-  #   message(
-  #     "Variable(s)", paste("\n <<", missing_var, collapse = " >> \n"),
-  #     " >> \n found in dat, but not in climatology_table"
-  #   )
-  # }
 
   colname_ts <- colnames(dat)[which(str_detect(colnames(dat), "timestamp"))]
 

@@ -62,7 +62,19 @@ qc_test_grossrange <- function(
   if (is.null(grossrange_table)) {
 
     grossrange_table <- thresholds %>%
-      filter(qc_test == "grossrange", county == !!county | is.na(county)) %>%
+      filter(qc_test == "grossrange", county == !!county | is.na(county))
+
+    # Inverness has separate thresholds for salinity compared to the other counties
+    if (county == "Inverness") {
+      grossrange_table <- grossrange_table %>%
+        filter(
+          !(is.na(county) &
+          variable == "salinity_psu" &
+          (threshold == "user_min" | threshold == "user_max"))
+        )
+    }
+
+    grossrange_table <- grossrange_table %>%
       select(-c(qc_test, county, month)) %>%
       pivot_wider(values_from = "threshold_value", names_from = threshold)
 
@@ -88,15 +100,7 @@ qc_test_grossrange <- function(
       contains("temperature")
     ) %>%
     colnames()
-  #
-  # if (!all(dat_vars %in% unique(grossrange_table$variable))) {
-  #   missing_var <- unique(dat_vars[which(!(dat_vars %in% grossrange_table$variable))])
-  #
-  #   warning(
-  #     "Variable(s)", paste("\n <<", missing_var, collapse = " >> \n"),
-  #     " >> \n found in dat, but not in grossrange_table"
-  #   )
-  # }
+
 
   # if a hobo do sensor was used, change sensor_type from hobo to hobo do
   # because the temperature grossrange is different

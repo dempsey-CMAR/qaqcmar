@@ -62,8 +62,21 @@ qc_test_spike <- function(
 
   # import default thresholds from internal data file
   if (is.null(spike_table)) {
+
     spike_table <- thresholds %>%
-      filter(qc_test == "spike", county == !!county | is.na(county)) %>%
+      filter(qc_test == "spike", county == !!county | is.na(county))
+
+    # Inverness has separate thresholds for salinity compared to the other counties
+    if (county == "Inverness") {
+      spike_table <- spike_table %>%
+        filter(
+          !(is.na(county) &
+              variable == "salinity_psu" &
+              (threshold == "spike_low" | threshold == "spike_high"))
+        )
+    }
+
+    spike_table <- spike_table %>%
       select(-c(qc_test, county, month)) %>%
       pivot_wider(values_from = "threshold_value", names_from = threshold)
   }

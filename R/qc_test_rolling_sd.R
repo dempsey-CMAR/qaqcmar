@@ -90,11 +90,22 @@ qc_test_rolling_sd <- function(
   # check that not providing more than one county
   county <- assert_county(dat, county, "qc_test_rolling_sd()")
 
-   # import default thresholds from internal data file -----------------------
+  # import default thresholds from internal data file -----------------------
   if (is.null(rolling_sd_table)) {
 
     rolling_sd_table <- thresholds %>%
-      filter(qc_test == "rolling_sd", county == !!county | is.na(county)) %>%
+      filter(qc_test == "rolling_sd", county == !!county | is.na(county))
+
+    # Inverness has separate thresholds for salinity compared to the other counties
+    if (county == "Inverness") {
+      rolling_sd_table <- rolling_sd_table %>%
+        filter(
+          !(is.na(county) &
+              variable == "salinity_psu" & threshold == "rolling_sd_max")
+        )
+    }
+
+    rolling_sd_table <- rolling_sd_table %>%
       select(-c(county, qc_test, month, sensor_type)) %>%
       pivot_wider(values_from = "threshold_value", names_from = threshold)
   }
