@@ -4,7 +4,14 @@
 \alias{ggplot_flags}
 \title{Create ggplot for one qc_test and variable}
 \usage{
-ggplot_flags(dat, qc_test, var, ncol = NULL, flag_title = TRUE)
+ggplot_flags(
+  dat,
+  qc_test,
+  var,
+  ncol = NULL,
+  flag_title = TRUE,
+  plotly_friendly = FALSE
+)
 }
 \arguments{
 \item{dat}{Data frame of flagged sensor string data in long format. Must
@@ -18,6 +25,10 @@ include a column named with the string "_flag_value".}
 
 \item{flag_title}{Logical argument indicating whether to include a ggtitle of
 the qc test and variable plotted.}
+
+\item{plotly_friendly}{Logical argument. If \code{TRUE}, the legend will be
+plotted when \code{plotly::ggplotly} is called on \code{p}. Default is
+\code{FALSE}, which makes the legend look better in a static figure.}
 }
 \value{
 Returns a ggplot object; a figure for \code{qc_test} and \code{var}.

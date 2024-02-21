@@ -1,34 +1,38 @@
-#' Plot sensor data coloured by flag value
+#'Plot sensor data coloured by flag value
 #'
-#' @param dat Data frame of flagged sensor string data in long or wide format.
-#'   Must include at least one column name with the string "_flag_variable".
+#'@param dat Data frame of flagged sensor string data in long or wide format.
+#'  Must include at least one column name with the string "_flag_variable".
 #'
-#' @param vars Character vector of variables to plot. Default is \code{vars =
-#'   "all"}, which will make a plot for each recognized variable in \code{dat}.
+#'@param vars Character vector of variables to plot. Default is \code{vars =
+#'  "all"}, which will make a plot for each recognized variable in \code{dat}.
 #'
-#' @param labels Logical argument indicating whether to convert numeric flag
-#'   values to text labels for the legend.
+#'@param labels Logical argument indicating whether to convert numeric flag
+#'  values to text labels for the legend.
 #'
-#' @param ncol Number of columns for faceted plots.
+#'@param ncol Number of columns for faceted plots.
 #'
-#' @param flag_title Logical argument indicating whether to include a ggtitle of
-#'   the qc test and variable plotted.
+#'@param flag_title Logical argument indicating whether to include a ggtitle of
+#'  the qc test and variable plotted.
 #'
-#' @param jitter_height Numeric value. Amount of vertical jitter in the
-#'   deth_crosscheck figure. Only recommended to check for overlapping
-#'   deployment points because it introduces random noise into the scatter plot
-#'   that can be misleading.
+#'@param plotly_friendly Logical argument. If \code{TRUE}, the legend will be
+#'  plotted when \code{plotly::ggplotly} is called on \code{p}. Default is
+#'  \code{FALSE}, which makes the legend look better in a static figure.
 #'
-#' @inheritParams qc_test_all
+#'@param jitter_height Numeric value. Amount of vertical jitter in the
+#'  deth_crosscheck figure. Only recommended to check for overlapping deployment
+#'  points because it introduces random noise into the scatter plot that can be
+#'  misleading.
 #'
-#' @return Returns a list of ggplot objects; one figure for each test in
-#'   \code{qc_tests} and variable in \code{vars}. Points are coloured by the
-#'   flag value and panels are faceted by depth and sensor. faceted by depth and
-#'   sensor.
+#'@inheritParams qc_test_all
 #'
-#' @importFrom lubridate as_datetime
+#'@return Returns a list of ggplot objects; one figure for each test in
+#'  \code{qc_tests} and variable in \code{vars}. Points are coloured by the flag
+#'  value and panels are faceted by depth and sensor. faceted by depth and
+#'  sensor.
 #'
-#' @export
+#'@importFrom lubridate as_datetime
+#'
+#'@export
 #'
 
 qc_plot_flags <- function(
@@ -39,7 +43,7 @@ qc_plot_flags <- function(
                  "rolling_sd",
                  "spike"),
     vars = "all",
-    labels = TRUE, ncol = NULL, flag_title = TRUE,
+    labels = TRUE, ncol = NULL, flag_title = TRUE, plotly_friendly = FALSE,
     jitter_height = 0
     ) {
 
@@ -102,7 +106,8 @@ qc_plot_flags <- function(
 
       p[[qc_test_j]] <- ggplot_flags(
         dat_i,
-        qc_test = qc_test_j, var = var_i, ncol = ncol
+        qc_test = qc_test_j, var = var_i, ncol = ncol,
+        plotly_friendly = plotly_friendly
       )
 
       p <- Filter(Negate(is.null), p) # remove empty list element
@@ -137,7 +142,14 @@ qc_plot_flags <- function(
 #' @importFrom gtools mixedsort
 
 
-ggplot_flags <- function(dat, qc_test, var, ncol = NULL, flag_title = TRUE) {
+ggplot_flags <- function(
+    dat,
+    qc_test,
+    var,
+    ncol = NULL,
+    flag_title = TRUE,
+    plotly_friendly = FALSE
+) {
   # https://www.visualisingdata.com/2019/08/five-ways-to-design-for-red-green-colour-blindness/
   flag_colours <- c("chartreuse4", "#E6E1BC", "#EDA247", "#DB4325", "grey24")
 
@@ -154,8 +166,12 @@ ggplot_flags <- function(dat, qc_test, var, ncol = NULL, flag_title = TRUE) {
     theme(
       strip.text = element_text(colour = "black", size = 10),
       strip.background = element_rect(fill = "white", colour = "darkgrey")
-    ) +
-    guides(color = guide_legend(override.aes = list(size = 4)))
+    )
+
+  if(isFALSE(plotly_friendly)) {
+    p <- p + guides(color = guide_legend(override.aes = list(size = 4)))
+  }
+
 
   if (isTRUE(flag_title)) p + ggtitle(paste0(qc_test, " test: ", var))
 

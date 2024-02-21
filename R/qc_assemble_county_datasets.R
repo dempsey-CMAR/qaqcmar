@@ -7,7 +7,7 @@
 #'
 #' @return Returns a data.frame with data from all deployments in folder.
 #'
-#' @importFrom dplyr %>% arrange distinct mutate select slice
+#' @importFrom dplyr %>% arrange distinct mutate n row_number select
 #' @importFrom purrr list_rbind map
 #'
 #' @export
@@ -32,8 +32,8 @@ qc_assemble_county_data <- function(path = NULL, folder) {
     "longitude" ,
     "deployment_range"   ,
     "string_configuration",
-    "sensor_type"     ,
-    "sensor_serial_number"  ,
+    "sensor_type",
+    "sensor_serial_number",
     "timestamp_utc"  ,
     "sensor_depth_at_low_tide_m",
     "depth_crosscheck_flag"
@@ -78,16 +78,12 @@ qc_assemble_county_data <- function(path = NULL, folder) {
   # read in data, bind together
   dat <- depls %>%
     map(readRDS) %>%
-    list_rbind() #%>%
+    list_rbind()
 
   # if any needed columns are NOT in dat, add them as na
   dat %>%
     bind_rows(df) %>%
-    slice(-nrow(dat)) %>%     # last row will be all NA, so need to remove it
-    select(all_of(all_cols))  # fix the order
-
-  # dat2 <- dat %>%
-  #   bind_rows(df) %>%
-  #   filter(if_any(everything(), ~ !is.na(.)))
+    filter(row_number() != n()) %>% # last row will be all NA, so need to remove it
+    select(all_of(all_cols))  # fix the column order
 
 }
