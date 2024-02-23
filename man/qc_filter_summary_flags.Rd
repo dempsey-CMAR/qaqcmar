@@ -9,7 +9,7 @@ qc_filter_summary_flags(
   keep_dissolved_oxygen_percent_saturation = c(1, 2, NA),
   keep_dissolved_oxygen_uncorrected_mg_per_l = c(1, 2, NA),
   keep_sensor_depth_measured_m = c(1, 2, 3, NA),
-  keep_salinity_psu = c(1, 2, 3, NA),
+  keep_salinity_psu = c(1, 2, NA),
   keep_temperature_degree_c = c(1, 2, 3, NA)
 )
 }
