@@ -101,7 +101,21 @@ utils::globalVariables(
     "n_fl",
 
     # qc_pivot_longer
-    "depth_crosscheck_flag_value"
+    "depth_crosscheck_flag_value",
+
+    # qc_filter_flags
+    # "keep_dissolved_oxygen_percent_saturation",
+    # "keep_dissolved_oxygen_uncorrected_mg_per_l",
+    # "keep_sensor_depth_measured_m",
+    # "keep_salinity_psu",
+    # "keep_temperature_degree_c"
+
+
+    "qc_flag_dissolved_oxygen_percent_saturation",
+    "qc_flag_dissolved_oxygen_uncorrected_mg_per_l",
+    "qc_flag_sensor_depth_measured_m",
+    "qc_flag_salinity_psu",
+    "qc_flag_temperature_degree_c"
 
   )
 )
