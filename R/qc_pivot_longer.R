@@ -32,10 +32,11 @@ qc_pivot_longer <- function(dat_wide, qc_tests = NULL) {
   if (is.null(qc_tests)) {
     qc_tests <- c(
       "climatology",
-      "depth_crosscheck",
+     # "depth_crosscheck",
       "grossrange",
       "rolling_sd",
-      "spike"
+      "spike",
+     "qc"
     )
   }
 
@@ -43,11 +44,12 @@ qc_pivot_longer <- function(dat_wide, qc_tests = NULL) {
 
   tests_foo <- c(
     "climatology",
-    "depth_crosscheck",
+  #  "depth_crosscheck",
     "grossrange",
     "rolling_sd",
     "spike",
-    "qc"
+    "qc",
+    "human_in_loop"
   )
 
   if (!(all(qc_tests %in% tests_foo))) {
@@ -96,6 +98,11 @@ qc_pivot_longer <- function(dat_wide, qc_tests = NULL) {
   if ("qc" %in% qc_tests) {
     dat <- pivot_flags_longer(dat, qc_test = "qc")
   }
+
+  # don't need to pivot this test rn
+  # if ("human_in_loop" %in% qc_tests) {
+  #   dat <- pivot_flags_longer(dat, qc_test = "human_in_loop")
+  # }
 
 
   # don't arrange by deployment_range (because it will be alphabetical not chronological)
