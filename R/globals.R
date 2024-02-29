@@ -115,7 +115,8 @@ utils::globalVariables(
     "qc_flag_dissolved_oxygen_uncorrected_mg_per_l",
     "qc_flag_sensor_depth_measured_m",
     "qc_flag_salinity_psu",
-    "qc_flag_temperature_degree_c"
+    "qc_flag_temperature_degree_c",
+    "qc_flag_value"
 
   )
 )
