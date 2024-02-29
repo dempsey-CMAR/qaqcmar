@@ -32,7 +32,7 @@ qc_pivot_longer <- function(dat_wide, qc_tests = NULL) {
   if (is.null(qc_tests)) {
     qc_tests <- c(
       "climatology",
-     # "depth_crosscheck",
+      #"depth_crosscheck",
       "grossrange",
       "rolling_sd",
       "spike",
@@ -42,24 +42,24 @@ qc_pivot_longer <- function(dat_wide, qc_tests = NULL) {
 
   qc_tests <- tolower(qc_tests)
 
-  tests_foo <- c(
-    "climatology",
-  #  "depth_crosscheck",
-    "grossrange",
-    "rolling_sd",
-    "spike",
-    "qc",
-    "human_in_loop"
-  )
-
-  if (!(all(qc_tests %in% tests_foo))) {
-    err <- qc_tests[which(!(qc_tests %in% tests_foo))]
-
-    stop(
-      paste("<< ", err, " >> is not an accepted value for qc_tests.\nHINT: check spelling\n"),
-      collapse = "\n"
-    )
-  }
+  # tests_foo <- c(
+  #   "climatology",
+  #   #"depth_crosscheck",
+  #   "grossrange",
+  #   "rolling_sd",
+  #   "spike",
+  #   "qc",
+  #   "human_in_loop"
+  # )
+  #
+  # if (!(all(qc_tests %in% tests_foo))) {
+  #   err <- qc_tests[which(!(qc_tests %in% tests_foo))]
+#
+#     stop(
+#       paste("<< ", err, " >> is not an accepted value for qc_tests.\nHINT: check spelling\n"),
+#       collapse = "\n"
+#     )
+#   }
 
   vars <- c(
     "dissolved_oxygen_percent_saturation",
@@ -107,8 +107,7 @@ qc_pivot_longer <- function(dat_wide, qc_tests = NULL) {
 
   # don't arrange by deployment_range (because it will be alphabetical not chronological)
   dat %>%
-    arrange(county, station,
-            sensor_type, variable, timestamp_utc)
+    arrange(county, station, sensor_type, variable, timestamp_utc)
 }
 
 

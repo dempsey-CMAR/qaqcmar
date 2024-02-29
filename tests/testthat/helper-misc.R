@@ -9,8 +9,7 @@ flag_labels <- data.frame(flag = c(1, 2, 3, 4, 9)) %>%
 
 path <- system.file("testdata", package = "qaqcmar")
 
-qc_tests <- c("climatology", "depth_crosscheck",
-              "grossrange", "rolling_sd", "spike")
+qc_tests <- c("climatology", "grossrange", "rolling_sd", "spike", "depth_crosscheck")
 
 n_var <- readRDS(paste0(path, "/test_data_rolling_sd.RDS")) %>%
   ss_pivot_longer() %>%
@@ -25,7 +24,7 @@ dat_wide <- readRDS(paste0(path, "/test_data_rolling_sd.RDS")) %>%
   )
 
 dat_long <- dat_wide %>%
-  qc_pivot_longer()
+  qc_pivot_longer(qc_tests = qc_tests)
 
 # dat_wide2 <- dat_long %>%
 #   pivot_wider(
