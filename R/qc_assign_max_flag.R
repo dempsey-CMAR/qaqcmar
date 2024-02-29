@@ -56,6 +56,16 @@ qc_assign_max_flag <- function(dat, qc_tests = NULL, return_all = TRUE) {
     arrange(qc_test)
   qc_test_cols <- qc_test_cols$col_name
 
+  qc_test_cols <- sort(c(
+    qc_test_cols,
+    "human_in_loop_flag_dissolved_oxygen_percent_saturation",
+    "human_in_loop_flag_dissolved_oxygen_uncorrected_mg_per_l",
+    "human_in_loop_flag_salinity_psu",
+    "human_in_loop_flag_sensor_depth_measured_m",
+    "human_in_loop_flag_temperature_degree_c",
+    "human_in_loop_flag_value"
+  ))
+
   qc_max_cols <- c(
     "qc_flag_dissolved_oxygen_percent_saturation"   ,
     "qc_flag_dissolved_oxygen_uncorrected_mg_per_l",
