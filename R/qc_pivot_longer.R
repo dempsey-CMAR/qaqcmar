@@ -99,10 +99,10 @@ qc_pivot_longer <- function(dat_wide, qc_tests = NULL) {
     dat <- pivot_flags_longer(dat, qc_test = "qc")
   }
 
-  # don't need to pivot this test rn
-  # if ("human_in_loop" %in% qc_tests) {
-  #   dat <- pivot_flags_longer(dat, qc_test = "human_in_loop")
-  # }
+  #don't need to pivot this test rn
+  if ("human_in_loop" %in% qc_tests) {
+    dat <- pivot_flags_longer(dat, qc_test = "human_in_loop")
+  }
 
 
   # don't arrange by deployment_range (because it will be alphabetical not chronological)

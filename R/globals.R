@@ -116,7 +116,13 @@ utils::globalVariables(
     "qc_flag_sensor_depth_measured_m",
     "qc_flag_salinity_psu",
     "qc_flag_temperature_degree_c",
-    "qc_flag_value"
+    "qc_flag_value",
+
+    "filter_out_flag",
+    "filter_out_timestamp",
+    "filter_from_start",
+    "start_date",
+    "end_date"
 
   )
 )
