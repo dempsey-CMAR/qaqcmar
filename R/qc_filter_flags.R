@@ -143,55 +143,55 @@ qc_filter_summary_flags <- function(
 #   filter(county == county)
 
 
-qc_filter_out_not_evaluated <- function(dat, filter_table) {
-
-  # dat <- suppressMessages(ss_import_data(county = "annapolis")) %>%
-  #   qc_pivot_longer()
-
-  depls <- distinct(dat, county, station, deployment_range)
-
-  dat_out <- NULL
-
-  for(i in 1:nrow(depls)) {
-
-    station_i <- depls[i, ]$station
-    depl_i <- depls[i, ]$deployment_range
-
-    filter_table_i <- filter_table %>%
-      filter(station == station_i, deployment_range == depl_i)
-
-    if(nrow(filter_table_i) == 0) {
-      dat_out[[i]] <- dat %>%
-        filter(station == station_i, deployment_range == depl_i)
-    } else{
-
-      # make a function that will look at the beginning OR end of the deployment
-      # depending on the values of filter_from_start
-      if(isTRUE(filter_table_i$filter_from_start)) {
-        filter_datetime <- thru(
-          filter_table_i$start_date, filter_table_i$start_date + days(2)
-        )
-      } else {
-        filter_datetime <- thru(
-          filter_table_i$end_date - days(2), filter_table_i$end_date
-        )
-      }
-
-      dat_out[[i]] <- dat %>%
-        filter(station == station_i, deployment_range == depl_i) %>%
-        left_join(
-          filter_table %>% select(-filter_from_start),
-          join_by(county, station, variable, qc_flag_value)
-        ) %>%
-        mutate(
-          filter_out_flag = if_else(is.na(filter_out_flag), FALSE, filter_out_flag),
-          filter_out_timestamp = filter_datetime(timestamp_utc)
-        ) %>%
-        filter(filter_out_flag != TRUE & filter_out_timestamp != TRUE) %>%
-        select(-c(filter_out_flag, filter_out_timestamp, start_date, end_date))
-    }
-  }
-
-  dat_out %>%
-    list_rbind()
-}
+# qc_filter_out_not_evaluated <- function(dat, filter_table) {
+#
+#   # dat <- suppressMessages(ss_import_data(county = "annapolis")) %>%
+#   #   qc_pivot_longer()
+#
+#   depls <- distinct(dat, county, station, deployment_range)
+#
+#   dat_out <- NULL
+#
+#   for(i in 1:nrow(depls)) {
+#
+#     station_i <- depls[i, ]$station
+#     depl_i <- depls[i, ]$deployment_range
+#
+#     filter_table_i <- filter_table %>%
+#       filter(station == station_i, deployment_range == depl_i)
+#
+#     if(nrow(filter_table_i) == 0) {
+#       dat_out[[i]] <- dat %>%
+#         filter(station == station_i, deployment_range == depl_i)
+#     } else{
+#
+#       # make a function that will look at the beginning OR end of the deployment
+#       # depending on the values of filter_from_start
+#       if(isTRUE(filter_table_i$filter_from_start)) {
+#         filter_datetime <- thru(
+#           filter_table_i$start_date, filter_table_i$start_date + days(2)
+#         )
+#       } else {
+#         filter_datetime <- thru(
+#           filter_table_i$end_date - days(2), filter_table_i$end_date
+#         )
+#       }
+#
+#       dat_out[[i]] <- dat %>%
+#         filter(station == station_i, deployment_range == depl_i) %>%
+#         left_join(
+#           filter_table %>% select(-filter_from_start),
+#           join_by(county, station, variable, qc_flag_value)
+#         ) %>%
+#         mutate(
+#           filter_out_flag = if_else(is.na(filter_out_flag), FALSE, filter_out_flag),
+#           filter_out_timestamp = filter_datetime(timestamp_utc)
+#         ) %>%
+#         filter(filter_out_flag != TRUE & filter_out_timestamp != TRUE) %>%
+#         select(-c(filter_out_flag, filter_out_timestamp, start_date, end_date))
+#     }
+#   }
+#
+#   dat_out %>%
+#     list_rbind()
+# }
