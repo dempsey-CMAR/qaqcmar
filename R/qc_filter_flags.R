@@ -104,28 +104,28 @@ qc_filter_summary_flags <- function(
 
 
 
-#' Filters out selected observations that were flagged Not Evaluated
-#'
-#' Additional filters based on human-in-the-loop analysis
-#'
-#' @param dat Data frame with summary quality control flags in long format
-#'   (e.g., output of `qc_pivot_longer()`).
-#'
-#' @param filter_table Table indicating which observations to filter. Must
-#'   include the following columns: county, station, deployment_range, variable,
-#'   qc_flag_value, filter_out_flag, filter_from_start.
-#'
-#'   filter_out_flag should be \code{TRUE} tp indicate the observation should be
-#'   filtered out. filter_from_start should be \code{TRUE} if the observations
-#'   to filter are at the beginning of the deployment and \code{FALSE} if the
-#'   observations to filter are at the end.
-#'
-#' @importFrom dplyr %>% filter if_else left_join
-#' @importFrom expss thru
-#' @importFrom lubridate days
-#' @importFrom purrr list_rbind
-#'
-#' @export
+# Filters out selected observations that were flagged Not Evaluated
+#
+# Additional filters based on human-in-the-loop analysis
+#
+# param dat Data frame with summary quality control flags in long format
+#   (e.g., output of `qc_pivot_longer()`).
+#
+# param filter_table Table indicating which observations to filter. Must
+#   include the following columns: county, station, deployment_range, variable,
+#   qc_flag_value, filter_out_flag, filter_from_start.
+#
+#   filter_out_flag should be \code{TRUE} tp indicate the observation should be
+#   filtered out. filter_from_start should be \code{TRUE} if the observations
+#   to filter are at the beginning of the deployment and \code{FALSE} if the
+#   observations to filter are at the end.
+#
+# importFrom dplyr %>% filter if_else left_join
+# importFrom expss thru
+# importFrom lubridate days
+# importFrom purrr list_rbind
+#
+# export
 
 # filter_table <- read_csv(
 #   "C:/Users/Danielle Dempsey/Desktop/RProjects/water_quality_reports/filter_not_evaluated_flags.csv",
