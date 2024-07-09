@@ -32,15 +32,15 @@ qc_assign_flag_labels <- function(dat) {
           .x == 1 ~ "Pass",
           .x == 2 ~ "Not Evaluated",
           .x == 3 ~ "Suspect/Of Interest",
-          .x == 4 ~ "Fail",
-          .x == 9 ~ "Missing Data"
+          .x == 4 ~ "Fail"
+         # .x == 9 ~ "Missing Data"
         )
       ),
       across(
         contains("flag"),
         ~ ordered(
           .x,
-          levels = c("Pass", "Not Evaluated", "Suspect/Of Interest", "Fail", "Missing Data")
+          levels = c("Pass", "Not Evaluated", "Suspect/Of Interest", "Fail")#, "Missing Data")
         )
       )
     )
