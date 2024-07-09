@@ -35,7 +35,6 @@
 #'
 #' @export
 
-
 qc_filter_summary_flags <- function(
     dat,
 
@@ -58,7 +57,8 @@ qc_filter_summary_flags <- function(
       "Deep Basin",
       "Hourglass Lake",
       "Piper Lake",
-      "Sissiboo"
+      "Sissiboo",
+      "Tickle Island 1" # 60 m DO only
     )
   }
 
