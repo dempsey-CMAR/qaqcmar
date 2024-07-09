@@ -151,13 +151,13 @@ ggplot_flags <- function(
     plotly_friendly = FALSE
 ) {
   # https://www.visualisingdata.com/2019/08/five-ways-to-design-for-red-green-colour-blindness/
-  flag_colours <- c("chartreuse4", "#E6E1BC", "#EDA247", "#DB4325", "grey24")
+  flag_colours <- c("chartreuse4", "grey24", "#EDA247", "#DB4325")
 
   flag_column <- paste0(qc_test, "_flag_value")
 
   p <- dat %>%
     ggplot(aes(tstamp, value, colour = !!sym(flag_column))) +
-    geom_point() +
+    geom_point(show.legend = TRUE) +
     scale_y_continuous(var) +
     scale_x_datetime("Date") +
     scale_colour_manual("Flag Value", values = flag_colours, drop = FALSE) +
@@ -208,7 +208,7 @@ ggplot_depth_crosscheck <- function(
     jitter_height = 0,
     ncol = NULL) {
 
-  flag_colours <- c("chartreuse4", "#E6E1BC", "#EDA247", "#DB4325", "grey24")
+  flag_colours <- c("chartreuse4", "grey24", "#EDA247", "#DB4325")
 
   labels <- labels
 
@@ -257,7 +257,7 @@ ggplot_depth_crosscheck <- function(
       linewidth = 1, col = "grey70"
     ) +
     geom_point(
-      size = 3, alpha = 1,
+      size = 3, alpha = 1, show.legend = TRUE,
       position = position_jitter(width = 0, height = jitter_height)
     ) +
     scale_colour_manual("Flag Value",values = flag_colours, drop = FALSE) +
