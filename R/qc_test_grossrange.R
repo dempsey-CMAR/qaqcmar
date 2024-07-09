@@ -43,7 +43,6 @@
 #' @importFrom sensorstrings ss_pivot_longer
 #' @importFrom stringr str_detect str_remove str_remove_all
 #' @importFrom tidyr pivot_wider separate
-#' @importFrom utils capture.output
 #'
 #' @export
 

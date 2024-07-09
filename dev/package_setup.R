@@ -15,20 +15,19 @@ use_git()
 use_github()
 
 # add packages (from CRAN)
+use_package("beepr")
 use_package("dplyr")
-use_package("purrr")
 use_package("ggplot2")
+use_package("gtools")
 use_package("lubridate")
 use_package("purrr")
-# use_package("readxl") # don't need this because only used in data-raw
 use_package("rlang")
 use_package("stringr")
 use_package("tidyr")
-#use_package("stringr")
-use_package("gtools")
+use_package("tidyselect")
 
 # add packages (not on CRAN)
-use_dev_pacakge("sensorstrings", remote = "dempsey-CMAR/sensorstrings")
+use_dev_package("sensorstrings", remote = "dempsey-CMAR/sensorstrings")
 
 # readme
 use_readme_rmd()
