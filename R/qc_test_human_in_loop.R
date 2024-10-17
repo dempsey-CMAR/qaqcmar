@@ -97,6 +97,17 @@ qc_test_human_in_loop <- function(
 
 #browser()
 
+  # for instances where qc_test_human_in_loop() needs to be applied twice
+  # e.g., for different time periods
+  if(!("human_in_loop_flag_value" %in% colnames(dat))) {
+    dat <- mutate(dat, human_in_loop_flag_value = 1 )
+  }
+  if(!("human_in_loop_comment" %in% colnames(dat))) {
+    dat <- mutate(dat, human_in_loop_comment = "")
+  }
+
+ # browser()
+
   dat %>%
     qc_pivot_longer(qc_tests = qc_tests) %>%
     rename(
@@ -108,15 +119,18 @@ qc_test_human_in_loop <- function(
            sensor_serial_number %in% hil_sn &
            eval(parse(text = filter_text)) &
            human_in_loop_reference_flag_col %in% hil_ref_flag_value),
-        hil_flag_value, 1),
+        hil_flag_value,
+        human_in_loop_flag_value
+      ),
       human_in_loop_flag_value = ordered(human_in_loop_flag_value, levels = 1:4),
 
-      human_in_loop_comment= if_else(
+      human_in_loop_comment = if_else(
         (variable %in% hil_var &
            sensor_serial_number %in% hil_sn &
            eval(parse(text = filter_text)) &
            human_in_loop_reference_flag_col %in% hil_ref_flag_value),
-        hil_comment, ""
+        hil_comment,
+        human_in_loop_comment
       )
     ) %>%
     select(-human_in_loop_reference_flag_col) %>%
