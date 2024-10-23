@@ -36,7 +36,8 @@ qc_assemble_county_data <- function(path = NULL, folder) {
     "sensor_serial_number",
     "timestamp_utc"  ,
     "sensor_depth_at_low_tide_m",
-    "depth_crosscheck_flag"
+    "depth_crosscheck_flag",
+    "hil_comment"
   )
 
   var_cols <- c(
