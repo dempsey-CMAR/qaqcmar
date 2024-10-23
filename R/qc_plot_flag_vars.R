@@ -107,7 +107,8 @@ qc_plot_flags <- function(
       p[[qc_test_j]] <- ggplot_flags(
         dat_i,
         qc_test = qc_test_j, var = var_i, ncol = ncol,
-        plotly_friendly = plotly_friendly
+        plotly_friendly = plotly_friendly,
+        flag_title = flag_title
       )
 
       p <- Filter(Negate(is.null), p) # remove empty list element
@@ -173,7 +174,7 @@ ggplot_flags <- function(
   }
 
 
-  if (isTRUE(flag_title)) p + ggtitle(paste0(qc_test, " test: ", var))
+  if (isTRUE(flag_title)) p <- p + ggtitle(paste0(qc_test, " test: ", var))
 
   p
 }
