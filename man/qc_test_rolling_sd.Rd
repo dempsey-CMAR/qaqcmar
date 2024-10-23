@@ -21,9 +21,9 @@ qc_test_rolling_sd(
 \item{rolling_sd_table}{Data frame with at least two columns:
 \code{variable}: must match the names of the variables being tested in
 \code{dat}. \code{rolling_sd_max}: maximum accepted value for the rolling
-standard deviation. Default values are used if \code{rolling_sd_table =
-  NULL}. Optional additional column that is used to join with \code{dat}.
-This column must have the same name as the string \code{join_column}.
+standard deviation. Optional additional column that is used to join with
+\code{dat}. This column must have the same name as the string
+\code{join_column}.
 
 Default values are used if \code{rolling_sd_table = NULL}. To see the
 default \code{rolling_sd_table}, type \code{subset(thresholds,

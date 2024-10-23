@@ -12,12 +12,12 @@
 #'   Optional additional column(s) that is used to join with \code{dat}. This
 #'   column must have the same name as the string \code{join_column}.
 #'
-#'   Default values are used if \code{spike_able = NULL}. To see the
+#'   Default values are used if \code{spike_table = NULL}. To see the
 #'   default \code{spike_table}, type \code{subset(thresholds,
 #'   qc_test == "spike")} in the console.
 #'
 #' @param county Character string indicating the county from which \code{dat}
-#'   was collected. Used to filter the default \code{grossrange_table}. Not
+#'   was collected. Used to filter the default \code{spike_table}. Not
 #'   required if there is a \code{county} column in \code{dat}.
 #'
 #' @param join_column Optional character string of a column name that is in both
