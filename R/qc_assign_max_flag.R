@@ -93,11 +93,6 @@ qc_assign_max_flag <- function(dat, qc_tests = NULL, return_all = TRUE) {
     dat <- rename(dat, depth_crosscheck = depth_crosscheck_flag)
   }
 
-  # rename columns so hil_flag_comment doesn't affect max_flag
-  if("hil_flag_comment" %in% colnames(dat)) {
-    dat <- rename(dat, hil_comment = hil_flag_comment)
-  }
-
   # find the maximum flag for each variable
   dat <- dat %>%
     mutate(
@@ -114,10 +109,6 @@ qc_assign_max_flag <- function(dat, qc_tests = NULL, return_all = TRUE) {
 
   if("depth_crosscheck" %in% colnames(dat)) {
     dat <- rename(dat, depth_crosscheck_flag = depth_crosscheck)
-  }
-
-  if("hil_comment" %in% colnames(dat)) {
-    dat <- rename(dat, hil_flag_comment = hil_comment)
   }
 
   colnames(dat) <- str_remove_all(colnames(dat), pattern = "value_")
