@@ -46,7 +46,8 @@ qc_assign_max_flag <- function(dat, qc_tests = NULL, return_all = TRUE) {
     "sensor_serial_number"  ,
     "timestamp_utc"  ,
     "sensor_depth_at_low_tide_m",
-    "depth_crosscheck_flag"
+    "depth_crosscheck_flag",
+    "hil_flag_comment"
   )
 
   qc_test_cols <- thresholds %>%
@@ -62,8 +63,7 @@ qc_assign_max_flag <- function(dat, qc_tests = NULL, return_all = TRUE) {
     "human_in_loop_flag_dissolved_oxygen_uncorrected_mg_per_l",
     "human_in_loop_flag_salinity_psu",
     "human_in_loop_flag_sensor_depth_measured_m",
-    "human_in_loop_flag_temperature_degree_c",
-    "human_in_loop_flag_value"
+    "human_in_loop_flag_temperature_degree_c"
   ))
 
   qc_max_cols <- c(
@@ -74,7 +74,7 @@ qc_assign_max_flag <- function(dat, qc_tests = NULL, return_all = TRUE) {
     "qc_flag_temperature_degree_c"
   )
 
-  # save the origal data frame to join the qc_flag columns ti
+  # save the original data frame to join the qc_flag columns ti
   if ("variable" %in% colnames(dat)) {
     dat_og <- dat %>% qc_pivot_wider()
 
@@ -93,6 +93,11 @@ qc_assign_max_flag <- function(dat, qc_tests = NULL, return_all = TRUE) {
     dat <- rename(dat, depth_crosscheck = depth_crosscheck_flag)
   }
 
+  # rename columns so hil_flag_comment doesn't affect max_flag
+  if("hil_flag_comment" %in% colnames(dat)) {
+    dat <- rename(dat, hil_comment = hil_flag_comment)
+  }
+
   # find the maximum flag for each variable
   dat <- dat %>%
     mutate(
@@ -109,6 +114,10 @@ qc_assign_max_flag <- function(dat, qc_tests = NULL, return_all = TRUE) {
 
   if("depth_crosscheck" %in% colnames(dat)) {
     dat <- rename(dat, depth_crosscheck_flag = depth_crosscheck)
+  }
+
+  if("hil_comment" %in% colnames(dat)) {
+    dat <- rename(dat, hil_flag_comment = hil_comment)
   }
 
   colnames(dat) <- str_remove_all(colnames(dat), pattern = "value_")
@@ -141,59 +150,3 @@ qc_assign_max_flag <- function(dat, qc_tests = NULL, return_all = TRUE) {
 
   dat
 }
-
-# Assign each observation the maximum flag from applied QC tests.
-#
-# ** change the spike test values at beginning/end to NA instead of 2
-#
-# @param dat Data frame in long or wide format with flag columns from multiple
-# quality control tests.
-#
-# @param qc_tests Quality control tests included in \code{dat}.
-#
-# @return Returns \code{dat} in a wide format, with a single flag column for
-#   each variable column.
-#
-# @importFrom dplyr %>% c_across contains mutate rename rowwise select ungroup
-# @importFrom tidyr pivot_wider
-#
-# @export
-
-# qc_assign_max_flag1 <- function(
-#     dat,
-#     qc_tests = c("climatology", "depth_crosscheck",
-#                  "grossrange", "rolling_sd", "spike")) {
-#
-#   if (!("variable" %in% colnames(dat))) {
-#     dat <- qc_pivot_longer(dat, qc_tests = qc_tests)
-#   }
-#
-#   if("depth_crosscheck_flag_value" %in% colnames(dat)) {
-#     dat <- rename(dat, depth_crosscheck = depth_crosscheck_flag_value)
-#   }
-#
-#   vars <- unique(dat$variable)
-#
-#   dat <- dat %>%
-#     # rowwise is REALLY slow - need to change to map_ of apply
-#     rowwise() %>%
-#     # mutate(qc_col = max(c_across(contains("flag"))), na.rm = TRUE) %>%
-#     mutate(qc_col = max(c_across(contains("flag")))) %>%
-#     ungroup() %>%
-#     select(-contains("flag")) %>%
-#     rename(qc_flag = qc_col) %>%
-#     # pivot_wider(
-#     #   names_from = variable,
-#     #   values_from = c(value, qc_flag),
-#     #   names_sort = TRUE
-#     # )
-#     qc_pivot_wider(vars = vars)
-#
-#   if("depth_crosscheck" %in% colnames(dat)) {
-#     dat <- rename(dat, depth_crosscheck_flag_value = depth_crosscheck)
-#   }
-#
-#   dat
-# }
-
-
