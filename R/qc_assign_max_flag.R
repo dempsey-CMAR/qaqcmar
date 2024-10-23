@@ -47,7 +47,7 @@ qc_assign_max_flag <- function(dat, qc_tests = NULL, return_all = TRUE) {
     "timestamp_utc"  ,
     "sensor_depth_at_low_tide_m",
     "depth_crosscheck_flag",
-    "hil_flag_comment"
+    "hil_comment"
   )
 
   qc_test_cols <- thresholds %>%
