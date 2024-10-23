@@ -118,8 +118,6 @@ qc_test_all <- function(
     )
   }
 
-
-
   if ("rolling_sd" %in% qc_tests) {
     dat_out[[4]] <- qc_test_rolling_sd(
       dat,
