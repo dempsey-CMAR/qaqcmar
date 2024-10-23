@@ -15,7 +15,7 @@
 #'
 #' @export
 
-qc_summarise_flags <- function(dat, qc_tests, ...) {
+qc_summarise_flags <- function(dat, qc_tests = NULL, ...) {
 
   if (!("variable" %in% colnames(dat))) {
     dat <- qc_pivot_longer(dat, qc_tests = qc_tests)

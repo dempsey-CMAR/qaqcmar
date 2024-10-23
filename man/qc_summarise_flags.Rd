@@ -4,7 +4,7 @@
 \alias{qc_summarise_flags}
 \title{Generate summary table of flags}
 \usage{
-qc_summarise_flags(dat, qc_tests, ...)
+qc_summarise_flags(dat, qc_tests = NULL, ...)
 }
 \arguments{
 \item{dat}{Data frame of flagged sensor string data in long or wide format.
