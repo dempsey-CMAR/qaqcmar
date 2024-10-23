@@ -1,6 +1,6 @@
 Package: qaqcmar
 Title: Apply Quality Control Flags to CMAR Water Quality Data
-Version: 1.0.6
+Version: 1.0.7
 Authors@R: 
     person("Danielle", "Dempsey", , "ddempsey@perennia.ca", role = c("aut", "cre"))
 Description: Applies flags for QARTOD-inspired quality control tests to CMAR Water Quality Data.
@@ -9,6 +9,7 @@ URL: https://github.com/dempsey-CMAR/qaqcmar
 BugReports: https://github.com/dempsey-CMAR/qaqcmar/issues
 Imports: 
     beepr,
+    data.table,
     dplyr,
     ggplot2,
     gtools,

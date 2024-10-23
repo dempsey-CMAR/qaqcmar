@@ -65,6 +65,7 @@ utils::globalVariables(
     "qc_col",
     "qc_flag",
     "depth_crosscheck",
+    "hil_comment",
 
     # ggplot_all_tests
     "depth",
@@ -122,7 +123,11 @@ utils::globalVariables(
     "filter_out_timestamp",
     "filter_from_start",
     "start_date",
-    "end_date"
+    "end_date",
 
+    # qc_test_human_in_loop
+    "hil_flag_comment",
+    "human_in_loop_flag_value",
+    "human_in_loop_reference_flag_col"
   )
 )
