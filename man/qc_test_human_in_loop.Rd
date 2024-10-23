@@ -13,7 +13,7 @@ qc_test_human_in_loop(
 \arguments{
 \item{dat}{Data frame of flagged sensor string data in wide format.}
 
-\item{human_in_loop_table}{Table with information required to assign the
+\item{human_in_loop_table}{Data table with information required to assign the
 human in the loop flags. Must include the following columns: station,
 depl_range, variable, sensor_serial number (if \code{NA}, all sensors that
 recorded variable will be flagged), timestamp_prompt (indicates whether
@@ -25,13 +25,12 @@ human_in_loop_flag_value, and human_in_loop_comment (will be included in
 the dataset).}
 
 \item{qc_tests}{Character vector of quality control tests that have been
-applied to \code{dat}. Passed to \code{qc_pivot_longer()}. Defaults to all
-available tests: \code{qc_tests = c("climatology", "depth_crosscheck",
-  "grossrange", "rolling_sd", "spike")}.}
+applied to \code{dat}. Passed to \code{qc_pivot_longer()}. Default is:
+\code{qc_tests = c("climatology", "grossrange", "rolling_sd", "spike")}.}
 }
 \value{
 Returns \code{dat} with a \code{human_in_loop_flag} column for each
-variable and a \code{human_in_loop_comment} column.
+variable and a corresponding \code{hil_comment} column.
 }
 \description{
 Apply human in the loop flags and comments
