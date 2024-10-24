@@ -33,5 +33,25 @@ Returns \code{dat} with a \code{human_in_loop_flag} column for each
 variable and a corresponding \code{hil_comment} column.
 }
 \description{
-Apply human in the loop flags and comments
+Only deployments that require additional human-in-loop QC will have non-NA
+values in the human-in-loop columns. Observations in these deployments that
+do not need additional QC will be assigned a \code{human_in_loop_flag_value}
+of 1.
+}
+\details{
+Flags are assigned to each observation. For example, if a sensor measures
+dissolved oxygen and temperature at the same time, and only the dissolved
+oxygen observation is poor quality, then only the dissolved oxygen
+observation will be flagged. The column
+\code{human_in_loop_flag_value_dissolved_oxygen} will have a value of 3 or 4
+(as specified in human_in_loop_table), while
+\code{human_in_loop_flag_value_tempearture} will be 1.
+
+However, there is only one column for comments, \code{hil_comment}. This is
+to reduce the total number of columns in the wide data set. The trade off is
+that the comment will appear to apply to both variables. To avoid confusion
+in this situation, comments should be pre-pended with the variable they refer
+to, e.g., "dissolved oxygen: suspected biofouling not flagged by other
+tests". This is not necessary for comments that apply to all variables (e.g.,
+only one variable is measured).
 }

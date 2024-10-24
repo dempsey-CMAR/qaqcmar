@@ -1,5 +1,26 @@
 #' Apply human in the loop flags and comments
 #'
+#' Only deployments that require additional human-in-loop QC will have non-NA
+#' values in the human-in-loop columns. Observations in these deployments that
+#' do not need additional QC will be assigned a \code{human_in_loop_flag_value}
+#' of 1.
+#'
+#' Flags are assigned to each observation. For example, if a sensor measures
+#' dissolved oxygen and temperature at the same time, and only the dissolved
+#' oxygen observation is poor quality, then only the dissolved oxygen
+#' observation will be flagged. The column
+#' \code{human_in_loop_flag_value_dissolved_oxygen} will have a value of 3 or 4
+#' (as specified in human_in_loop_table), while
+#' \code{human_in_loop_flag_value_tempearture} will be 1.
+#'
+#' However, there is only one column for comments, \code{hil_comment}. This is
+#' to reduce the total number of columns in the wide data set. The trade off is
+#' that the comment will appear to apply to both variables. To avoid confusion
+#' in this situation, comments should be pre-pended with the variable they refer
+#' to, e.g., "dissolved oxygen: suspected biofouling not flagged by other
+#' tests". This is not necessary for comments that apply to all variables (e.g.,
+#' only one variable is measured).
+#'
 #' @param dat Data frame of flagged sensor string data in wide format.
 #'
 #' @param human_in_loop_table Data table with information required to assign the
@@ -82,7 +103,8 @@ qc_test_human_in_loop <- function(
 #' @return Returns \code{dat} with a \code{human_in_loop_flag} column for each
 #'   variable and a \code{human_in_loop_comment} column.
 #'
-#' @importFrom dplyr distinct filter last_col relocate rename select
+#' @importFrom dplyr contains distinct if_any if_else filter last_col left_join
+#'   relocate rename select
 #' @importFrom data.table := between
 
 
@@ -91,8 +113,6 @@ qc_apply_human_in_loop <- function(
     human_in_loop_table = NULL,
     qc_tests = c("climatology", "grossrange", "rolling_sd", "spike")
 ) {
-
-  #browser()
 
   # checks ------------------------------------------------------------------
 
@@ -166,7 +186,7 @@ qc_apply_human_in_loop <- function(
     dat <- mutate(dat, hil_comment = NA_character_)
   }
 
- dat %>%
+  dat_hil <- dat %>%
     rename(
       human_in_loop_reference_flag_col = all_of(hil_qc_test_ref_column)
     ) %>%
@@ -180,22 +200,27 @@ qc_apply_human_in_loop <- function(
         hil_flag_value,
         human_in_loop_flag_value
       ),
-      human_in_loop_flag_value = ordered(human_in_loop_flag_value, levels = 1:4),
-
-      hil_comment = if_else(
-        (#variable %in% hil_var & # need to apply comment based on serial number
-          # so extra rows are not added when pivoted wider
-           sensor_serial_number %in% hil_sn &
-           eval(parse(text = filter_text)) &
-           human_in_loop_reference_flag_col %in% hil_ref_flag_value),
-        hil_flag_comment,
-        hil_comment
-      )
+      human_in_loop_flag_value = ordered(human_in_loop_flag_value, levels = 1:4)
     ) %>%
     rename(
       "{hil_qc_test_ref_column}" := human_in_loop_reference_flag_col
     ) %>%
-    qc_pivot_wider() %>%
+    qc_pivot_wider()
+
+  # add comments (these will be applied to ALL variables measured by a sensor)
+  join_cols <- colnames(dat_hil)[which(colnames(dat_hil) != "hil_comment")]
+
+  dat_comment <- dat_hil %>%
+    filter(
+      if_any(contains("human_in_loop"), function (x) x == hil_flag_value)
+    ) %>%
+    mutate(
+      hil_comment = if_else(is.na(hil_comment), hil_flag_comment, hil_comment)
+    )
+
+  dat_hil %>%
+    select(-hil_comment) %>%
+    left_join(dat_comment, by = join_cols) %>%
     relocate(hil_comment, .after = last_col())
 
 }

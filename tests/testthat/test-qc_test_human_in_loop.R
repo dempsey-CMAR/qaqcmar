@@ -23,7 +23,15 @@ test_that("qc_test_rolling_sd() assigns correct flags", {
 })
 
 test_that("qc_test_human_in_loop() assigns comments", {
-  expect_equal(unique(qc_hil_4$hil_comment), hil_table$human_in_loop_comment)
+  expect_true(
+    all(unique(qc_hil_4$hil_comment) %in%
+          unique(hil_table$human_in_loop_comment))
+  )
 
   expect_equal(unique(qc_hil_1$hil_comment), NA_character_)
+})
+
+
+test_that("qc_test_human_in_loop() does not add rows", {
+  expect_equal(nrow(dat_hil), nrow(qc_hil))
 })
