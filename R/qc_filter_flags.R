@@ -51,8 +51,8 @@ qc_filter_summary_flags <- function(
 
   if(is.null(keep_sus_do_stations)) {
     keep_sus_do_stations <- c(
-      "0814x East",
-      "0814x West",
+      "0814x E",
+      "0814x W",
       "Aberdeen",
       "Deep Basin",
       "Hourglass Lake",
