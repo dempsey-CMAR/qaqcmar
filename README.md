@@ -9,18 +9,18 @@
 
 [![License: GPL
 v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-[![](https://img.shields.io/badge/devel%20version-0.1.1-blue.svg)](https://github.com/dempsey-cmar/qaqcmar)
+[![](https://img.shields.io/badge/devel%20version-1.0.8-blue.svg)](https://github.com/dempsey-cmar/qaqcmar)
 [![CodeFactor](https://www.codefactor.io/repository/github/dempsey-cmar/qaqcmar/badge)](https://www.codefactor.io/repository/github/dempsey-cmar/qaqcmar)
 [![R-CMD-check](https://github.com/dempsey-CMAR/qaqcmar/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/dempsey-CMAR/qaqcmar/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
-The goal of qaqcmar is to apply quality control flags to Water Quality
-data collected through the Centre for Marine Applied Research’s (CMAR)
-Coastal Monitoring Program.
+`qaqcmar` applies quality control flags to Water Quality data collected
+through the Centre for Marine Applied Research’s (CMAR) Coastal
+Monitoring Program.
 
 ## Installation
 
-You can install the development version of qaqcmar from
+You can install the development version of `qaqcmar` from
 [GitHub](https://github.com/) with:
 
 ``` r
@@ -39,10 +39,10 @@ Program](https://cmar.ca/coastal-monitoring-program/) to measure
 Variables](https://www.goosocean.org/index.php?option=com_content&view=article&id=14&Itemid=114)
 from around the coast of Nova Scotia, Canada. There are three main
 branches of the program: *Water Quality*, *Currents*, and *Waves*.
-Processed data for each branch can be viewed and downloaded from several
-sources, as outlined in the [CMAR Report & Data Access Cheat
-Sheet](https://github.com/Centre-for-Marine-Applied-Research/strings/blob/master/man/figures/README-access-cheatsheet.pdf)
-(download for clickable links).
+Summary reports and full datasets for each branch can be viewed and
+downloaded from several sources, as outlined in the [CMAR Report & Data
+Access Cheat
+Sheet](https://cmar.ca/wp-content/uploads/sites/22/2024/07/Report-Data-Access-2024-07-30.pdf).
 
 ### Quality Assurance and Quality Control
 
@@ -50,24 +50,24 @@ CMAR applies Quality Assurance (QA) and Quality Control (QC) processes
 to support the delivery of high quality data (Bushnell et al, 2019). QA
 processes are typically completed prior to sensor deployment (e.g.,
 sensor calibration and validation), and are documented in a series of
-Standard Operating Procedures (link here).
+Standard Operating Procedures.
 
 Quality Control processes (e.g., automated data flags, manual review)
 are completed for each deployment after the data have been collected and
-compiled. CMAR has adopted the QARTOD (Quality Assurance / Quality
+compiled. CMAR has adapted the QARTOD (Quality Assurance / Quality
 Control of Real-Time Oceanographic Data) flagging scheme and associated
-tests. QARTOD provides a relatively simple yet informative rating scale
-(Table X), and is very well documented. There are QARTOD manuals for 14
-EOVs that provide codeable instructions for implementing recommended QC
-tests. QARTOD has been adopted by oceanographic organizations around the
-world, including the US Integrated Ocean Observing System (IOOS).
+tests. QARTOD provides a relatively simple yet informative rating scale,
+and is very well documented. QARTOD manuals provide codeable
+instructions for implementing recommended QC tests. QARTOD has been
+adopted by oceanographic organizations around the world, including the
+US Integrated Ocean Observing System (IOOS).
 
-`qaqcmar` is a quality control tool that automates assigning flags to
-each observation based on QARTOD recommendations.
+For more information on the Quality Control tests and thresholds, visit
+the [CMAR Data Governance
+Website](https://dempsey-cmar.github.io/cmp-data-governance/pages/cmp_about.html).
 
-- link to thresholds analysis document
-  - Tests that we are planning to run (include table)
-  - Flagging scheme (include table)
+`qaqcmar` automates assigning flags to each observation based on QARTOD
+recommendations and CMAR modifications.
 
 ## Example
 
@@ -77,7 +77,9 @@ library(ggplot2)
 library(qaqcmar)
 library(sensorstrings)
 library(dplyr)
+#> Warning: package 'dplyr' was built under R version 4.2.3
 library(kableExtra)
+#> Warning: package 'kableExtra' was built under R version 4.2.3
 library(lubridate)
 ```
 
@@ -96,186 +98,13 @@ dat <- readRDS(paste0(path, "/test_data_grossrange.RDS"))
 kable(dat[1:5, ])
 ```
 
-<table>
-<thead>
-<tr>
-<th style="text-align:left;">
-county
-</th>
-<th style="text-align:left;">
-station
-</th>
-<th style="text-align:left;">
-deployment_range
-</th>
-<th style="text-align:left;">
-sensor_type
-</th>
-<th style="text-align:left;">
-sensor_serial_number
-</th>
-<th style="text-align:right;">
-sensor_depth_at_low_tide_m
-</th>
-<th style="text-align:left;">
-timestamp_utc
-</th>
-<th style="text-align:right;">
-dissolved_oxygen_percent_saturation
-</th>
-<th style="text-align:right;">
-temperature_degree_c
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left;">
-Lunenburg
-</td>
-<td style="text-align:left;">
-White Tower
-</td>
-<td style="text-align:left;">
-2023-Jan-01 to 2023-Dec-28
-</td>
-<td style="text-align:left;">
-aquameasure
-</td>
-<td style="text-align:left;">
-123
-</td>
-<td style="text-align:right;">
-5
-</td>
-<td style="text-align:left;">
-2023-01-01
-</td>
-<td style="text-align:right;">
--5
-</td>
-<td style="text-align:right;">
--10
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Lunenburg
-</td>
-<td style="text-align:left;">
-White Tower
-</td>
-<td style="text-align:left;">
-2023-Jan-01 to 2023-Dec-28
-</td>
-<td style="text-align:left;">
-aquameasure
-</td>
-<td style="text-align:left;">
-123
-</td>
-<td style="text-align:right;">
-5
-</td>
-<td style="text-align:left;">
-2023-02-01
-</td>
-<td style="text-align:right;">
--5
-</td>
-<td style="text-align:right;">
--10
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Lunenburg
-</td>
-<td style="text-align:left;">
-White Tower
-</td>
-<td style="text-align:left;">
-2023-Jan-01 to 2023-Dec-28
-</td>
-<td style="text-align:left;">
-aquameasure
-</td>
-<td style="text-align:left;">
-123
-</td>
-<td style="text-align:right;">
-5
-</td>
-<td style="text-align:left;">
-2023-03-01
-</td>
-<td style="text-align:right;">
--5
-</td>
-<td style="text-align:right;">
--10
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Lunenburg
-</td>
-<td style="text-align:left;">
-White Tower
-</td>
-<td style="text-align:left;">
-2023-Jan-01 to 2023-Dec-28
-</td>
-<td style="text-align:left;">
-aquameasure
-</td>
-<td style="text-align:left;">
-123
-</td>
-<td style="text-align:right;">
-5
-</td>
-<td style="text-align:left;">
-2023-04-01
-</td>
-<td style="text-align:right;">
--5
-</td>
-<td style="text-align:right;">
--10
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Lunenburg
-</td>
-<td style="text-align:left;">
-White Tower
-</td>
-<td style="text-align:left;">
-2023-Jan-01 to 2023-Dec-28
-</td>
-<td style="text-align:left;">
-aquameasure
-</td>
-<td style="text-align:left;">
-123
-</td>
-<td style="text-align:right;">
-5
-</td>
-<td style="text-align:left;">
-2023-05-01
-</td>
-<td style="text-align:right;">
--5
-</td>
-<td style="text-align:right;">
--10
-</td>
-</tr>
-</tbody>
-</table>
+| county    | station     | deployment_range           | sensor_type | sensor_serial_number | sensor_depth_at_low_tide_m | timestamp_utc | dissolved_oxygen_percent_saturation | temperature_degree_c |
+|:----------|:------------|:---------------------------|:------------|:---------------------|---------------------------:|:--------------|------------------------------------:|---------------------:|
+| Lunenburg | White Tower | 2023-Jan-01 to 2023-Dec-28 | aquameasure | 123                  |                          5 | 2023-01-01    |                                  -5 |                  -10 |
+| Lunenburg | White Tower | 2023-Jan-01 to 2023-Dec-28 | aquameasure | 123                  |                          5 | 2023-02-01    |                                  -5 |                  -10 |
+| Lunenburg | White Tower | 2023-Jan-01 to 2023-Dec-28 | aquameasure | 123                  |                          5 | 2023-03-01    |                                  -5 |                  -10 |
+| Lunenburg | White Tower | 2023-Jan-01 to 2023-Dec-28 | aquameasure | 123                  |                          5 | 2023-04-01    |                                  -5 |                  -10 |
+| Lunenburg | White Tower | 2023-Jan-01 to 2023-Dec-28 | aquameasure | 123                  |                          5 | 2023-05-01    |                                  -5 |                  -10 |
 
 ``` r
 ss_ggplot_variables(dat) + geom_point(size = 1)
@@ -299,222 +128,13 @@ dat_gr <- qc_test_grossrange(dat, county = "Lunenburg")
 kable(dat_gr[1:5, ])
 ```
 
-<table>
-<thead>
-<tr>
-<th style="text-align:left;">
-county
-</th>
-<th style="text-align:left;">
-station
-</th>
-<th style="text-align:left;">
-deployment_range
-</th>
-<th style="text-align:left;">
-sensor_type
-</th>
-<th style="text-align:left;">
-sensor_serial_number
-</th>
-<th style="text-align:right;">
-sensor_depth_at_low_tide_m
-</th>
-<th style="text-align:left;">
-timestamp_utc
-</th>
-<th style="text-align:right;">
-value_dissolved_oxygen_percent_saturation
-</th>
-<th style="text-align:right;">
-value_temperature_degree_c
-</th>
-<th style="text-align:left;">
-grossrange_flag_dissolved_oxygen_percent_saturation
-</th>
-<th style="text-align:left;">
-grossrange_flag_temperature_degree_c
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left;">
-Lunenburg
-</td>
-<td style="text-align:left;">
-White Tower
-</td>
-<td style="text-align:left;">
-2023-Jan-01 to 2023-Dec-28
-</td>
-<td style="text-align:left;">
-aquameasure
-</td>
-<td style="text-align:left;">
-123
-</td>
-<td style="text-align:right;">
-5
-</td>
-<td style="text-align:left;">
-2023-01-01
-</td>
-<td style="text-align:right;">
--5
-</td>
-<td style="text-align:right;">
--10
-</td>
-<td style="text-align:left;">
-4
-</td>
-<td style="text-align:left;">
-4
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Lunenburg
-</td>
-<td style="text-align:left;">
-White Tower
-</td>
-<td style="text-align:left;">
-2023-Jan-01 to 2023-Dec-28
-</td>
-<td style="text-align:left;">
-aquameasure
-</td>
-<td style="text-align:left;">
-123
-</td>
-<td style="text-align:right;">
-5
-</td>
-<td style="text-align:left;">
-2023-02-01
-</td>
-<td style="text-align:right;">
--5
-</td>
-<td style="text-align:right;">
--10
-</td>
-<td style="text-align:left;">
-4
-</td>
-<td style="text-align:left;">
-4
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Lunenburg
-</td>
-<td style="text-align:left;">
-White Tower
-</td>
-<td style="text-align:left;">
-2023-Jan-01 to 2023-Dec-28
-</td>
-<td style="text-align:left;">
-aquameasure
-</td>
-<td style="text-align:left;">
-123
-</td>
-<td style="text-align:right;">
-5
-</td>
-<td style="text-align:left;">
-2023-03-01
-</td>
-<td style="text-align:right;">
--5
-</td>
-<td style="text-align:right;">
--10
-</td>
-<td style="text-align:left;">
-4
-</td>
-<td style="text-align:left;">
-4
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Lunenburg
-</td>
-<td style="text-align:left;">
-White Tower
-</td>
-<td style="text-align:left;">
-2023-Jan-01 to 2023-Dec-28
-</td>
-<td style="text-align:left;">
-aquameasure
-</td>
-<td style="text-align:left;">
-123
-</td>
-<td style="text-align:right;">
-5
-</td>
-<td style="text-align:left;">
-2023-04-01
-</td>
-<td style="text-align:right;">
--5
-</td>
-<td style="text-align:right;">
--10
-</td>
-<td style="text-align:left;">
-4
-</td>
-<td style="text-align:left;">
-4
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Lunenburg
-</td>
-<td style="text-align:left;">
-White Tower
-</td>
-<td style="text-align:left;">
-2023-Jan-01 to 2023-Dec-28
-</td>
-<td style="text-align:left;">
-aquameasure
-</td>
-<td style="text-align:left;">
-123
-</td>
-<td style="text-align:right;">
-5
-</td>
-<td style="text-align:left;">
-2023-05-01
-</td>
-<td style="text-align:right;">
--5
-</td>
-<td style="text-align:right;">
--10
-</td>
-<td style="text-align:left;">
-4
-</td>
-<td style="text-align:left;">
-4
-</td>
-</tr>
-</tbody>
-</table>
+| county    | station     | deployment_range           | sensor_type | sensor_serial_number | sensor_depth_at_low_tide_m | timestamp_utc | dissolved_oxygen_percent_saturation | temperature_degree_c | grossrange_flag_dissolved_oxygen_percent_saturation | grossrange_flag_temperature_degree_c |
+|:----------|:------------|:---------------------------|:------------|:---------------------|---------------------------:|:--------------|------------------------------------:|---------------------:|:----------------------------------------------------|:-------------------------------------|
+| Lunenburg | White Tower | 2023-Jan-01 to 2023-Dec-28 | aquameasure | 123                  |                          5 | 2023-01-01    |                                  -5 |                  -10 | 4                                                   | 4                                    |
+| Lunenburg | White Tower | 2023-Jan-01 to 2023-Dec-28 | aquameasure | 123                  |                          5 | 2023-02-01    |                                  -5 |                  -10 | 4                                                   | 4                                    |
+| Lunenburg | White Tower | 2023-Jan-01 to 2023-Dec-28 | aquameasure | 123                  |                          5 | 2023-03-01    |                                  -5 |                  -10 | 4                                                   | 4                                    |
+| Lunenburg | White Tower | 2023-Jan-01 to 2023-Dec-28 | aquameasure | 123                  |                          5 | 2023-04-01    |                                  -5 |                  -10 | 4                                                   | 4                                    |
+| Lunenburg | White Tower | 2023-Jan-01 to 2023-Dec-28 | aquameasure | 123                  |                          5 | 2023-05-01    |                                  -5 |                  -10 | 4                                                   | 4                                    |
 
 The flagged data can be plotted with `qc_plot_flags()`, specifying
 argument `qc_tests = "grossrange"`.
@@ -547,258 +167,13 @@ dat_qc <- dat %>%
 kable(dat_qc[1:5, ])
 ```
 
-<table>
-<thead>
-<tr>
-<th style="text-align:left;">
-county
-</th>
-<th style="text-align:left;">
-station
-</th>
-<th style="text-align:left;">
-deployment_range
-</th>
-<th style="text-align:left;">
-sensor_type
-</th>
-<th style="text-align:left;">
-sensor_serial_number
-</th>
-<th style="text-align:right;">
-sensor_depth_at_low_tide_m
-</th>
-<th style="text-align:left;">
-timestamp_utc
-</th>
-<th style="text-align:right;">
-value_dissolved_oxygen_percent_saturation
-</th>
-<th style="text-align:right;">
-value_temperature_degree_c
-</th>
-<th style="text-align:left;">
-climatology_flag_dissolved_oxygen_percent_saturation
-</th>
-<th style="text-align:left;">
-climatology_flag_temperature_degree_c
-</th>
-<th style="text-align:left;">
-grossrange_flag_dissolved_oxygen_percent_saturation
-</th>
-<th style="text-align:left;">
-grossrange_flag_temperature_degree_c
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left;">
-Lunenburg
-</td>
-<td style="text-align:left;">
-White Tower
-</td>
-<td style="text-align:left;">
-2023-Jan-01 to 2023-Dec-28
-</td>
-<td style="text-align:left;">
-aquameasure
-</td>
-<td style="text-align:left;">
-123
-</td>
-<td style="text-align:right;">
-5
-</td>
-<td style="text-align:left;">
-2023-01-01
-</td>
-<td style="text-align:right;">
--5
-</td>
-<td style="text-align:right;">
--10
-</td>
-<td style="text-align:left;">
-3
-</td>
-<td style="text-align:left;">
-3
-</td>
-<td style="text-align:left;">
-4
-</td>
-<td style="text-align:left;">
-4
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Lunenburg
-</td>
-<td style="text-align:left;">
-White Tower
-</td>
-<td style="text-align:left;">
-2023-Jan-01 to 2023-Dec-28
-</td>
-<td style="text-align:left;">
-aquameasure
-</td>
-<td style="text-align:left;">
-123
-</td>
-<td style="text-align:right;">
-5
-</td>
-<td style="text-align:left;">
-2023-02-01
-</td>
-<td style="text-align:right;">
--5
-</td>
-<td style="text-align:right;">
--10
-</td>
-<td style="text-align:left;">
-3
-</td>
-<td style="text-align:left;">
-3
-</td>
-<td style="text-align:left;">
-4
-</td>
-<td style="text-align:left;">
-4
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Lunenburg
-</td>
-<td style="text-align:left;">
-White Tower
-</td>
-<td style="text-align:left;">
-2023-Jan-01 to 2023-Dec-28
-</td>
-<td style="text-align:left;">
-aquameasure
-</td>
-<td style="text-align:left;">
-123
-</td>
-<td style="text-align:right;">
-5
-</td>
-<td style="text-align:left;">
-2023-03-01
-</td>
-<td style="text-align:right;">
--5
-</td>
-<td style="text-align:right;">
--10
-</td>
-<td style="text-align:left;">
-3
-</td>
-<td style="text-align:left;">
-3
-</td>
-<td style="text-align:left;">
-4
-</td>
-<td style="text-align:left;">
-4
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Lunenburg
-</td>
-<td style="text-align:left;">
-White Tower
-</td>
-<td style="text-align:left;">
-2023-Jan-01 to 2023-Dec-28
-</td>
-<td style="text-align:left;">
-aquameasure
-</td>
-<td style="text-align:left;">
-123
-</td>
-<td style="text-align:right;">
-5
-</td>
-<td style="text-align:left;">
-2023-04-01
-</td>
-<td style="text-align:right;">
--5
-</td>
-<td style="text-align:right;">
--10
-</td>
-<td style="text-align:left;">
-3
-</td>
-<td style="text-align:left;">
-3
-</td>
-<td style="text-align:left;">
-4
-</td>
-<td style="text-align:left;">
-4
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Lunenburg
-</td>
-<td style="text-align:left;">
-White Tower
-</td>
-<td style="text-align:left;">
-2023-Jan-01 to 2023-Dec-28
-</td>
-<td style="text-align:left;">
-aquameasure
-</td>
-<td style="text-align:left;">
-123
-</td>
-<td style="text-align:right;">
-5
-</td>
-<td style="text-align:left;">
-2023-05-01
-</td>
-<td style="text-align:right;">
--5
-</td>
-<td style="text-align:right;">
--10
-</td>
-<td style="text-align:left;">
-3
-</td>
-<td style="text-align:left;">
-3
-</td>
-<td style="text-align:left;">
-4
-</td>
-<td style="text-align:left;">
-4
-</td>
-</tr>
-</tbody>
-</table>
+| county    | station     | deployment_range           | sensor_type | sensor_serial_number | sensor_depth_at_low_tide_m | timestamp_utc | dissolved_oxygen_percent_saturation | temperature_degree_c | climatology_flag_dissolved_oxygen_percent_saturation | climatology_flag_temperature_degree_c | grossrange_flag_dissolved_oxygen_percent_saturation | grossrange_flag_temperature_degree_c |
+|:----------|:------------|:---------------------------|:------------|:---------------------|---------------------------:|:--------------|------------------------------------:|---------------------:|:-----------------------------------------------------|:--------------------------------------|:----------------------------------------------------|:-------------------------------------|
+| Lunenburg | White Tower | 2023-Jan-01 to 2023-Dec-28 | aquameasure | 123                  |                          5 | 2023-01-01    |                                  -5 |                  -10 | 3                                                    | 3                                     | 4                                                   | 4                                    |
+| Lunenburg | White Tower | 2023-Jan-01 to 2023-Dec-28 | aquameasure | 123                  |                          5 | 2023-02-01    |                                  -5 |                  -10 | 3                                                    | 3                                     | 4                                                   | 4                                    |
+| Lunenburg | White Tower | 2023-Jan-01 to 2023-Dec-28 | aquameasure | 123                  |                          5 | 2023-03-01    |                                  -5 |                  -10 | 3                                                    | 3                                     | 4                                                   | 4                                    |
+| Lunenburg | White Tower | 2023-Jan-01 to 2023-Dec-28 | aquameasure | 123                  |                          5 | 2023-04-01    |                                  -5 |                  -10 | 3                                                    | 3                                     | 4                                                   | 4                                    |
+| Lunenburg | White Tower | 2023-Jan-01 to 2023-Dec-28 | aquameasure | 123                  |                          5 | 2023-05-01    |                                  -5 |                  -10 | 3                                                    | 3                                     | 4                                                   | 4                                    |
 
 There are now 13 columns in `dat_qc`!
 
@@ -812,222 +187,13 @@ dat_qc <- dat_qc %>%
 kable(dat_qc[1:5, ])
 ```
 
-<table>
-<thead>
-<tr>
-<th style="text-align:left;">
-county
-</th>
-<th style="text-align:left;">
-station
-</th>
-<th style="text-align:left;">
-deployment_range
-</th>
-<th style="text-align:left;">
-sensor_type
-</th>
-<th style="text-align:left;">
-sensor_serial_number
-</th>
-<th style="text-align:right;">
-sensor_depth_at_low_tide_m
-</th>
-<th style="text-align:left;">
-timestamp_utc
-</th>
-<th style="text-align:right;">
-value_dissolved_oxygen_percent_saturation
-</th>
-<th style="text-align:right;">
-value_temperature_degree_c
-</th>
-<th style="text-align:left;">
-qc_flag_dissolved_oxygen_percent_saturation
-</th>
-<th style="text-align:left;">
-qc_flag_temperature_degree_c
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left;">
-Lunenburg
-</td>
-<td style="text-align:left;">
-White Tower
-</td>
-<td style="text-align:left;">
-2023-Jan-01 to 2023-Dec-28
-</td>
-<td style="text-align:left;">
-aquameasure
-</td>
-<td style="text-align:left;">
-123
-</td>
-<td style="text-align:right;">
-5
-</td>
-<td style="text-align:left;">
-2023-01-01
-</td>
-<td style="text-align:right;">
--5
-</td>
-<td style="text-align:right;">
--10
-</td>
-<td style="text-align:left;">
-4
-</td>
-<td style="text-align:left;">
-4
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Lunenburg
-</td>
-<td style="text-align:left;">
-White Tower
-</td>
-<td style="text-align:left;">
-2023-Jan-01 to 2023-Dec-28
-</td>
-<td style="text-align:left;">
-aquameasure
-</td>
-<td style="text-align:left;">
-123
-</td>
-<td style="text-align:right;">
-5
-</td>
-<td style="text-align:left;">
-2023-01-05
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-NA
-</td>
-<td style="text-align:left;">
-3
-</td>
-<td style="text-align:left;">
-NA
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Lunenburg
-</td>
-<td style="text-align:left;">
-White Tower
-</td>
-<td style="text-align:left;">
-2023-Jan-01 to 2023-Dec-28
-</td>
-<td style="text-align:left;">
-aquameasure
-</td>
-<td style="text-align:left;">
-123
-</td>
-<td style="text-align:right;">
-5
-</td>
-<td style="text-align:left;">
-2023-01-10
-</td>
-<td style="text-align:right;">
-100
-</td>
-<td style="text-align:right;">
-5
-</td>
-<td style="text-align:left;">
-1
-</td>
-<td style="text-align:left;">
-1
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Lunenburg
-</td>
-<td style="text-align:left;">
-White Tower
-</td>
-<td style="text-align:left;">
-2023-Jan-01 to 2023-Dec-28
-</td>
-<td style="text-align:left;">
-aquameasure
-</td>
-<td style="text-align:left;">
-123
-</td>
-<td style="text-align:right;">
-5
-</td>
-<td style="text-align:left;">
-2023-01-15
-</td>
-<td style="text-align:right;">
-155
-</td>
-<td style="text-align:right;">
-40
-</td>
-<td style="text-align:left;">
-4
-</td>
-<td style="text-align:left;">
-4
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-Lunenburg
-</td>
-<td style="text-align:left;">
-White Tower
-</td>
-<td style="text-align:left;">
-2023-Jan-01 to 2023-Dec-28
-</td>
-<td style="text-align:left;">
-aquameasure
-</td>
-<td style="text-align:left;">
-123
-</td>
-<td style="text-align:right;">
-5
-</td>
-<td style="text-align:left;">
-2023-01-28
-</td>
-<td style="text-align:right;">
-149
-</td>
-<td style="text-align:right;">
-34
-</td>
-<td style="text-align:left;">
-3
-</td>
-<td style="text-align:left;">
-3
-</td>
-</tr>
-</tbody>
-</table>
+| county    | station     | deployment_range           | sensor_type | sensor_serial_number | timestamp_utc | sensor_depth_at_low_tide_m | dissolved_oxygen_percent_saturation | temperature_degree_c | climatology_flag_dissolved_oxygen_percent_saturation | climatology_flag_temperature_degree_c | grossrange_flag_dissolved_oxygen_percent_saturation | grossrange_flag_temperature_degree_c | qc_flag_dissolved_oxygen_percent_saturation | qc_flag_temperature_degree_c |
+|:----------|:------------|:---------------------------|:------------|:---------------------|:--------------|---------------------------:|------------------------------------:|---------------------:|:-----------------------------------------------------|:--------------------------------------|:----------------------------------------------------|:-------------------------------------|:--------------------------------------------|:-----------------------------|
+| Lunenburg | White Tower | 2023-Jan-01 to 2023-Dec-28 | aquameasure | 123                  | 2023-01-01    |                          5 |                                  -5 |                  -10 | 3                                                    | 3                                     | 4                                                   | 4                                    | 4                                           | 4                            |
+| Lunenburg | White Tower | 2023-Jan-01 to 2023-Dec-28 | aquameasure | 123                  | 2023-02-01    |                          5 |                                  -5 |                  -10 | 3                                                    | 3                                     | 4                                                   | 4                                    | 4                                           | 4                            |
+| Lunenburg | White Tower | 2023-Jan-01 to 2023-Dec-28 | aquameasure | 123                  | 2023-03-01    |                          5 |                                  -5 |                  -10 | 3                                                    | 3                                     | 4                                                   | 4                                    | 4                                           | 4                            |
+| Lunenburg | White Tower | 2023-Jan-01 to 2023-Dec-28 | aquameasure | 123                  | 2023-04-01    |                          5 |                                  -5 |                  -10 | 3                                                    | 3                                     | 4                                                   | 4                                    | 4                                           | 4                            |
+| Lunenburg | White Tower | 2023-Jan-01 to 2023-Dec-28 | aquameasure | 123                  | 2023-05-01    |                          5 |                                  -5 |                  -10 | 3                                                    | 3                                     | 4                                                   | 4                                    | 4                                           | 4                            |
 
 The flagged data can be plotted with `qc_plot_flags()`, specifying
 argument `qc_tests = "qc"`.

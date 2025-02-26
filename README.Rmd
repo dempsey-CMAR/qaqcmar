@@ -27,16 +27,15 @@ knitr::include_graphics("man/figures/hex_qaqcmar.png")
 ```
 
 
-
 <!-- badges: start -->
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0) `r badge_devel(repo, "blue")` `r badge_codefactor(repo)` [![R-CMD-check](https://github.com/dempsey-CMAR/qaqcmar/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/dempsey-CMAR/qaqcmar/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
-The goal of qaqcmar is to apply quality control flags to Water Quality data collected through the Centre for Marine Applied Research's (CMAR) Coastal Monitoring Program.
+`qaqcmar` applies quality control flags to Water Quality data collected through the Centre for Marine Applied Research's (CMAR) Coastal Monitoring Program.
 
 ## Installation
 
-You can install the development version of qaqcmar from [GitHub](https://github.com/) with:
+You can install the development version of `qaqcmar` from [GitHub](https://github.com/) with:
 
 ``` r
 # install.packages("devtools")
@@ -47,21 +46,18 @@ devtools::install_github("dempsey-CMAR/qaqcmar")
 
 ### Coastal Monitoring Program
 
-The Centre for Marine Applied Research ([CMAR](https://cmar.ca/)) coordinates an extensive [Coastal Monitoring Program](https://cmar.ca/coastal-monitoring-program/) to measure [Essential Ocean Variables](https://www.goosocean.org/index.php?option=com_content&view=article&id=14&Itemid=114) from around the coast of Nova Scotia, Canada. There are three main branches of the program: _Water Quality_, _Currents_, and _Waves_. Processed data for each branch can be viewed and downloaded from several sources, as outlined in the [CMAR Report & Data Access Cheat Sheet](https://github.com/Centre-for-Marine-Applied-Research/strings/blob/master/man/figures/README-access-cheatsheet.pdf) (download for clickable links).
+The Centre for Marine Applied Research ([CMAR](https://cmar.ca/)) coordinates an extensive [Coastal Monitoring Program](https://cmar.ca/coastal-monitoring-program/) to measure [Essential Ocean Variables](https://www.goosocean.org/index.php?option=com_content&view=article&id=14&Itemid=114) from around the coast of Nova Scotia, Canada. There are three main branches of the program: _Water Quality_, _Currents_, and _Waves_. Summary reports and full datasets for each branch can be viewed and downloaded from several sources, as outlined in the [CMAR Report & Data Access Cheat Sheet](https://cmar.ca/wp-content/uploads/sites/22/2024/07/Report-Data-Access-2024-07-30.pdf).
 
 
 ### Quality Assurance and Quality Control 
 
-CMAR applies Quality Assurance (QA) and Quality Control (QC) processes to support the delivery of high quality data (Bushnell et al, 2019). QA processes are typically completed prior to sensor deployment (e.g., sensor calibration and validation), and are documented in a series of Standard Operating Procedures (link here). 
+CMAR applies Quality Assurance (QA) and Quality Control (QC) processes to support the delivery of high quality data (Bushnell et al, 2019). QA processes are typically completed prior to sensor deployment (e.g., sensor calibration and validation), and are documented in a series of Standard Operating Procedures. 
 
-Quality Control processes (e.g., automated data flags, manual review) are completed for each deployment after the data have been collected and compiled. CMAR has adopted the QARTOD (Quality Assurance / Quality Control of Real-Time Oceanographic Data) flagging scheme and associated tests. QARTOD provides a relatively simple yet informative rating scale (Table X), and is very well documented. There are QARTOD manuals for 14 EOVs that provide codeable instructions for implementing recommended QC tests. QARTOD has been adopted by oceanographic organizations around the world, including the US Integrated Ocean Observing System (IOOS).
+Quality Control processes (e.g., automated data flags, manual review) are completed for each deployment after the data have been collected and compiled. CMAR has adapted the QARTOD (Quality Assurance / Quality Control of Real-Time Oceanographic Data) flagging scheme and associated tests. QARTOD provides a relatively simple yet informative rating scale, and is very well documented. QARTOD manuals provide codeable instructions for implementing recommended QC tests. QARTOD has been adopted by oceanographic organizations around the world, including the US Integrated Ocean Observing System (IOOS).
 
-`qaqcmar` is a quality control tool that automates assigning flags to each observation based on QARTOD recommendations.
+For more information on the Quality Control tests and thresholds, visit the [CMAR Data Governance Website](https://dempsey-cmar.github.io/cmp-data-governance/pages/cmp_about.html).
 
-
-- link to thresholds analysis document
-  - Tests that we are planning to run (include table)
-  - Flagging scheme (include table)
+`qaqcmar` automates assigning flags to each observation based on QARTOD recommendations and CMAR modifications.
 
 ## Example
 
