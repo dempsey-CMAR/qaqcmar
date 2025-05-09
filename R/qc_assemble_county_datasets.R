@@ -2,7 +2,12 @@
 #'
 #' Will add columns that do not already exist.
 #'
+#' @param prov Character string indicating which province the data to be
+#'   assembled is from. Options are "ns" (the default) and "nb". This dictates
+#'   the default file path.
+#'
 #' @param path File path the the folder with the rds files to be assembled.
+#'
 #' @param folder Name of the folder where the rds files are saved.
 #'
 #' @return Returns a data.frame with data from all deployments in folder.
@@ -13,18 +18,26 @@
 #' @export
 #'
 
-qc_assemble_county_data <- function(path = NULL, folder) {
+qc_assemble_county_data <- function(prov = "ns", path = NULL, folder) {
 
-  if(is.null(path)) {
+  if(prov == "ns") {
     path <- file.path(
       "R:/data_branches/water_quality/processed_data/qc_data")
+
+    region_col <- "county"
+  }
+  if(prov == "nb") {
+    path <- file.path(
+      "R:/data_branches/nb_water_quality/processed_data/qc_data")
+
+    region_col <- "region"
   }
 
   # column order ------------------------------------------------------------
 
   # use for the join and to order columns in output
   depl_cols <- c(
-    "county",
+    region_col,
     "waterbody",
     "station",
     "lease",
@@ -43,6 +56,7 @@ qc_assemble_county_data <- function(path = NULL, folder) {
   var_cols <- c(
     "dissolved_oxygen_percent_saturation"   ,
     "dissolved_oxygen_uncorrected_mg_per_l",
+    "ph_ph",
     "salinity_psu",
     "sensor_depth_measured_m",
     "temperature_degree_c"
@@ -54,20 +68,22 @@ qc_assemble_county_data <- function(path = NULL, folder) {
     filter(qc_test != "depth_crosscheck") %>%
     mutate(col_name = paste(qc_test, "flag", variable, sep = "_")) %>%
     arrange(qc_test)
+
   qc_test_cols <- sort(c(
     qc_test_cols$col_name,
     "human_in_loop_flag_dissolved_oxygen_percent_saturation",
     "human_in_loop_flag_dissolved_oxygen_uncorrected_mg_per_l",
+    "human_in_loop_flag_ph_ph",
     "human_in_loop_flag_salinity_psu",
     "human_in_loop_flag_sensor_depth_measured_m",
     "human_in_loop_flag_temperature_degree_c")
   )
 
-
   qc_max_cols <- c(
     "qc_flag_dissolved_oxygen_percent_saturation"   ,
     "qc_flag_dissolved_oxygen_uncorrected_mg_per_l",
     "qc_flag_salinity_psu",
+    "qc_flag_ph_ph",
     "qc_flag_sensor_depth_measured_m",
     "qc_flag_temperature_degree_c"
   )
@@ -77,9 +93,9 @@ qc_assemble_county_data <- function(path = NULL, folder) {
   df <- data.frame(matrix(nrow = 1, ncol = length(all_cols)))
   colnames(df) <- all_cols
 
-  # list all files in county folder
+  # list all files in region folder
   depls <- list.files(
-    paste(path, county, sep = "/"),
+    paste(path, folder, sep = "/"),
     pattern = ".rds",
     full.names = TRUE
   )

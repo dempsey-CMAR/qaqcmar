@@ -95,6 +95,7 @@ qc_test_grossrange <- function(
     select(
       contains("depth_measured"),
       contains("dissolved_oxygen"),
+      contains("ph"),
       contains("salinity"),
       contains("temperature")
     ) %>%

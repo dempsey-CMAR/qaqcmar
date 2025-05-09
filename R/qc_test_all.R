@@ -68,6 +68,7 @@ qc_test_all <- function(
   # # use for the join and to order columns in output
   depl_cols <- c(
     "county",
+    "region",
     "waterbody",
     "station",
     "lease",

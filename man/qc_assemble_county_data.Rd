@@ -4,9 +4,13 @@
 \alias{qc_assemble_county_data}
 \title{Assemble county data}
 \usage{
-qc_assemble_county_data(path = NULL, folder)
+qc_assemble_county_data(prov = "ns", path = NULL, folder)
 }
 \arguments{
+\item{prov}{Character string indicating which province the data to be
+assembled is from. Options are "ns" (the default) and "nb". This dictates
+the default file path.}
+
 \item{path}{File path the the folder with the rds files to be assembled.}
 
 \item{folder}{Name of the folder where the rds files are saved.}
