@@ -23,7 +23,7 @@
 #' @param join_column Optional character string of a column name that is in both
 #'   \code{dat} and \code{spike_table}. The specified column will be used to
 #'   join the two tables. Default is \code{join_column = NULL}, and the tables
-#'   are joined only on the code{variable} columns (unless the variable is
+#'   are joined only on the \code{variable} columns (unless the variable is
 #'   sensor_depth_at_low_tide_m, in which case the tables are also joined by the
 #'   \code{sensor_type} column).
 #'
